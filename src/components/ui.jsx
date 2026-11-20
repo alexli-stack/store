@@ -10,40 +10,71 @@ export const Link = ({ to, href, children, ...rest }) =>
     <a href={`#${to}`} {...rest}>{children}</a>
   );
 
-export const Icon = ({ name, size = 22 }) => {
-  const paths = {
-    search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>,
-    user: <><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6" /></>,
-    cart: <><path d="M3 4h2.5l2.2 11h10.6L20.5 7H7" /><circle cx="9.5" cy="19" r="1.4" /><circle cx="17" cy="19" r="1.4" /></>,
-    close: <path d="M6 6l12 12M18 6 6 18" />,
-    menu: <path d="M4 7h16M4 12h16M4 17h16" />,
-    chevron: <path d="m9 6 6 6-6 6" />,
-    check: <path d="m5 12 4.5 4.5L19 7" />,
-    plus: <path d="M12 5v14M5 12h14" />,
-    arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
-    trash: <path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12M10 11v5M14 11v5" />,
-    truck: <><path d="M3 6h11v10H3zM14 9h4l3 3v4h-7" /><circle cx="7" cy="17.5" r="1.6" /><circle cx="17.5" cy="17.5" r="1.6" /></>,
-    shield: <path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6z" />,
-    refresh: <><path d="M4 12a8 8 0 0 1 14-5l2 2M20 12a8 8 0 0 1-14 5l-2-2" /><path d="M20 4v5h-5M4 20v-5h5" /></>,
-    headset: <><path d="M5 13a7 7 0 0 1 14 0" /><rect x="3.5" y="13" width="4" height="6" rx="1.5" /><rect x="16.5" y="13" width="4" height="6" rx="1.5" /></>,
-    lock: <><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></>,
-    card: <><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M3 10h18" /></>,
-    filter: <path d="M4 6h16l-6 7v5l-4 2v-7z" />,
-    mail: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3.5 7 8.5 6 8.5-6" /></>,
-    pin: <><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></>,
-    phone: <path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.5 5.7 2 2 0 0 1 6.5 3.5z" />,
-    sparkle: <path d="M10 3.5 11.6 8a3 3 0 0 0 1.9 1.9L18 11.5l-4.5 1.6a3 3 0 0 0-1.9 1.9L10 19.5l-1.6-4.5a3 3 0 0 0-1.9-1.9L2 11.5l4.5-1.6A3 3 0 0 0 8.4 8zM18 2.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" fill="currentColor" stroke="none" />,
-    clock: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>,
-    quote: <><path d="M5 5h14v10H9l-4 4z" /><path d="M9 9.5h6M9 12h4" /></>,
-    calendar: <><rect x="4" y="5.5" width="16" height="14.5" rx="2.5" /><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" /></>,
-    globe: <><circle cx="12" cy="12" r="8.5" /><path d="M3.5 12h17M12 3.5c2.6 2.4 3.9 5.2 3.9 8.5s-1.3 6.1-3.9 8.5c-2.6-2.4-3.9-5.2-3.9-8.5s1.3-6.1 3.9-8.5z" /></>,
-  };
+/* Icon set, redrawn on the 24px grid in one consistent outline style (1.75 stroke, round caps and joins).
+   tone: a two-tone version for feature tiles; closed shapes get a soft tinted fill under the outline. */
+const ICONS = {
+  search: <><circle cx="11" cy="11" r="7.5" /><path d="m20.5 20.5-4.2-4.2" /></>,
+  user: <><circle cx="12" cy="7.5" r="4" /><path d="M4.5 21v-1.5A4.5 4.5 0 0 1 9 15h6a4.5 4.5 0 0 1 4.5 4.5V21" /></>,
+  cart: <><circle cx="8.5" cy="20" r="1.4" /><circle cx="18" cy="20" r="1.4" /><path d="M2.5 3h2.2l2.5 11.6a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 1.95-1.55L21.5 7H5.6" /></>,
+  close: <path d="M18 6 6 18M6 6l12 12" />,
+  menu: <path d="M4 6.5h16M4 12h16M4 17.5h16" />,
+  chevron: <path d="m9 18 6-6-6-6" />,
+  check: <path d="M20 6 9.5 16.5 4 11" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  arrow: <path d="M5 12h14m-6-7 7 7-7 7" />,
+  trash: <><path d="M3.5 6h17M18.5 6v13.5a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2V6M8.5 6V4.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2V6" /><path d="M10 11v6M14 11v6" /></>,
+  truck: <><path d="M14 17.5V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10.5a1 1 0 0 0 1 1h1.5M15.5 17.5h-6.5M18.5 17.5H21a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.22-.62L18.3 8.4a1 1 0 0 0-.78-.4H14" /><circle cx="7" cy="17.5" r="2" /><circle cx="17" cy="17.5" r="2" /></>,
+  shield: <><path d="M20 12.5c0 5-3.5 7.6-7.6 9a1.2 1.2 0 0 1-.8 0C7.5 20.1 4 17.5 4 12.5V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" /></>,
+  refresh: <><path d="M3.5 12a8.5 8.5 0 0 1 14.6-5.9L20.5 8.5M20.5 3.5v5h-5" /><path d="M20.5 12a8.5 8.5 0 0 1-14.6 5.9L3.5 15.5M3.5 20.5v-5h5" /></>,
+  headset: <><path d="M3.5 13v-1a8.5 8.5 0 0 1 17 0v1" /><path d="M3.5 13h2.5a1.5 1.5 0 0 1 1.5 1.5v3A1.5 1.5 0 0 1 6 19H5a1.5 1.5 0 0 1-1.5-1.5zM20.5 13H18a1.5 1.5 0 0 0-1.5 1.5v3A1.5 1.5 0 0 0 18 19h1a1.5 1.5 0 0 0 1.5-1.5z" /><path d="M20.5 17.5V18a3.5 3.5 0 0 1-3.5 3.5h-4" /></>,
+  lock: <><rect x="4" y="10.5" width="16" height="11" rx="2.5" /><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" /><path d="M12 15v2.5" /></>,
+  card: <><rect x="2.5" y="5" width="19" height="14" rx="2.5" /><path d="M2.5 10h19M6.5 15h3" /></>,
+  filter: <path d="M21 4H3l7.2 8.5V19l3.6 1.8v-8.3z" />,
+  mail: <><rect x="2.5" y="4.5" width="19" height="15" rx="2.5" /><path d="m21.5 7.5-8.4 5.3a2 2 0 0 1-2.2 0L2.5 7.5" /></>,
+  pin: <><path d="M19.5 10c0 5-5.3 10-7 11.4a.8.8 0 0 1-1 0C9.8 20 4.5 15 4.5 10a7.5 7.5 0 0 1 15 0" /><circle cx="12" cy="10" r="2.6" /></>,
+  phone: <path d="M21.5 16.6v2.9a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 3.6 1.5h2.9a2 2 0 0 1 2 1.7c.12.9.34 1.8.66 2.7a2 2 0 0 1-.45 2.1L7.5 9.2a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.45c.9.32 1.8.54 2.7.66a2 2 0 0 1 1.7 2z" />,
+  sparkle: <path d="M10 3.5 11.6 8a3 3 0 0 0 1.9 1.9L18 11.5l-4.5 1.6a3 3 0 0 0-1.9 1.9L10 19.5l-1.6-4.5a3 3 0 0 0-1.9-1.9L2 11.5l4.5-1.6A3 3 0 0 0 8.4 8zM18 2.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" fill="currentColor" stroke="none" />,
+  clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.2 2" /></>,
+  quote: <path d="M21 14.5a2 2 0 0 1-2 2H8l-4.5 4V5a2 2 0 0 1 2-2H19a2 2 0 0 1 2 2z" />,
+  calendar: <><rect x="3" y="4.5" width="18" height="17" rx="2.5" /><path d="M16 2.5v4M8 2.5v4M3 10h18" /><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01" strokeWidth="2.4" /></>,
+  globe: <><circle cx="12" cy="12" r="9.5" /><path d="M12 2.5a14.5 14.5 0 0 0 0 19 14.5 14.5 0 0 0 0-19M2.5 12h19" /></>,
+  star: <path d="M11.5 2.8a.55.55 0 0 1 1 0l2.3 4.7a2.1 2.1 0 0 0 1.6 1.15l5.15.75a.55.55 0 0 1 .3.94l-3.73 3.63a2.1 2.1 0 0 0-.6 1.88l.88 5.13a.55.55 0 0 1-.8.58l-4.6-2.43a2.1 2.1 0 0 0-2 0l-4.6 2.43a.55.55 0 0 1-.8-.58l.88-5.13a2.1 2.1 0 0 0-.6-1.88L2.35 10.34a.55.55 0 0 1 .3-.94l5.15-.75a2.1 2.1 0 0 0 1.6-1.15z" />,
+  flag: <><path d="M4.5 22V15" /><path d="M4.5 15s1-1 4-1 5 2 8 2 4-1 4-1V3.5s-1 1-4 1-5-2-8-2-4 1-4 1z" /></>,
+  tv: <><rect x="2.5" y="7" width="19" height="14" rx="2.5" /><path d="m17 2.5-5 4.5-5-4.5" /></>,
+};
+/* in the two-tone style these shapes get the tinted fill (open strokes such as arrows never do) */
+const TONE = new Set(["user", "cart", "trash", "truck", "shield", "headset", "lock", "card", "mail", "pin", "phone", "clock", "quote", "calendar", "globe", "star", "flag", "tv", "search"]);
+export const Icon = ({ name, size = 22, tone = false }) => {
+  const fill = tone && TONE.has(name);
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {paths[name]}
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={fill ? "currentColor" : "none"} fillOpacity={fill ? 0.16 : undefined} stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={tone ? "ico-tone" : undefined}>
+      {ICONS[name]}
     </svg>
   );
 };
+
+
+/* Spec-plate drawings (design direction B): technical line drawings on a 96x72 plate, ink outline, blue dimension
+   marks with small monospace labels, one brand-red point. Keyed by the same names as Icon so feature spots can swap. */
+const D = ({ d }) => <path className="sp-dim" pathLength="100" d={d} />;
+const T = ({ x, y, children }) => <text className="sp-dimt" x={x} y={y}>{children}</text>;
+const SPEC = {
+  refresh: <><path className="sp-st" pathLength="100" d="M30 40a16 16 0 1 0 5-11M28 21v9h9" /><circle className="sp-acc" cx="46" cy="40" r="2.6" /><D d="M68 24v32M64 24h8M64 56h8" /><T x="74" y="43">30d</T></>,
+  shield: <><path className="sp-st" pathLength="100" d="M40 8 24 14v12c0 11 7 18 16 22 9-4 16-11 16-22V14zM33 28l5 5 9-10" /><D d="M64 14h18M64 30h12M64 44h6" /><T x="84" y="16">3y</T><T x="78" y="32">2y</T><T x="72" y="46">1y</T><circle className="sp-acc" cx="40" cy="8" r="2.4" /></>,
+  headset: <><path className="sp-st" pathLength="100" d="M22 40v-4a18 18 0 0 1 36 0v4M22 40h5v11h-5zM53 40h5v11h-5zM58 51c0 5-4 8-9 8h-6" /><circle className="sp-acc" cx="42" cy="59" r="2.6" /><D d="M68 18v34M64 18h8M64 52h8" /><T x="73" y="38">US</T></>,
+  user: <><circle className="sp-st" pathLength="100" cx="28" cy="24" r="8" /><path className="sp-st" pathLength="100" d="M14 56c0-9 6-14 14-14s14 5 14 14" /><circle className="sp-st" pathLength="100" cx="60" cy="24" r="8" /><path className="sp-st" pathLength="100" d="M46 56c0-9 6-14 14-14s14 5 14 14" /><circle className="sp-acc" cx="44" cy="24" r="2.6" /><D d="M14 64h60M14 61v6M74 61v6" /><T x="80" y="66">1:1</T></>,
+  search: <><rect className="sp-st" pathLength="100" x="44" y="16" width="38" height="26" rx="2" /><path className="sp-st" pathLength="100" d="M44 23h38" /><circle className="sp-st" pathLength="100" cx="34" cy="38" r="15" /><path className="sp-st" pathLength="100" d="M45 49l11 11" /><path className="sp-dim" pathLength="100" d="M29 38h10M34 33v10" /><circle className="sp-acc" cx="34" cy="38" r="2.4" /><D d="M44 50h38M44 47v6M82 47v6" /><T x="60" y="58">6Q</T></>,
+  calendar: <><rect className="sp-st" pathLength="100" x="16" y="14" width="40" height="42" rx="3" /><path className="sp-st" pathLength="100" d="M16 26h40M26 9v9M46 9v9" /><path className="sp-st" pathLength="100" d="M24 34h.01M32 34h.01M40 34h.01M48 34h.01M24 42h.01M32 42h.01M48 42h.01M24 50h.01M32 50h.01" strokeWidth="2.6" /><circle className="sp-acc" cx="40" cy="42" r="2.8" /><D d="M66 14v42M62 14h8M62 56h8" /><T x="71" y="38">30m</T></>,
+  card: <><rect className="sp-st" pathLength="100" x="12" y="18" width="50" height="32" rx="3" /><path className="sp-st" pathLength="100" d="M12 27h50M18 42h12" /><circle className="sp-acc" cx="52" cy="41" r="2.8" /><D d="M70 50v-6M76 50v-12M82 50v-18M88 50v-24M68 54h22" /><T x="70" y="64">/mo</T></>,
+  star: <><path className="sp-st" pathLength="100" d="M36 10l7 14 15 2-11 11 3 15-14-7-14 7 3-15-11-11 15-2z" /><circle className="sp-acc" cx="36" cy="32" r="2.4" /><D d="M66 14h22M66 26h20M66 38h22M66 50h14" /><T x="66" y="64">4.92</T></>,
+  flag: <><path className="sp-st" pathLength="100" d="M20 62V12M20 14h30l-6 9 6 9H20" /><circle className="sp-acc" cx="20" cy="12" r="2.6" /><path className="sp-st" pathLength="100" d="M56 62V40h20v22M62 48h8M62 55h8" /><D d="M14 66h68" /><T x="64" y="34">CA</T></>,
+  tv: <><rect className="sp-st" pathLength="100" x="16" y="20" width="46" height="32" rx="3" /><path className="sp-st" pathLength="100" d="M30 8l9 12 9-12M30 60h18" /><path className="sp-st" pathLength="100" d="M35 30l10 6-10 6z" /><circle className="sp-acc" cx="56" cy="26" r="2.4" /><D d="M70 20v32M66 20h8M66 52h8" /><T x="75" y="39">TV</T></>,
+};
+export const SpecIcon = ({ name, className = "" }) => (
+  <svg className={`spec-ico ${className}`} viewBox="0 0 96 72" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {SPEC[name] || SPEC.search}
+  </svg>
+);
 
 /** DJI writes prices as "$439.00 USD" on product pages and "USD $439" on cards and in the cart. */
 export const usd = (n) => `$${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -130,6 +161,7 @@ export function CollectionCard({ product }) {
   );
 }
 
+/** Countdown with flip digits: each digit is keyed by its value, so only the digits that change replay the flip. */
 export function Countdown({ endsAt }) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -144,7 +176,7 @@ export function Countdown({ endsAt }) {
   return (
     <div className="countdown" role="timer">
       {parts.map(([label, n]) => (
-        <span key={label}><strong>{String(n).padStart(2, "0")}</strong><small>{t(label)}</small></span>
+        <span key={label} className={`cd-${label.toLowerCase()}`}><strong aria-label={String(n)}>{String(n).padStart(2, "0").split("").map((d, i) => <i key={`${i}-${d}`} aria-hidden="true">{d}</i>)}</strong><small>{t(label)}</small></span>
       ))}
     </div>
   );

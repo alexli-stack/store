@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { t } from "../i18n.js";
-import { asset, byHandle, frontImg, img, money } from "../lib.js";
+import { asset, byHandle, frontImg, img, lockScroll, money, products } from "../lib.js";
 import { AddButton, Icon, Link } from "./ui.jsx";
 import { contact } from "../data/site.js";
 import { M, STEPS, rank as rankAll, roundFocus, hasRound, ready } from "./finderRules.js";
@@ -68,7 +68,18 @@ const CONFETTI = Array.from({ length: 64 }, (_, i) => {
   };
 });
 
+/* Warm the browser cache with every machine's front picture (preview and result sizes) once the finder is on the page,
+   so the "best match" picture swaps instantly while the visitor answers instead of popping in late. */
+let warmed = false;
+const warmFronts = () => {
+  if (warmed || typeof Image === "undefined") return;
+  warmed = true;
+  const go = () => products.filter((p) => p.kind === "machine").forEach((p) => [600, 900].forEach((w) => { const i = new Image(); i.decoding = "async"; i.src = img(frontImg(p), w); }));
+  (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
+};
+
 export default function FinderCard() {
+  useEffect(warmFronts, []);
   const cardRef = useRef(null);
   const [answers, setAnswersRaw] = useState(memo.answers);
   const [step, setStepRaw] = useState(memo.step);
@@ -132,7 +143,7 @@ export default function FinderCard() {
             <Link to={`/products/${top.handle}`} className="ih-btn dark">{t("Buy now")}</Link>
           </div>
           <Link to="/pages/sales-consultation" className="fx-call-cta">
-            <span className="fx-call-ico"><Icon name="calendar" size={18} /></span>
+            <span className="fx-call-ico"><Icon name="calendar" size={20} tone /></span>
             <span><b>{t("Want to talk it through first?")}</b><em>{t("Book a free 30-minute call with a laser expert")}</em></span>
             <Icon name="arrow" size={18} />
           </Link>
@@ -259,12 +270,11 @@ export function LeadDialog({ mode = "quote", product, lines = [], onClose }) {
   const [err, setErr] = useState({});
   const first = useRef(null);
   useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockScroll();
     first.current?.focus();
     const key = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", key);
-    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", key); };
+    return () => { unlock(); window.removeEventListener("keydown", key); };
   }, [onClose]);
   const submit = (e) => {
     e.preventDefault();
@@ -349,19 +359,6 @@ function FinderResult({ answers, ranked }) {
   const specs = ["Laser source", "Work area", "Max engraving speed", "Acceleration"].filter((k) => top.specs?.[k]);
   return (
     <section className="fr" aria-label={t("Specs and good to know")}>
-      <ol className="fr-steps">
-        {STEPS.map((s, n) => {
-          const l = lines.find((x) => x.n === n);
-          return (
-            <li key={s.id} className={l ? "done" : ""}>
-              <span title={l ? l.a.map((x) => t(x)).join(", ") : undefined}>
-                <i>{l ? <Icon name="check" size={14} /> : n + 1}</i>
-                <span><b>{t(s.label)}</b><em>{l ? l.a.map((x) => t(x)).join(", ") : t("Skipped")}</em></span>
-              </span>
-            </li>
-          );
-        })}
-      </ol>
       <div className="fr-card">
         <div className="fr-col">
           <h3>{fill(t("{name} at a glance"), { name: top.name })}</h3>

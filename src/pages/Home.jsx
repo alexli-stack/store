@@ -1,15 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { t } from "../i18n.js";
-import { asset, byHandle, img, money, frontImg, openMachineFinder } from "../lib.js";
-import { contact, footer, heroSlides, homeAmbition, homeFaq, homeProof, homeReviews, homeStandard, homeMachineSeries, homeShopCategories, trustpilot, promo } from "../data/site.js";
-import { AddButton, Countdown, Icon, Link, useDragScroll } from "../components/ui.jsx";
+import { asset, byHandle, img, lockScroll, money, frontImg, openMachineFinder } from "../lib.js";
+import { contact, footer, heroSlides, homeFaq, homeProof, homeReviews, homeStandard, homeMachineSeries, homeShopCategories, trustpilot, newHandles, promo } from "../data/site.js";
+import { AddButton, Countdown, Icon, Link, SpecIcon, useDragScroll } from "../components/ui.jsx";
 import FinderCard, { FinderHelp } from "../components/Finder.jsx";
-
-/* Module order, sizes and type follow the insta360.com homepage (measured 2026-11-17 at 1440 and 375):
-   full-bleed hero 660 with segmented progress → headline + sticky pill tabs + 3-column product cards (416×554, radius 24)
-   → feature banner 480 → Shop by interest (310×480 tiles) → two half cards 640×480 → image banner 480
-   → story carousel (864×486) → business band 376 → four support tiles 240. 64px gutters, 64px between blocks.
-   Typeface is Poppins, as on Insta360. Only the brand red is OneLaser's own (Insta360 uses yellow). */
 
 const SLIDE_MS = 10000;
 
@@ -147,6 +141,7 @@ function MachineSeries() {
           return (
             <li key={label}>
               <Link to={to} className="ih-machine-link">
+                {models.some((model) => newHandles.includes(model.handle)) && <span className="ih-new">{t("NEW")}</span>}
                 <span className="ih-machine-photo"><img src={img(frontImg(models[0]), 640)} alt="" loading="lazy" /></span>
                 <div className="ih-machine-copy">
                   <h3>{t(label)}</h3>
@@ -209,12 +204,6 @@ const thumbFallback = (e, id) => { if (!e.target.dataset.fb) { e.target.dataset.
 /* Trust strip right above the videos: four facts, each a door to its proof. All real:
    Judge.me owner rating (homeReviews), U.S. company (homeStandard), 3-2-1 warranty on XRF + Hydra and 30-day returns
    (homeFaq), FOX & Discovery coverage (the OneLaser videos below). */
-const TRUST_ICONS = {
-  star: <path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z" />,
-  flag: <><path d="M5 21V4" /><path d="M5 4h11l-2 4 2 4H5" /></>,
-  shield: <><path d="M12 3.5 19 6v5.5c0 4.3-3 7.7-7 9-4-1.3-7-4.7-7-9V6z" /><path d="m9 12 2.2 2.2L15.5 10" /></>,
-  tv: <><rect x="3" y="5" width="18" height="12" rx="2" /><path d="m10.5 8.8 4 2.2-4 2.2zM8 20.5h8" /></>,
-};
 /* Judge.me averages per product page (read 2026-11-18, as in site.js homeReviews): the 4.92 is review-weighted across these. */
 const faqText = (q) => homeFaq.find(([k]) => k.startsWith(q))?.[1] || "";
 
@@ -230,24 +219,41 @@ const FIN_MACHINES = ["onelaser-xrf-desktop-laser-machine", "cobra-10-100w-co2-l
 const perMonth = (amount, apr, n) => { const r = apr / 1200; return r ? (amount * r) / (1 - (1 + r) ** -n) : amount / n; };
 const Faces = () => <span className="tdlg-faces" aria-hidden="true">{[1, 2, 3].map((n) => <img key={n} src={asset(`team-${n}.jpg`)} alt="" />)}</span>;
 
+/** Phone sheets: drag down from the top (sheet scrolled to its top) to close; a short drag springs back. */
+function useSwipeClose(onClose) {
+  const st = useRef(null);
+  return {
+    onTouchStart: (e) => { const el = e.currentTarget; st.current = el.scrollTop <= 0 ? { y: e.touches[0].clientY, el, dy: 0 } : null; },
+    onTouchMove: (e) => {
+      const s = st.current; if (!s) return;
+      s.dy = Math.max(0, e.touches[0].clientY - s.y);
+      if (s.dy > 0 && s.el.scrollTop <= 0) { s.el.style.transition = "none"; s.el.style.transform = `translateY(${s.dy}px)`; }
+    },
+    onTouchEnd: () => {
+      const s = st.current; st.current = null; if (!s) return;
+      s.el.style.transition = "transform .25s ease"; s.el.style.transform = "";
+      if (s.dy > 110) onClose();
+    },
+  };
+}
+
 function TrustDialog({ kind, onClose, onTrustpilot }) {
   const [film, setFilm] = useState(false);
   const [clip, setClip] = useState(PRESS[0]);
   const [fin, setFin] = useState({ h: FIN_MACHINES[2], n: 36 });
   const quotes = useRef(null);
+  const swipe = useSwipeClose(onClose);
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
+    const unlock = lockScroll();
+    return () => { window.removeEventListener("keydown", onKey); unlock(); };
   }, [onClose]);
   const More = ({ href, to, ghost, children }) => (href ? <Link href={href} className={`tdlg-more${ghost ? " ghost" : ""}`}>{children} <Icon name="arrow" size={16} /></Link> : <Link to={to} className={`tdlg-more${ghost ? " ghost" : ""}`}>{children} <Icon name="arrow" size={16} /></Link>);
   const Head = ({ title, sub }) => {
-    const [icon, kicker] = DLG_HEAD[kind];
+    const [, kicker] = DLG_HEAD[kind];
     return (
       <header className="tdlg-head">
-        <span className="tdlg-head-ico">{TRUST_ICONS[icon] ? <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{TRUST_ICONS[icon]}</svg> : <Icon name={icon} size={26} />}</span>
         <p className="tdlg-kicker">{t(kicker)}</p>
         <h3>{title}</h3>
         {sub && <p className="tdlg-sub">{sub}</p>}
@@ -301,10 +307,14 @@ function TrustDialog({ kind, onClose, onTrustpilot }) {
       <>
         <Head title={t("Covered after you buy")} />
         <div className="tdlg-timeline">
-          {[[3, "years mechanical", "Frame, motion system and mechanical parts"], [2, "years electrical", "Power, control board and electronics"], [1, "year optics", "Lenses, mirrors and optical parts"]].map(([n, l, x]) => (
+          {[[3, "years mechanical", "Frame, motion system and mechanical parts"], [2, "years electrical", "Power, control board and electronics"], [1, "year optics", "Optical components and laser source parts"]].map(([n, l, x]) => (
             <div key={l}><b>{n}</b><span><strong>{t(l)}</strong><small>{t(x)}</small></span><i><em style={{ width: `${(n / 3) * 100}%` }} /></i></div>
           ))}
-          <p>{t("Covers XRF and Hydra machines. Other products follow the official warranty policy.")}</p>
+          <p>{t("X Series (XRF, XT) and Hydra machines.")}</p>
+        </div>
+        <div className="tdlg-terms">
+          <div><b>Cobra</b><span>{t("1 year on mechanical and electrical parts. Optical lenses are not covered.")}</span></div>
+          <div><b>VertiGo</b><span>{t("1 year on mechanical and electrical parts, 6 months on the laser source, 1 month on lens and mirror.")}</span></div>
         </div>
         <div className="tdlg-cards"><section><b className="tdlg-big">30</b><p className="tdlg-days">{t("day returns")}</p><p>{t(faqText("Can I return"))}</p></section>
           <section><Faces /><p className="tdlg-days">{t("U.S.-based support")}</p><p>{t(faqText("How does support"))}</p></section></div>
@@ -410,7 +420,8 @@ function TrustDialog({ kind, onClose, onTrustpilot }) {
   }
   return (
     <div className="tdlg-scrim" onClick={onClose}>
-      <div className={`tdlg tdlg-${kind}`} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+      <div className={`tdlg tdlg-${kind}`} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()} {...swipe}>
+        <span className="tdlg-grab" aria-hidden="true" />
         <button type="button" className="tdlg-x" aria-label={t("Close")} onClick={onClose}><Icon name="close" size={20} /></button>
         {body}
       </div>
@@ -419,8 +430,7 @@ function TrustDialog({ kind, onClose, onTrustpilot }) {
 }
 
 
-/* Credibility: who stands behind the machine. Real material only: the U.S. headquarters photo and points (homeStandard),
-   and OneLaser's own brand film, TV, news and trade-show videos, each playing right where it is clicked. */
+/* Press and brand-film clips, shown in the company and FOX dialogs. Real OneLaser videos only. */
 const PRESS = [
   ["seseyuxIZt4", "TV feature", "As seen on FOX & Discovery"],
   ["8tn7O69iCnQ", "FOX News", "Picked as a best holiday DIY gift"],
@@ -429,118 +439,43 @@ const PRESS = [
 ];
 const BRAND_FILM = ["_dv0xXmHSiA", "Engineered in the USA: What Makes OneLaser Different"];
 const embed = (id, title) => <iframe src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`} title={title} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen />;
+/* Video wall: one large player and a list of OneLaser's own clips (brand film, TV, news, trade show, conference).
+   Picking a clip loads it into the player and plays it there; nothing leaves the page. */
+const CLIPS = [[BRAND_FILM[0], "Brand film", "What makes OneLaser different"], ...PRESS];
 function Credibility() {
-  const [playing, setPlaying] = useState(null); // one video plays at a time, right where it was clicked
+  const [cur, setCur] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [id, tag, title] = CLIPS[cur];
+  const pick = (n) => { setCur(n); setPlaying(true); };
   return (
     <section className="ih-block icred">
       <div className="ih-wrap">
         <p className="icred-kicker">{t("Who stands behind your machine")}</p>
-        <h2 className="ih-h2 narrow">{t("Headquartered in California, with a team you can actually reach.")}</h2>
-        <div className="icred-grid">
-          <figure className={`icred-hq${playing === BRAND_FILM[0] ? " playing" : ""}`}>
-            {playing === BRAND_FILM[0] ? embed(...BRAND_FILM) : (
-              <>
-                <img src={img(homeStandard.image, 1200)} alt={t("OneLaser headquarters in the United States")} loading="lazy" />
-                <button type="button" className="icred-film" onClick={() => setPlaying(BRAND_FILM[0])}>
-                  <i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z" /></svg></i>
-                  <span><small>{t("Brand film")}</small><b>{t("What makes OneLaser different")}</b></span>
+        <h2 className="ih-h2 narrow">{t("A real U.S. company, seen on TV.")}</h2>
+        <div className="icv">
+          <div className="icv-main">
+            <div className="icv-player">
+              {playing ? embed(id, title) : (
+                <button type="button" onClick={() => setPlaying(true)} aria-label={`${t("Play video")}: ${t(title)}`}>
+                  <img src={cur === 0 ? img(homeStandard.image, 1400) : thumb(id)} onError={(e) => thumbFallback(e, id)} alt="" loading="lazy" />
+                  <span className="icv-play" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z" /></svg></span>
                 </button>
-              </>
-            )}
-            {playing !== BRAND_FILM[0] && <figcaption>
-              <b>{t("OneLaser headquarters, USA")}</b>
-              <ul>{homeStandard.points.filter((_, n) => n !== 2).map(([h]) => <li key={h}><Icon name="check" size={16} />{t(h)}</li>)}</ul>
-            </figcaption>}
-          </figure>
-          <ul className="icred-press">
-            {PRESS.map(([id, tag, title]) => (
-              <li key={id}>
-                <div className={`icred-tile${playing === id ? " playing" : ""}`}>
-                  {playing === id ? <span className="icred-thumb">{embed(id, title)}</span> : (
-                    <button type="button" className="icred-thumb" onClick={() => setPlaying(id)} aria-label={`${t("Play video")}: ${t(title)}`}>
-                      <img src={thumb(id)} onError={(e) => thumbFallback(e, id)} alt="" loading="lazy" /><i aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z" /></svg></i>
-                    </button>
-                  )}
-                  <span className="icred-text"><small>{t(tag)}</small><b>{t(title)}</b></span>
-                </div>
+              )}
+            </div>
+            <p className="icv-meta"><small>{t(tag)}</small><b>{t(title)}</b></p>
+          </div>
+          <ol className="icv-list">
+            {CLIPS.map(([cid, ctag, ctitle], n) => (
+              <li key={cid}>
+                <button type="button" className={n === cur ? "on" : ""} aria-current={n === cur ? "true" : undefined} onClick={() => pick(n)}>
+                  <span className="icv-thumb"><img src={thumb(cid)} onError={(e) => thumbFallback(e, cid)} alt="" loading="lazy" />{n === cur && playing ? <em>{t("Playing")}</em> : <i aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z" /></svg></i>}</span>
+                  <span className="icv-text"><small>{t(ctag)}</small><b>{t(ctitle)}</b></span>
+                </button>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       </div>
-    </section>
-  );
-}
-
-/* "Built for every ambition" (official heading and segment copy) with a pill switch for Makers / Business / Education.
-   Each segment is one full-bleed row: an intro card with the official photo and copy, then that segment's videos, which open
-   in a dialog on this page. */
-function Makers({ sub = false }) {
-  const [seg, setSeg] = useState(0);
-  const [open, setOpen] = useState(null);
-  const row = useDragScroll();
-  const slide = (dir) => row.current?.scrollBy({ left: dir * row.current.clientWidth * 0.8, behavior: "smooth" });
-  useEffect(() => { row.current?.scrollTo({ left: 0 }); }, [seg]);
-  useEffect(() => {
-    if (!open) return undefined;
-    const onKey = (e) => e.key === "Escape" && setOpen(null);
-    window.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
-  }, [open]);
-  const A = homeAmbition;
-  const cur = A.segments[seg];
-  return (
-    <section className={sub ? "iu iu-sub" : "ih-block iu"}>
-      <div className="ih-wrap">
-        {sub ? (
-          <h3 className="iu-subhead">{t("What they make with it")}</h3>
-        ) : (
-          <>
-            <p className="ist-kicker">{t(A.kicker)}</p>
-            <div className="ip2-head">
-              <h2 className="ih-h2">{t(A.title)}</h2>
-              <p>{t(A.text)}</p>
-            </div>
-          </>
-        )}
-        <div className="iu-bar">
-          <div className="iu-seg" role="tablist">
-            {A.segments.map((g, n) => <button key={g.label} type="button" role="tab" aria-selected={n === seg} className={n === seg ? "on" : ""} onClick={() => setSeg(n)}>{t(g.label)}</button>)}
-          </div>
-          <div className="ih-arrows">
-            <button type="button" aria-label={t("Previous")} onClick={() => slide(-1)}><Icon name="chevron" size={18} /></button>
-            <button type="button" aria-label={t("Next")} onClick={() => slide(1)}><Icon name="chevron" size={18} /></button>
-          </div>
-        </div>
-      </div>
-      <div className="ih-scroller iu-row" ref={row} key={seg}>
-        <Link to={A.cta[1]} className="iu-intro">
-          <img src={img(cur.image, 1000)} alt="" loading="lazy" />
-          <span><small>{t(cur.label)}</small><b>{t(cur.title)}</b><em>{t(cur.text)}</em><i>{t(A.cta[0])} ›</i></span>
-        </Link>
-        {cur.videos.map(([id, title, channel, what, machine]) => (
-          <button key={id} type="button" className="iu-card" onClick={() => setOpen([id, title])} aria-label={`${t("Play video")}: ${title}`}>
-            <span className="iu-thumb">
-              <img src={thumb(id)} onError={(e) => thumbFallback(e, id)} alt="" loading="lazy" />
-              <i aria-hidden="true" />
-              <em>{machine}</em>
-            </span>
-            <span className="iu-what">{t(what)}</span>
-            <b>{title}</b>
-            <small>{channel}</small>
-          </button>
-        ))}
-      </div>
-      {open && (
-        <div className="is-modal" role="dialog" aria-modal="true" aria-label={open[1]} onClick={() => setOpen(null)}>
-          <button type="button" aria-label={t("Close video")}>×</button>
-          <div onClick={(e) => e.stopPropagation()}>
-            <iframe src={`https://www.youtube-nocookie.com/embed/${open[0]}?autoplay=1&rel=0`} title={open[1]} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen />
-          </div>
-        </div>
-      )}
     </section>
   );
 }
@@ -550,9 +485,8 @@ function ReviewsDialog({ onClose }) {
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
+    const unlock = lockScroll();
+    return () => { window.removeEventListener("keydown", onKey); unlock(); };
   }, [onClose]);
   const tp = trustpilot;
   const Stars = ({ n }) => <span className="tp-stars" aria-label={`${n} / 5`}>{[1, 2, 3, 4, 5].map((k) => <i key={k} className={k <= n ? "on" : ""}>★</i>)}</span>;
@@ -587,57 +521,59 @@ function ReviewsDialog({ onClose }) {
   );
 }
 
-/* Why OneLaser, against the category most first-time buyers compare with. Category traits only (no brand named);
-   diode light passes through clear acrylic, so diode lasers cannot cut it. OneLaser figures are from the catalog. */
-const COMPARE = [
-  ["Laser source", "CO₂ glass tube or RF metal tube", "Semiconductor diode"],
-  ["Laser power", "38W to 150W", "Usually under 40W"],
-  ["Cuts clear acrylic", true, false],
-  ["Engraves glass, stone and coated metal", true, "Limited"],
-  ["Engraving speed", "Up to 2,000 mm/s (Hydra Gen2)", "Usually much slower"],
-  ["RF tube life", "Up to 30,000 h, air-cooled (XRF, Hydra)", "—"],
-  ["Support and warranty", "U.S. engineers · 3-2-1 warranty (XRF, Hydra)", "Varies by brand"],
-];
-const tick = (v) => (v === true ? <span className="icmp-yes"><Icon name="check" size={18} />{t("Yes")}</span> : v === false ? <span className="icmp-no">✕ {t("No")}</span> : t(v));
 
 /* Ownership promises, each one a door to the policy or service behind it. Copy speaks to the buyer's worry first. */
+/* spec-plate labels per promise: [section code, figure] */
+const PROMISE_SPEC = { returns: ["Returns", "30 days"], warranty: ["Warranty", "3·2·1"], support: ["Support", "U.S."], training: ["Training", "1:1"] };
 const PROMISES = [ // [icon, worry, promise, link label, dialog]
   ["refresh", "Worried about choosing wrong?", "30-day returns. Use it on real jobs first.", "Refund policy", "returns"],
-  ["shield", "Something breaks?", "3-2-1 warranty on XRF and Hydra: 3 years mechanical, 2 electrical, 1 optics.", "Warranty policy", "warranty"],
+  ["shield", "Something breaks?", "3-2-1 warranty on X Series and Hydra: 3 years mechanical, 2 electrical, 1 optics and laser source.", "Warranty policy", "warranty"],
   ["headset", "Stuck on a job?", "Call U.S. engineers who build, tune and repair these machines.", "Contact support", "support"],
   ["user", "First laser?", "One-on-one training, so you are not figuring it out alone.", "1-on-1 training", "training"],
-  ["card", "Budget tight?", "$0-down business financing and installments at checkout.", "See financing", "financing"],
 ];
 
 
-/* Featured owner quotes: one sentence each, word for word, from the real Judge.me reviews in homeReviews. They rotate every
+/* Featured owner quotes: seven lines picked from the real reviews in site.js (Judge.me homeReviews and Trustpilot), word for word. They rotate every
    few seconds (paused while the pointer or focus is on them, and not at all with reduced motion); the dots pick one. */
 const QUOTES = [
-  ["James Kirk", "I started out with a Full Spectrum K40 style, upgraded to a GlowForge, dabbled with some blue diode lasers, but the XRF is amazing."],
-  ["Thomas M Eichhorn", "If I had the funds, I would replace several of the other lasers I have with OneLasers."],
-  ["Chris Vaughn", "So much faster and reliable to cut! Really stoked on my purchase with this machine."],
-  ["Emily R.", "Needed a laser that could keep up with my growing business, and this one delivers."],
-  ["Thomas M Eichhorn", "Tech support is fantastic and quick to respond, material quality is great."],
-  ["Jack Anderson", "The magnetic lens assembly is a lifesaver!"],
-].map(([name, q]) => ({ q, ...homeReviews.items.find((r) => r.name === name) }));
+  { name: "Thomas M Eichhorn", product: "XRF 38W", q: "If I had the funds, I would replace several of the other lasers I have with OneLasers." },
+  { name: "James Kirk", product: "XRF 38W", q: "Smooth, solid, relatively quiet, accurate. I love it! Puts the joy back into creating." },
+  { name: "Jason Olsen", product: "XRF · Trustpilot", q: "Tech support is not only here in America but the team is dedicated and passionate and it shows!" },
+  { name: "Chris Vaughn", product: "Hydra 9", q: "So much faster and reliable to cut! Really stoked on my purchase with this machine." },
+  { name: "David F", product: "XRF · Trustpilot", q: "I like having the RF tube because I'm able to run the laser at higher power and not having any water cooling." },
+  { name: "Emily R.", product: "Hydra 16", q: "Needed a laser that could keep up with my growing business, and this one delivers." },
+  { name: "Guills785", product: "Trustpilot", q: "No doubt this have to be one of the best laser in the market for sure. I don't regret it one second." },
+];
 
+/* Split a quote for the word-by-word reveal: on spaces for Latin text, in pairs of characters for Chinese / Japanese. */
+const words = (s) => (/\s/.test(s) ? s.split(/(?<=\s)/) : s.match(/.{1,2}/gu) || [s]);
 function QuoteReel() {
   const [i, setI] = useState(0);
+  const touch = useRef(null); // swipe left / right on phones
   const [hold, setHold] = useState(false);
   useEffect(() => {
     if (hold || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
-    const id = setTimeout(() => setI((n) => (n + 1) % QUOTES.length), 5500);
+    const id = setTimeout(() => setI((n) => (n + 1) % QUOTES.length), 3800);
     return () => clearTimeout(id);
   }, [i, hold]);
   const r = QUOTES[i];
   return (
-    <blockquote className="iowners-quote" onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)} onFocus={() => setHold(true)} onBlur={() => setHold(false)} aria-live="polite">
+    <blockquote className="iowners-quote" onTouchStart={(e) => { touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; setHold(true); }} onTouchEnd={(e) => { const s = touch.current; touch.current = null; setHold(false); if (!s) return; const dx = e.changedTouches[0].clientX - s.x, dy = e.changedTouches[0].clientY - s.y; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) setI((n) => (n + (dx < 0 ? 1 : QUOTES.length - 1)) % QUOTES.length); }} onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)} onFocus={() => setHold(true)} onBlur={() => setHold(false)} aria-live="polite">
+      <span className="iowners-mark" aria-hidden="true">“</span>
       <div className="iowners-q" key={i}>
-        <p>“{t(r.q)}”</p>
-        <footer><b>{r.name}</b> · {r.product}</footer>
+        <span className="iowners-stars" aria-label={t("5 out of 5 stars")}>{[0, 1, 2, 3, 4].map((n) => <i key={n} style={{ "--s": n }} aria-hidden="true">★</i>)}</span>
+        <p aria-label={t(r.q)}>{words(t(r.q)).map((w, n) => <span key={n} aria-hidden="true" style={{ "--w": n }}>{w}</span>)}</p>
+        <footer>
+          <span className="iowners-avatar" aria-hidden="true">{r.name.replace(/[^A-Za-z ]/g, "").split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]).join("")}</span>
+          <span><b>{r.name}</b><small>{r.product}</small></span>
+        </footer>
       </div>
-      <div className="iowners-dots" role="tablist" aria-label={t("Owner quotes")}>
-        {QUOTES.map((x, n) => <button key={n} type="button" role="tab" aria-selected={n === i} aria-label={`${n + 1} / ${QUOTES.length}`} className={n === i ? (hold ? "on held" : "on") : ""} onClick={() => setI(n)}><i /></button>)}
+      <div className="iowners-nav">
+        <button type="button" className="iowners-step" aria-label={t("Previous")} onClick={() => setI((i + QUOTES.length - 1) % QUOTES.length)}><Icon name="chevron" size={16} /></button>
+        <div className="iowners-dots" role="tablist" aria-label={t("Owner quotes")}>
+          {QUOTES.map((x, n) => <button key={n} type="button" role="tab" aria-selected={n === i} aria-label={`${n + 1} / ${QUOTES.length}`} className={n === i ? (hold ? "on held" : "on") : ""} onClick={() => setI(n)}><i /></button>)}
+        </div>
+        <button type="button" className="iowners-step next" aria-label={t("Next")} onClick={() => setI((i + 1) % QUOTES.length)}><Icon name="chevron" size={16} /></button>
       </div>
     </blockquote>
   );
@@ -670,6 +606,43 @@ function AssuranceBar({ onOpen }) {
   );
 }
 
+/* Why OneLaser cards animate when they scroll into view (and again on each later visit): figures count up, bars grow. */
+const SeenCtx = createContext(false);
+// Confetti bits thrown out from each multiple badge as it pops: fixed angles and distances, five brand colours.
+const BADGE_BITS = Array.from({ length: 16 }, (_, k) => {
+  const a = (k / 16) * Math.PI * 2 + (k % 2) * 0.2;
+  const r = 34 + (k % 3) * 16;
+  return { "--x": `${Math.round(Math.cos(a) * r * 1.4)}px`, "--y": `${Math.round(Math.sin(a) * r)}px`, "--c": ["#e7310e", "#38bdf8", "#fbbf24", "#34d399", "#f472b6"][k % 5], "--r": `${(k * 67) % 360}deg` };
+});
+function ProofGrid({ children }) {
+  const ref = useRef(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !("IntersectionObserver" in window) || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) { setSeen(true); return undefined; }
+    // play when a good part of the cards is on screen; reset once they have left the screen, so it plays again next time
+    const io = new IntersectionObserver(([e]) => { if (e.intersectionRatio >= 0.35) setSeen(true); else if (!e.isIntersecting) setSeen(false); }, { threshold: [0, 0.35] });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <SeenCtx.Provider value={seen}><div ref={ref} className={`ip2-grid${seen ? " seen" : ""}`}>{children}</div></SeenCtx.Provider>;
+}
+function CountUp({ text }) {
+  const seen = useContext(SeenCtx);
+  const [, num, unit] = text.match(/^([\d,]+)\s*(.*)$/) || [null, null, text];
+  const target = num ? Number(num.replace(/,/g, "")) : 0;
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    if (!seen || !num) { setV(0); return undefined; }
+    const t0 = performance.now(); let raf;
+    const tick = (now) => { const k = Math.min(1, (now - t0) / 1400); setV(Math.round(target * (1 - Math.pow(1 - k, 3)))); if (k < 1) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [seen]);
+  if (!num) return t(text);
+  return <>{(seen ? v : 0).toLocaleString("en-US")}{unit && <> {t(unit)}</>}</>;
+}
+
 export default function Home({ openFinder = false }) {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [dlg, setDlg] = useState(null); // promise / next-step dialogs, so the visitor stays on the home page
@@ -687,12 +660,12 @@ export default function Home({ openFinder = false }) {
 
       <Credibility />
 
-      {/* Owners: real words on top, what they make below */}
+      {/* Owner reviews */}
       <section className="ih-block irv iowners">
         <div className="ih-wrap">
           <p className="ist-kicker">{t("Real owner reviews")}</p>
           <div className="irv-head">
-            <h2 className="ih-h2">{t("Don't take our word for it. Hear it from owners.")}</h2>
+            <h2 className="ih-h2">{t("Hear it from owners.")}</h2>
             <button type="button" className="irv-score" onClick={() => setReviewsOpen(true)}>
               <span className="irv-stars" aria-hidden="true">★★★★★</span>
               <b>{homeReviews.average}</b>
@@ -706,7 +679,7 @@ export default function Home({ openFinder = false }) {
           </div>
         </div>
         <div className="ih-scroller irv-row" ref={rv}>
-            {[...homeReviews.items, ...trustpilot.items.map((r) => ({ ...r, product: "Trustpilot" }))].map((r) => (
+            {[...homeReviews.items, ...trustpilot.items.map((r) => ({ ...r, product: "Trustpilot" }))].filter((r) => !QUOTES.some((x) => x.name === r.name)).map((r) => (
               <figure key={r.product + r.name}>
                 <span className="irv-stars" aria-label={`${r.rating || 5} / 5`}>{"★".repeat(r.rating || 5)}</span>
                 <blockquote>“{r.text}”</blockquote>
@@ -715,13 +688,12 @@ export default function Home({ openFinder = false }) {
             ))}
         </div>
         <div className="ih-wrap">
-          <p className="fd-links"><button type="button" onClick={() => setReviewsOpen(true)}>{t("Read all reviews")} ›</button><Link href={trustpilot.url}>{t("See us on Trustpilot")} ›</Link></p>
+          <p className="fd-links"><button type="button" onClick={() => setReviewsOpen(true)}>{t("Read all reviews")} ›</button></p>
           {reviewsOpen && <ReviewsDialog onClose={() => setReviewsOpen(false)} />}
         </div>
-        <Makers sub />
       </section>
 
-      {/* Why OneLaser: the numbers, then an honest comparison with the category most buyers weigh us against */}
+      {/* Why OneLaser */}
       <section className="ih-block ip2 iwhy">
         <div className="ih-wrap">
           <p className="ist-kicker">{t("Why OneLaser")}</p>
@@ -729,30 +701,19 @@ export default function Home({ openFinder = false }) {
             <h2 className="ih-h2">{t("Faster, steadier, and dependable day after day.")}</h2>
             <p>{t("What decides whether a laser keeps running job after job, year after year.")}</p>
           </div>
-          <div className="ip2-grid">
-            {homeProof.map((x) => (
-              <article key={x.figure}>
-                <div className="ip2-top"><em>{t(x.times)}</em><b>{x.figure}</b></div>
+          <ProofGrid>
+            {homeProof.map((x, n) => (
+              <article key={x.figure} style={{ "--n": n }}>
+                <div className="ip2-top"><span className="ip2-badge"><em>{t(x.times)}</em><span className="ip2-pop" aria-hidden="true">{BADGE_BITS.map((s, k) => <i key={k} style={s} />)}</span></span><b><CountUp text={x.figure} /></b></div>
                 <h3>{t(x.title)}</h3>
                 <dl className="ip2-vs">
                   <div className="me"><dt>OneLaser</dt><dd><i><u style={{ width: `${x.us}%` }} /></i><span>{t(x.usLabel)}</span></dd></div>
                   <div><dt>{t("Typical glass-tube laser")}</dt><dd><i><u style={{ width: `${x.them}%` }} /></i><span>{t(x.themLabel)}</span></dd></div>
                 </dl>
-                <p><strong>{t("For you:")}</strong> {t(x.meaning)}</p>
+                <p>{t(x.meaning)}</p>
               </article>
             ))}
-          </div>
-          <p className="ip2-note">{t("Compared with the published specs of a typical 55W glass-tube desktop CO2 laser. Years estimated at 8 hours a day. Bars are for illustration.")}</p>
-          <div className="icmp">
-            <h3>{t("OneLaser or a typical desktop diode laser?")}</h3>
-            <div className="icmp-scroll">
-              <table>
-                <thead><tr><th /><th className="me">OneLaser</th><th>{t("Typical diode laser")}</th></tr></thead>
-                <tbody>{COMPARE.map(([k, ours, theirs]) => <tr key={k}><th>{t(k)}</th><td className="me">{tick(ours)}</td><td>{tick(theirs)}</td></tr>)}</tbody>
-              </table>
-            </div>
-            <p className="icmp-note">{t("Category traits in general; individual models vary. OneLaser figures are from our product specs.")} <Link to="/compare">{t("Compare every OneLaser spec")} ›</Link></p>
-          </div>
+          </ProofGrid>
         </div>
       </section>
 
@@ -760,10 +721,10 @@ export default function Home({ openFinder = false }) {
       <section className="ih-block iprom">
         <div className="ih-wrap">
           <p className="ist-kicker">{t("After you buy")}</p>
-          <h2 className="ih-h2 narrow">{t("If something goes wrong, our U.S. engineers have you covered.")}</h2>
+          <h2 className="ih-h2 narrow">{t("U.S. engineers have you covered.")}</h2>
           <ul>
-            {PROMISES.map(([icon, worry, promise, label, kind]) => (
-              <li key={worry}><button type="button" onClick={() => setDlg(kind)} aria-haspopup="dialog"><span className="iprom-ico"><Icon name={icon} size={24} /></span><b>{t(worry)}</b><p>{t(promise)}</p><em>{t(label)} ›</em></button></li>
+            {PROMISES.map(([icon, worry, promise, label, kind], n) => (
+              <li key={worry}><button type="button" className="plate" onClick={() => setDlg(kind)} aria-haspopup="dialog"><span className="spec-idx"><span>{String(n + 1).padStart(2, "0")} / {t(PROMISE_SPEC[kind][0])}</span><span>{t(PROMISE_SPEC[kind][1])}</span></span><SpecIcon name={icon} /><b>{t(worry)}</b><p>{t(promise)}</p><em className="spec-cta">{t(label)}<span aria-hidden="true">↗</span></em></button></li>
             ))}
           </ul>
         </div>
@@ -788,11 +749,11 @@ export default function Home({ openFinder = false }) {
       {/* Next step: three ways forward, side by side */}
       <section className="ih-block inext">
         <div className="ih-wrap">
-          <h2 className="ih-h2">{t("Ready when you are. Pick your next step.")}</h2>
+          <h2 className="ih-h2">{t("Your next step.")}</h2>
           <ul>
-            <li><button type="button" onClick={openMachineFinder}><span className="inext-top"><span className="inext-ico"><Icon name="search" size={24} /></span><i>{t("6 questions")}</i></span><small>{t("Choose it yourself")}</small><b>{t("Find your machine in 30 seconds")}</b><p>{t("Answer a few questions about your materials and jobs, and get a matched machine.")}</p><em>{t("Start the finder")}<Icon name="chevron" size={16} /></em></button></li>
-            <li className="hot"><Link to="/pages/sales-consultation"><span className="inext-top"><span className="inext-ico"><Icon name="calendar" size={24} /></span><i>{t("Free")}</i></span><small>{t("Talk it through")}</small><b>{t("Book a free 30-minute call with a laser expert")}</b><p>{t("Talk through your materials, space and budget before you choose.")}</p><em>{t("Pick a time")}<Icon name="chevron" size={16} /></em></Link></li>
-            <li><button type="button" onClick={() => setDlg("financing")} aria-haspopup="dialog"><span className="inext-top"><span className="inext-ico"><Icon name="card" size={24} /></span><i>{t("Estimate")}</i></span><small>{t("Do the math")}</small><b>{t("See your monthly payment")}</b><p>{t("Pick a machine and a term to see a rough monthly payment right away.")}</p><em>{t("Open the estimator")}<Icon name="chevron" size={16} /></em></button></li>
+            <li><button type="button" className="plate" onClick={openMachineFinder}><span className="spec-idx"><span>01 / {t("Finder")}</span><span>{t("6 questions")}</span></span><SpecIcon name="search" /><small>{t("Choose it yourself")}</small><b>{t("Find your machine in 30 seconds")}</b><p>{t("Answer a few questions about your materials and jobs, and get a matched machine.")}</p><em>{t("Start the finder")}<Icon name="chevron" size={16} /></em></button></li>
+            <li><Link to="/pages/sales-consultation" className="plate"><span className="spec-idx"><span>02 / {t("Call")}</span><span>{t("Free")}</span></span><SpecIcon name="calendar" /><small>{t("Talk it through")}</small><b>{t("Book a free 30-minute call with a laser expert")}</b><p>{t("Talk through your materials, space and budget before you choose.")}</p><em>{t("Pick a time")}<Icon name="chevron" size={16} /></em></Link></li>
+            <li><button type="button" className="plate" onClick={() => setDlg("financing")} aria-haspopup="dialog"><span className="spec-idx"><span>03 / {t("Finance")}</span><span>{t("Estimate")}</span></span><SpecIcon name="card" /><small>{t("Do the math")}</small><b>{t("See your monthly payment")}</b><p>{t("Pick a machine and a term to see a rough monthly payment right away.")}</p><em>{t("Open the estimator")}<Icon name="chevron" size={16} /></em></button></li>
           </ul>
         </div>
       </section>

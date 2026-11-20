@@ -156,7 +156,7 @@ export const seriesBlocks = [
 // TODO(team): confirm each promise with the boss before launch.
 export const benefits = [
   ["30-Day Easy Returns", "Shop with confidence."],
-  ["3-2-1 Warranty", "3-year mechanical, 2-year electrical, 1-year optics on XRF and Hydra."],
+  ["3-2-1 Warranty", "3-year mechanical, 2-year electrical, 1-year optics on X Series and Hydra."],
   ["U.S.-Based Support", "Talk to real laser engineers."],
   ["Official Accessories", "Tested for OneLaser machines."],
   ["Secure Payment", "Encrypted checkout."],
@@ -164,7 +164,7 @@ export const benefits = [
 
 export const faq = [
   ["What is the return policy?", "OneLaser offers 30-day easy returns. See the Refund Policy on 1laser.com for conditions."],
-  ["What warranty is included?", "The 3-2-1 warranty covers XRF and Hydra machines: 3-year mechanical, 2-year electrical and 1-year optics. Other products follow the official warranty policy."],
+  ["What warranty is included?", "X Series (XRF, XT) and Hydra: 3-year mechanical parts, 2-year electrical components, 1-year optics and laser source. Cobra: 1-year mechanical and electrical (optical lenses not covered). VertiGo: 1-year mechanical and electrical, 6-month laser source, 1-month lens and mirror."],
   ["Where can I get help choosing?", "Book a free sales consultation call or contact U.S.-based support from the Support page."],
 ];
 
@@ -260,13 +260,13 @@ export const homeProof = [
   { figure: "30,000 h", title: "Laser tube life", times: "About 4x", us: 100, them: 27, usLabel: "30,000 h · air-cooled", themLabel: "6,000–8,000 h · water-cooled", meaning: "At 8 hours a day that is about 10 years of work. A typical glass tube needs replacing every 2–3 years." },
   { figure: "2,000 mm/s", title: "Engraving speed", times: "Over 3x", us: 100, them: 30, usLabel: "2,000 mm/s · Hydra Gen2", themLabel: "600 mm/s", meaning: "Big batches finish sooner, so you can take larger orders and still ship on time." },
   { figure: "2,000 DPI", title: "Engraving detail", times: "Up to 4x", us: 100, them: 25, usLabel: "0.07 mm RF laser dot", themLabel: "Glass-tube beam", meaning: "Small text, photos and logos come out crisp, so fewer pieces end up remade." },
-  { figure: "3 years", title: "Warranty on mechanical parts", times: "3x", us: 100, them: 33, usLabel: "3-2-1 warranty · XRF and Hydra", themLabel: "12 months main parts · 6 months tube", meaning: "Longer cover means fewer surprise repair bills over the years you own it." },
+  { figure: "3 years", title: "Warranty on mechanical parts", times: "3x", us: 100, them: 33, usLabel: "3-2-1 warranty · X Series and Hydra", themLabel: "12 months main parts · 6 months tube", meaning: "Longer cover means fewer surprise repair bills over the years you own it." },
 ];
 
 // Home buying FAQ (after "Questions? Answers." on thunderlaserusa.com). Answers restate the policies and pages on 1laser.com.
 export const homeFaq = [
-  ["Which machine is right for me?", "Answer the questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer."],
-  ["What warranty is included?", "The 3-2-1 warranty covers XRF and Hydra machines: 3-year mechanical, 2-year electrical and 1-year optics. Other products follow the official warranty policy."],
+  ["Which machine is right for me?", "Answer the six questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer."],
+  ["What warranty is included?", "X Series (XRF, XT) and Hydra: 3-year mechanical parts, 2-year electrical components, 1-year optics and laser source. Cobra: 1-year mechanical and electrical (optical lenses not covered). VertiGo: 1-year mechanical and electrical, 6-month laser source, 1-month lens and mirror."],
   ["Can I return a machine?", "OneLaser offers 30-day easy returns. See the Refund Policy on 1laser.com for conditions."],
   ["Is financing available?", "Yes. OneLaser works with Shop Pay Installments, Affirm and ClickLease. Rates and terms depend on the lender's approval."],
   ["Which software does it work with?", "OneLaser machines work with LightBurn, MakerBoost AI and RDWorks on Windows and macOS."],

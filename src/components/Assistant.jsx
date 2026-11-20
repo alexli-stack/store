@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getLang, t } from "../i18n.js";
-import { byHandle, frontImg, img, money, products, openMachineFinder } from "../lib.js";
+import { lockScroll, byHandle, frontImg, img, money, products, openMachineFinder } from "../lib.js";
 import { useCart } from "../cart.jsx";
 import { AddButton, Icon, Link } from "./ui.jsx";
 import { M, STEPS, rank } from "./finderRules.js";
@@ -15,7 +15,7 @@ import { contact, homeFaq, homeReviews, promo } from "../data/site.js";
 const LABELS = ["Shop with AI", "Shop Deals", "Find my laser"];
 const CATS = [
   ["xrf", "XRF desktop", "onelaser-xrf-desktop-laser-machine"],
-  ["cobra", "Cobra Series", "cobra-10-100w-co2-laser-engraver-cutter"],
+  ["cobra", "Cobra", "cobra-10-100w-co2-laser-engraver-cutter"],
   ["hydra", "Hydra Gen2", "hydra-9-gen-2-70w-rf-co2-dual-laser-machine"],
   ["vertigo", "VertiGo", "vertigo-vertical-laser-engraver"],
   ["deals", "Black Friday deals", null],
@@ -338,13 +338,13 @@ export default function Assistant({ product }) {
   useEffect(() => { body.current?.scrollTo({ top: body.current.scrollHeight, behavior: "smooth" }); }, [msgs, typing, open]);
   useEffect(() => {
     if (!open) return undefined;
-    input.current?.focus({ preventScroll: true });
+    // phones and tablets: do not focus, so the keyboard does not jump up and cover the welcome and quick picks
+    if (!window.matchMedia("(max-width: 860px), (pointer: coarse)").matches) input.current?.focus({ preventScroll: true });
     const key = (e) => e.key === "Escape" && close();
     window.addEventListener("keydown", key);
     const small = window.matchMedia("(max-width: 860px)").matches;
-    const prev = document.body.style.overflow;
-    if (small) document.body.style.overflow = "hidden";
-    return () => { window.removeEventListener("keydown", key); document.body.style.overflow = prev; };
+    const unlock = small ? lockScroll() : () => {};
+    return () => { window.removeEventListener("keydown", key); unlock(); };
   }, [open]);
 
   const answer = (r) => {
@@ -490,7 +490,8 @@ export default function Assistant({ product }) {
             {typing && <div className="ai-typing" aria-label={t("Assistant is typing")}><i /><i /><i /></div>}
           </div>
           <form className="ai-input" onSubmit={(e) => { e.preventDefault(); ask(text, true); }}>
-            <input ref={input} value={text} onChange={(e) => setText(e.target.value)} placeholder={t("Message the OneLaser assistant")} aria-label={t("Message")} />
+            <span className="ai-input-ico" aria-hidden="true"><Icon name="sparkle" size={18} /></span>
+            <input ref={input} value={text} onChange={(e) => setText(e.target.value)} placeholder={t("Ask me anything…")} aria-label={t("Message")} />
             <button type="submit" disabled={!text.trim() || typing} aria-label={t("Send")}><Icon name="arrow" size={18} /></button>
           </form>
           <p className="ai-fine">{t("Design draft: replies come from preset rules over the real catalog, not a live AI.")}</p>

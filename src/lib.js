@@ -57,12 +57,15 @@ const jump = (y) => window.scrollTo({ top: y, left: 0, behavior: "instant" });
 const restore = (y) => {
   const until = performance.now() + 4000;
   let user = false;
+  let last = null; // where our own last jump left the page; any other movement is the visitor scrolling (scrollbar, keys, trackpad)
   const stop = () => { user = true; };
-  const evs = ["wheel", "touchstart", "keydown", "mousedown"];
+  const evs = ["wheel", "touchstart", "keydown", "mousedown", "pointerdown"];
   evs.forEach((e) => window.addEventListener(e, stop, { once: true, passive: true }));
   const step = () => {
-    if (user) return;
+    if (!user && last != null && Math.abs(window.scrollY - last) > 2 && Math.abs(window.scrollY - y) > 2) user = true;
+    if (user) { evs.forEach((e) => window.removeEventListener(e, stop)); return; }
     if (Math.abs(window.scrollY - y) > 2) jump(y);
+    last = window.scrollY;
     if (performance.now() < until) requestAnimationFrame(step);
     else evs.forEach((e) => window.removeEventListener(e, stop));
   };
@@ -110,6 +113,27 @@ export const go = (path) => {
   intent = same ? null : "new"; // same page: no hashchange will consume the flag
   window.location.hash = path;
 };
+
+/** Freeze the page behind a dialog. overflow:hidden alone still lets iOS Safari scroll the page under a sheet, so the body is
+    pinned with position:fixed at the current offset and put back exactly where it was on release. Nested dialogs share one lock. */
+let locks = 0, lockedAt = 0;
+export function lockScroll() {
+  if (typeof document === "undefined") return () => {};
+  if (locks++ === 0) {
+    lockedAt = window.scrollY;
+    const b = document.body.style;
+    Object.assign(b, { position: "fixed", top: `-${lockedAt}px`, left: "0", right: "0", width: "100%", overflow: "hidden" });
+  }
+  let done = false;
+  return () => {
+    if (done) return; done = true;
+    if (--locks === 0) {
+      const b = document.body.style;
+      Object.assign(b, { position: "", top: "", left: "", right: "", width: "", overflow: "" });
+      window.scrollTo({ top: lockedAt, left: 0, behavior: "instant" });
+    }
+  };
+}
 
 export function openMachineFinder() {
   const finder = document.getElementById("machine-finder");

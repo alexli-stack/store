@@ -1,6 +1,6 @@
 # OneLaser Store — 1laser.com 重设计初稿
 
-**首页源码来源：** [Yonge6/onelaser-store](https://github.com/Yonge6/onelaser-store/tree/66bb29fecae1674f9a9c399ff8102d7a981250be)，对应 [同事的预览](https://yonge6.github.io/onelaser-store/#/)。
+**首页源码来源：** [Yonge6/onelaser-store](https://github.com/Yonge6/onelaser-store/tree/430b32f730da576859204b662c3edb88f43ec7ad)，对应 [同事的预览](https://yonge6.github.io/onelaser-store/#/)。
 
 本仓库用于独立修改首页。首页结构在 `src/pages/Home.jsx`，数据在 `src/data/site.js`，样式在 `src/styles.css`。
 
