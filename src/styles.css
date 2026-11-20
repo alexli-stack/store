@@ -1161,6 +1161,46 @@ ul { list-style: none; }
 .ih-hero-arrow.prev { left: 0; border-radius: 0 4px 4px 0; } .ih-hero-arrow.next { right: 0; border-radius: 4px 0 0 4px; }
 @keyframes ih-fill { from { width: 0; } to { width: 100%; } }
 
+.ih-assurance { background: #222426; color: #fff; border-top: 1px solid #393b3e; }
+.ih-assurance-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ih-assurance-list li + li { border-inline-start: 1px solid #424548; }
+.ih-assurance-list button {
+  width: 100%;
+  height: 100%;
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px clamp(12px, 1.7vw, 24px);
+  text-align: start;
+  transition: background-color .2s;
+}
+.ih-assurance-list button:hover { background: #303234; }
+.ih-assurance-list button:focus-visible { outline-color: #ff9681; outline-offset: -3px; }
+.ih-assurance-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #393032;
+  color: #ff9681;
+}
+.ih-assurance-copy { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.ih-assurance-copy strong { font-size: 15px; line-height: 1.35; font-weight: 600; }
+.ih-assurance-copy small { color: #d5d6d7; font-size: 13px; line-height: 1.45; }
+@media (max-width: 767px) {
+  .ih-assurance-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ih-assurance-list li:nth-child(odd) { border-inline-start: 0; }
+  .ih-assurance-list li:nth-child(n + 3) { border-top: 1px solid #424548; }
+  .ih-assurance-list button { padding: 12px 8px; gap: 8px; }
+  .ih-assurance-icon { width: 30px; height: 30px; }
+  .ih-assurance-icon svg { width: 18px; height: 18px; }
+  .ih-assurance-copy strong { font-size: 14px; }
+  .ih-assurance-copy small { font-size: 12px; }
+}
+
 .ih-products { margin-top: 64px; }
 .ih-sticky { position: sticky; top: 64px; z-index: 20; background: #fff; margin-top: 16px; }
 .ih-tabs { display: flex; gap: 16px; padding: 16px 0; overflow-x: auto; scrollbar-width: none; }

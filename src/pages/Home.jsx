@@ -654,6 +654,33 @@ function QuoteReel() {
   );
 }
 
+const ASSURANCES = [
+  { kind: "company", icon: "pin", label: "U.S. company", detail: "Local team for sales and support" },
+  { kind: "training", icon: "user", label: "1-on-1 training", detail: "Live video" },
+  { kind: "warranty", icon: "shield", label: "Warranty and returns", detail: "Read the warranty policy" },
+  { kind: "support", icon: "headset", label: "Tech Support", detail: "Talk to real laser engineers." },
+];
+
+function AssuranceBar({ onOpen }) {
+  return (
+    <section className="ih-assurance" aria-label={t("Support and warranty")}>
+      <ul className="ih-wrap ih-assurance-list">
+        {ASSURANCES.map(({ kind, icon, label, detail }) => (
+          <li key={kind}>
+            <button type="button" aria-haspopup="dialog" onClick={() => onOpen(kind)}>
+              <span className="ih-assurance-icon"><Icon name={icon} size={22} /></span>
+              <span className="ih-assurance-copy">
+                <strong>{t(label)}</strong>
+                <small>{t(detail)}</small>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export default function Home() {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [dlg, setDlg] = useState(null); // promise / next-step dialogs, so the visitor stays on the home page
@@ -666,6 +693,7 @@ export default function Home() {
   return (
     <div className="ih">
       <Hero />
+      <AssuranceBar onOpen={setDlg} />
       <ProductBlock />
 
       <Credibility />
