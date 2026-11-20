@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { t } from "../i18n.js";
 import { asset, byHandle, img, lockScroll, money, frontImg, openMachineFinder } from "../lib.js";
-import { contact, footer, heroSlides, homeFaq, homeProof, homeReviews, homeStandard, homeMachineSeries, homeShopCategories, trustpilot, newHandles, promo } from "../data/site.js";
+import { contact, footer, heroSlides, homeFaq, homeProof, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, trustpilot, newHandles, promo } from "../data/site.js";
 import { AddButton, Countdown, Icon, Link, SpecIcon, useDragScroll } from "../components/ui.jsx";
 import FinderCard, { FinderHelp } from "../components/Finder.jsx";
 
@@ -128,32 +128,50 @@ function Hero() {
   );
 }
 
-function MachineSeries() {
+const FINANCE_MONTHS = 24;
+
+function HomeCard({ product, description }) {
+  const { handle, name, price, compareAt, priceVaries } = product;
+  const productPath = `/products/${handle}`;
+  const savings = compareAt - price;
+  const monthly = (price / FINANCE_MONTHS).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   return (
-    <section className="ih-products ih-wrap" aria-labelledby="machine-series-title">
-      <h2 className="ih-h2" id="machine-series-title">{t("Laser machines for makers and growing businesses.")}</h2>
-      <ul className="ih-machine-series">
-        {homeMachineSeries.map(({ label, description, handles, to }) => {
-          const models = handles.map((handle) => byHandle[handle]).filter(Boolean);
-          if (!models.length) return null;
-          const available = models.filter((model) => model.available);
-          const price = Math.min(...(available.length ? available : models).map((model) => model.price));
-          return (
-            <li key={label}>
-              <Link to={to} className="ih-machine-link">
-                {models.some((model) => newHandles.includes(model.handle)) && <span className="ih-new">{t("NEW")}</span>}
-                <span className="ih-machine-photo"><img src={img(frontImg(models[0]), 640)} alt="" loading="lazy" /></span>
-                <div className="ih-machine-copy">
-                  <h3>{t(label)}</h3>
-                  <span className="ih-machine-description">{t(description)}</span>
-                  <span className="ih-machine-price">{t("From")} <b>{money(price)}</b></span>
-                  <span className="ih-machine-action">{t("Explore")} <Icon name="chevron" size={16} /></span>
-                </div>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+    <article className="ih-card">
+      {newHandles.includes(handle) && <span className="ih-new">{t("NEW")}</span>}
+      <div className="ih-card-info">
+        <h3><Link to={productPath}>{name}</Link></h3>
+        <p>{t(description)}</p>
+      </div>
+      <Link to={productPath} className="ih-card-media" tabIndex={-1} aria-hidden="true">
+        <img src={img(frontImg(product), 700)} alt="" loading="lazy" className="front" />
+      </Link>
+      <p className="ih-card-price">
+        {priceVaries && <span>{t("From")}</span>}
+        <b>{money(price)}</b>
+        {savings > 0 && <><s>{money(compareAt)}</s><span className="ih-card-break" aria-hidden="true" /><em>{t("Save")} {money(savings)}</em></>}
+      </p>
+      <p className="ih-card-monthly">{t("or")} <b>${monthly}</b>{t("/mo for 24 months")}</p>
+      <div className="ih-card-btns">
+        <AddButton product={product} className="ih-btn line sm" />
+        <Link to={productPath} className="ih-btn dark sm">{t("Buy now")}</Link>
+      </div>
+    </article>
+  );
+}
+
+function FeaturedMachines() {
+  return (
+    <section className="ih-products ih-wrap" aria-labelledby="featured-machines-title">
+      <h2 className="ih-h2" id="featured-machines-title">{t("Laser machines for makers and growing businesses.")}</h2>
+      <div className="ih-grid">
+        <div className="ih-row">
+          {homeFeaturedMachines.map(({ handle, description }) => {
+            const product = byHandle[handle];
+            return product && <HomeCard key={handle} product={product} description={description} />;
+          })}
+        </div>
+      </div>
       <div className="ih-machine-links">
         <Link to="/compare" className="ih-btn dark">{t("Compare machines")}</Link>
         <Link to="/collections/machines" className="ih-btn line">{t("All laser machines")}</Link>
@@ -655,7 +673,7 @@ export default function Home({ openFinder = false }) {
     <div className="ih">
       <Hero />
       <AssuranceBar onOpen={setDlg} />
-      <MachineSeries />
+      <FeaturedMachines />
       <MachineFinder />
 
       <Credibility />

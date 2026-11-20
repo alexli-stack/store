@@ -179,21 +179,11 @@ export const addOns = {
 
 
 /* ---------- Home, Insta360-style (2026-11-17) ---------- */
-const machineCollections = {
-  "X Series": "xrf-series",
-  "Cobra Series": "cobra-series",
-  "Hydra Series": "hydra-gen2",
-};
-
-export const homeMachineSeries = nav.find((entry) => entry.label === "Machines").series.map((series) => {
-  const collection = machineCollections[series.title];
-  return {
-    label: series.title === "Hydra Series" ? collections[collection].title : series.title,
-    description: series.desc,
-    handles: series.items,
-    to: collection ? `/collections/${collection}` : series.to,
-  };
-});
+export const homeFeaturedMachines = [
+  { handle: "onelaser-xrf-desktop-laser-machine", description: "38W RF desktop laser." },
+  { handle: "hydra-9-gen-2-70w-rf-co2-dual-laser-machine", description: "RF + CO₂ dual-laser system." },
+  { handle: "cobra-10-100w-co2-laser-engraver-cutter", description: "100W CO₂ laser cutter." },
+];
 
 export const homeShopCategories = [
   { label: "Accessories", types: ["Rotary Attachments", "Fume Extractors"], image: "hot-piburn.jpg", to: "/collections/accessories" },
