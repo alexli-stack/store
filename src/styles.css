@@ -2515,6 +2515,8 @@ ul { list-style: none; }
   .ih-row { display: flex; gap: 12px; padding: 16px 24px 4px; margin: 0 -24px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 24px; scrollbar-width: none; overscroll-behavior-x: contain; }
   .ih-row::-webkit-scrollbar { display: none; }
   .ih-row > .ih-card { flex: none; width: 84%; height: auto; min-height: 440px; scroll-snap-align: start; }
+  .ih-row > .ih-card h3,
+  .ih-row > .ih-card .ih-card-info p { white-space: normal; }
   .fx { height: auto; margin-top: 16px; grid-template-columns: 1fr; border-radius: 18px; }
   .fx-main { padding: 20px 18px 16px; }
   .fx-steps span { display: none; }
