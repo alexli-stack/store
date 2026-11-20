@@ -362,7 +362,7 @@ export default {
   "U.S.-based engineers": "Ingenieure in den USA",
   "Call OneLaser and you talk to a U.S.-based engineer with more than five years of laser experience on average.": "Ruf OneLaser an und sprich mit einem Ingenieur in den USA, der im Durchschnitt mehr als fünf Jahre Lasererfahrung hat.",
   "Which machine is right for me?": "Welche Maschine passt zu mir?",
-  "Answer the four questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer.": "Beantworte oben die vier Fragen unter „Finde deine Maschine“, vergleiche alle Modelle nebeneinander oder vereinbare einen Anruf mit einem OneLaser-Ingenieur.",
+  "Answer the questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer.": "Beantworte oben die Fragen unter „Finde deine Maschine“, vergleiche alle Modelle nebeneinander oder vereinbare einen Anruf mit einem OneLaser-Ingenieur.",
   "Can I return a machine?": "Kann ich eine Maschine zurückgeben?",
   "Is financing available?": "Gibt es Finanzierung?",
   "Yes. OneLaser works with Shop Pay Installments, Affirm and ClickLease. Rates and terms depend on the lender's approval.": "Ja. OneLaser arbeitet mit Shop Pay Installments, Affirm und ClickLease zusammen. Zinsen und Konditionen hängen von der Zusage des Kreditgebers ab.",

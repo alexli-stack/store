@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { t } from "../i18n.js";
-import { asset, byHandle, img, money, products, frontImg } from "../lib.js";
-import { contact, footer, heroSlides, homeAmbition, homeFaq, homeProof, homeReviews, homeStandard, homeTabs, trustpilot, newHandles, promo, shortSlogans } from "../data/site.js";
+import { asset, byHandle, img, money, frontImg, openMachineFinder } from "../lib.js";
+import { contact, footer, heroSlides, homeAmbition, homeFaq, homeProof, homeReviews, homeStandard, homeMachineSeries, homeShopCategories, trustpilot, promo } from "../data/site.js";
 import { AddButton, Countdown, Icon, Link, useDragScroll } from "../components/ui.jsx";
 import FinderCard, { FinderHelp } from "../components/Finder.jsx";
 
@@ -134,73 +134,69 @@ function Hero() {
   );
 }
 
-/* Insta360's card has "Learn more" + "Buy now", both leading to the product page. Here the left control adds to the cart instead:
-   it adds the first available option (the one the product page preselects), stays on the page and confirms for a moment. */
-// Monthly figure = price ÷ 24, the same "24-month payment" 1laser.com shows on its product pages ($4,399 → $183.29/mo.).
-// It is an illustration, not an offer: the real rate and term depend on the lender's approval.
-const FINANCE_MONTHS = 24;
-
-function HomeCard({ p }) {
+function MachineSeries() {
   return (
-    <article className="ih-card">
-      <div className="ih-card-info">
-        {newHandles.includes(p.handle) && <span className="ih-new">{t("NEW")}</span>}
-        <h3><Link to={`/products/${p.handle}`}>{p.name}</Link></h3>
-        <p>{t(shortSlogans[p.handle] || p.tagline)}</p>
+    <section className="ih-products ih-wrap" aria-labelledby="machine-series-title">
+      <h2 className="ih-h2" id="machine-series-title">{t("Laser machines for makers and growing businesses.")}</h2>
+      <ul className="ih-machine-series">
+        {homeMachineSeries.map(({ label, description, handles, to }) => {
+          const models = handles.map((handle) => byHandle[handle]).filter(Boolean);
+          if (!models.length) return null;
+          const available = models.filter((model) => model.available);
+          const price = Math.min(...(available.length ? available : models).map((model) => model.price));
+          return (
+            <li key={label}>
+              <Link to={to} className="ih-machine-link">
+                <span className="ih-machine-photo"><img src={img(frontImg(models[0]), 640)} alt="" loading="lazy" /></span>
+                <div className="ih-machine-copy">
+                  <h3>{t(label)}</h3>
+                  <span className="ih-machine-description">{t(description)}</span>
+                  <span className="ih-machine-price">{t("From")} <b>{money(price)}</b></span>
+                  <span className="ih-machine-action">{t("Explore")} <Icon name="chevron" size={16} /></span>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="ih-machine-links">
+        <Link to="/compare" className="ih-btn dark">{t("Compare machines")}</Link>
+        <Link to="/collections/machines" className="ih-btn line">{t("All laser machines")}</Link>
       </div>
-      <Link to={`/products/${p.handle}`} className="ih-card-media" tabIndex={-1} aria-hidden="true"><img src={img(frontImg(p), 700)} alt="" loading="lazy" className={p.kind === "machine" ? "front" : undefined} /></Link>
-      <p className="ih-card-price">
-        {p.priceVaries && <span>{t("From")}</span>}
-        <b>{money(p.price)}</b>
-        {p.compareAt > p.price && <s>{money(p.compareAt)}</s>}
-        {p.compareAt > p.price && <em>{t("Save")} {money(p.compareAt - p.price)}</em>}
-      </p>
-      {p.kind === "machine" && (
-        <p className="ih-card-monthly">{t("or")} <b>${(p.price / FINANCE_MONTHS).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</b>{t("/mo for 24 months")}</p>
-      )}
-      <div className="ih-card-btns">
-        <AddButton product={p} className="ih-btn line sm" />
-        <Link to={`/products/${p.handle}`} className="ih-btn dark sm">{t("Buy now")}</Link>
-      </div>
-    </article>
+    </section>
   );
 }
 
-function ProductBlock() {
-  const tabsRef = useDragScroll({ wheel: true });
-  const [ti, setTi] = useState(0);
-  const tab = homeTabs[ti];
-  const machines = !!tab.picks; // the finder only belongs with the machine tabs
-  useEffect(() => {
-    const back = () => setTi((n) => (homeTabs[n].picks ? n : 0));
-    window.addEventListener("onelaser:finder", back);
-    return () => window.removeEventListener("onelaser:finder", back);
-  }, []);
-  const list = (tab.picks ? tab.picks.map((h) => byHandle[h]) : products.filter((p) => p.category === tab.collection || (tab.collection === "materials" && p.kind === "material"))).filter(Boolean).slice(0, 6);
+function MachineFinder() {
   return (
-    <section className="ih-products">
-      <div className="ih-wrap"><h2 className="ih-h2 narrow">{t("Laser machines for makers and growing businesses.")}</h2></div>
-      <div className="ih-sticky">
-        <div className="ih-wrap">
-          <div className="ih-tabs" role="tablist" ref={tabsRef}>
-            {homeTabs.map((x, n) => <button key={x.label} type="button" role="tab" aria-selected={n === ti} className={n === ti ? "on" : ""} onClick={() => setTi(n)}>{t(x.label)}</button>)}
-          </div>
-        </div>
-      </div>
-      <div className="ih-wrap">
-        {tab.note && <p className="ih-tab-note" key={`n${ti}`}>{t(tab.note)} · {t("from")} <b>{money(Math.min(...list.map((p) => p.price)))}</b></p>}
-        <div className="ih-grid" key={ti}>
-          <div className="ih-row">
-            {list.slice(0, machines ? 4 : 6).map((p) => (
-              <HomeCard key={p.handle} p={p} />
-            ))}
-          </div>
-          {machines && <FinderCard />}
-        </div>
-        {machines && <div id="fc-result" />}
-        <div className="ih-viewall"><Link to={tab.all}>{t("View all")}</Link></div>
-        {machines && <FinderHelp />}
-      </div>
+    <section className="ih-block ih-finder ih-wrap" id="machine-finder" aria-labelledby="machine-finder-title">
+      <h2 className="ih-h2" id="machine-finder-title">{t("Find your machine")}</h2>
+      <p className="ih-finder-intro">{t("Answer a few questions about your materials and jobs, and get a matched machine.")}</p>
+      <FinderCard />
+      <div id="fc-result" />
+      <FinderHelp />
+    </section>
+  );
+}
+
+function ShopCategories() {
+  return (
+    <section className="ih-block ih-wrap" aria-labelledby="home-shop-title">
+      <h2 className="ih-h2" id="home-shop-title">{t("Accessories")} &amp; {t("Materials")}</h2>
+      <ul className="ih-shop-categories">
+        {homeShopCategories.map(({ label, types, image, to }) => (
+          <li key={label}>
+            <Link to={to}>
+              <img src={asset(image)} alt="" loading="lazy" />
+              <div className="ih-shop-copy">
+                <h3>{t(label)}</h3>
+                <span>{types.map((type) => t(type)).join(" · ")}</span>
+                <b>{t("Shop now")} <Icon name="chevron" size={16} /></b>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -264,14 +260,7 @@ function TrustDialog({ kind, onClose, onTrustpilot }) {
     </ul>
   );
   let body;
-  if (kind === "finder") {
-    body = (
-      <>
-        <div className="tdlg-finder"><FinderCard modal /></div>
-        <div id="fc-result-modal" className="tdlg-finder-result" />
-      </>
-    );
-  } else if (kind === "reviews") {
+  if (kind === "reviews") {
     body = (
       <>
         <Head title={<span className="tdlg-score"><b>{homeReviews.average}</b><span className="tdlg-stars" aria-hidden="true">★★★★★</span></span>} sub={`${t("Average of")} ${homeReviews.count} ${t("owner reviews on 1laser.com product pages (Judge.me).")}`} />
@@ -681,20 +670,20 @@ function AssuranceBar({ onOpen }) {
   );
 }
 
-export default function Home() {
+export default function Home({ openFinder = false }) {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [dlg, setDlg] = useState(null); // promise / next-step dialogs, so the visitor stays on the home page
   const rv = useDragScroll();
   const rvSlide = (dir) => rv.current?.scrollBy({ left: dir * rv.current.clientWidth * 0.8, behavior: "smooth" });
-  const toFinder = () => {
-    window.dispatchEvent(new Event("onelaser:finder")); // switches the product tabs back to a machine tab
-    setTimeout(() => document.querySelector(".fx")?.scrollIntoView({ behavior: "smooth", block: "center" }), 60);
-  };
+  useEffect(() => {
+    if (openFinder) openMachineFinder();
+  }, [openFinder]);
   return (
     <div className="ih">
       <Hero />
       <AssuranceBar onOpen={setDlg} />
-      <ProductBlock />
+      <MachineSeries />
+      <MachineFinder />
 
       <Credibility />
 
@@ -794,12 +783,14 @@ export default function Home() {
         </div>
       </section>
 
+      <ShopCategories />
+
       {/* Next step: three ways forward, side by side */}
       <section className="ih-block inext">
         <div className="ih-wrap">
           <h2 className="ih-h2">{t("Ready when you are. Pick your next step.")}</h2>
           <ul>
-            <li><button type="button" onClick={() => setDlg("finder")} aria-haspopup="dialog"><span className="inext-top"><span className="inext-ico"><Icon name="search" size={24} /></span><i>{t("6 questions")}</i></span><small>{t("Choose it yourself")}</small><b>{t("Find your machine in 30 seconds")}</b><p>{t("Answer a few questions about your materials and jobs, and get a matched machine.")}</p><em>{t("Start the finder")}<Icon name="chevron" size={16} /></em></button></li>
+            <li><button type="button" onClick={openMachineFinder}><span className="inext-top"><span className="inext-ico"><Icon name="search" size={24} /></span><i>{t("6 questions")}</i></span><small>{t("Choose it yourself")}</small><b>{t("Find your machine in 30 seconds")}</b><p>{t("Answer a few questions about your materials and jobs, and get a matched machine.")}</p><em>{t("Start the finder")}<Icon name="chevron" size={16} /></em></button></li>
             <li className="hot"><Link to="/pages/sales-consultation"><span className="inext-top"><span className="inext-ico"><Icon name="calendar" size={24} /></span><i>{t("Free")}</i></span><small>{t("Talk it through")}</small><b>{t("Book a free 30-minute call with a laser expert")}</b><p>{t("Talk through your materials, space and budget before you choose.")}</p><em>{t("Pick a time")}<Icon name="chevron" size={16} /></em></Link></li>
             <li><button type="button" onClick={() => setDlg("financing")} aria-haspopup="dialog"><span className="inext-top"><span className="inext-ico"><Icon name="card" size={24} /></span><i>{t("Estimate")}</i></span><small>{t("Do the math")}</small><b>{t("See your monthly payment")}</b><p>{t("Pick a machine and a term to see a rough monthly payment right away.")}</p><em>{t("Open the estimator")}<Icon name="chevron" size={16} /></em></button></li>
           </ul>

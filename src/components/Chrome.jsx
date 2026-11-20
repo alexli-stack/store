@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { LANGS, getLang, setLang, t } from "../i18n.js";
-import { asset, byHandle, go, img, products, frontImg } from "../lib.js";
+import { asset, byHandle, go, img, products, frontImg, openMachineFinder } from "../lib.js";
 import { useCart } from "../cart.jsx";
 import { nav, promo, benefits, contact, footer } from "../data/site.js";
 import { Countdown, Icon, Link, usd } from "./ui.jsx";
@@ -35,15 +35,7 @@ export function Header({ path }) {
   // "Help me choose": go to the home page and bring the machine finder card into view.
   const openFinder = () => {
     setOpen(null); setMobile(false);
-    go("/");
-    window.dispatchEvent(new Event("onelaser:finder")); // the home product block switches back to a machine tab
-    let tries = 0;
-    const seek = () => {
-      const el = document.querySelector(".fx");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-      else if (tries++ < 20) setTimeout(seek, 100);
-    };
-    setTimeout(seek, 60);
+    openMachineFinder();
   };
   const closePromo = () => { setPromoOn(false); try { sessionStorage.setItem("onelaser-promo-closed", "1"); } catch { /* keep it closed for this view only */ } };
   const current = LANGS.find((l) => l.code === getLang()) || LANGS[0];

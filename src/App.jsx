@@ -22,7 +22,7 @@ function Page({ path, query }) {
   if (section === "pages" && handle === "sales-consultation") return <Consult />;
   if (section === "pages" && handle === "financing") return <Finance key={query.get("p") || ""} query={query} />;
   if (section === "cart") return <Cart />;
-  return <Home />;
+  return <Home openFinder={query.has("finder")} />;
 }
 
 export default function App() {

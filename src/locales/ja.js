@@ -362,7 +362,7 @@ export default {
   "U.S.-based engineers": "米国拠点のエンジニア",
   "Call OneLaser and you talk to a U.S.-based engineer with more than five years of laser experience on average.": "OneLaserに電話すると、平均5年以上のレーザー経験を持つ米国拠点のエンジニアが対応します。",
   "Which machine is right for me?": "自分に合うマシンは？",
-  "Answer the four questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer.": "上の「マシンを探す」の4つの質問に答えるか、全モデルを並べて比較するか、OneLaserのエンジニアとの通話を予約してください。",
+  "Answer the questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer.": "上の「マシンを探す」の質問に答えるか、全モデルを並べて比較するか、OneLaserのエンジニアとの通話を予約してください。",
   "Can I return a machine?": "マシンは返品できますか？",
   "Is financing available?": "分割払いは利用できますか？",
   "Yes. OneLaser works with Shop Pay Installments, Affirm and ClickLease. Rates and terms depend on the lender's approval.": "はい。OneLaserはShop Pay Installments、Affirm、ClickLeaseに対応しています。金利や条件は貸し手の審査によって異なります。",

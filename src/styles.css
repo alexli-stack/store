@@ -1202,6 +1202,57 @@ ul { list-style: none; }
 }
 
 .ih-products { margin-top: 64px; }
+
+.ih-machine-series, .ih-shop-categories {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+.ih-machine-series { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ih-machine-link, .ih-shop-categories a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--tile);
+  transition: border-color .2s, background-color .2s;
+}
+.ih-machine-link:hover, .ih-shop-categories a:hover { border-color: var(--accent-ink); background: #fff; }
+.ih-machine-photo { position: relative; display: block; aspect-ratio: 3 / 2; overflow: hidden; background: #eef0f3; }
+.ih-machine-photo img { position: absolute; inset: 0; width: 100%; height: 100%; padding: 12px; object-fit: contain; }
+.ih-machine-series li:first-child .ih-machine-photo img { object-fit: cover; object-position: center 52%; }
+.ih-machine-copy, .ih-shop-copy { display: flex; flex: 1; flex-direction: column; gap: 6px; padding: 18px; }
+.ih-machine-copy h3, .ih-shop-copy h3 { font-size: 21px; line-height: 1.2; font-weight: 650; overflow-wrap: anywhere; }
+.ih-machine-description, .ih-shop-copy > span { color: var(--muted); font-size: 14px; line-height: 1.5; }
+.ih-machine-price { margin-top: auto; padding-top: 6px; font-size: 14px; }
+.ih-machine-price b { font-size: 18px; color: var(--brand-dark); }
+.ih-machine-action, .ih-shop-copy > b { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--accent-dark); font-weight: 650; }
+.ih-machine-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.ih-machine-links .ih-btn { height: auto; min-height: 44px; padding-block: 8px; line-height: 1.4; white-space: normal; }
+.ih-finder, .ih-finder .fx, #fc-result { scroll-margin-top: calc(var(--promo-h) + 86px); }
+.ih-finder-intro { margin: 10px 0 24px; max-width: 620px; color: var(--muted); }
+.ih-finder .fx { height: auto; min-height: 490px; }
+.ih-finder .fx-art { width: min(100%, 350px); margin-inline: auto; }
+.ih-shop-categories { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ih-shop-categories a { flex-direction: row; align-items: stretch; }
+.ih-shop-categories img { width: 43%; min-height: 144px; object-fit: cover; }
+.ih-shop-copy { justify-content: center; }
+@media (max-width: 1023px) {
+  .ih-machine-series { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 650px) {
+  .ih-machine-series { gap: 10px; margin-top: 18px; }
+  .ih-machine-copy, .ih-shop-copy { padding: 12px; }
+  .ih-machine-copy h3, .ih-shop-copy h3 { font-size: 17px; }
+  .ih-machine-description, .ih-shop-copy > span { font-size: 13px; }
+  .ih-machine-price b { font-size: 16px; }
+  .ih-finder .fx { min-height: 0; }
+  .ih-shop-categories { grid-template-columns: 1fr; gap: 10px; }
+  .ih-shop-categories img { min-height: 120px; }
+}
+
 .ih-sticky { position: sticky; top: 64px; z-index: 20; background: #fff; margin-top: 16px; }
 .ih-tabs { display: flex; gap: 16px; padding: 16px 0; overflow-x: auto; scrollbar-width: none; }
 .ih-tabs::-webkit-scrollbar, .ih-scroller::-webkit-scrollbar { display: none; }
@@ -2228,7 +2279,7 @@ ul { list-style: none; }
 /* ===== Finder result: full-width panel under the product grid (after the thunderlaserusa.com result) ===== */
 .ih-card.fc-done .ih-card-info p { margin-top: 6px; font-size: 14px; line-height: 19px; color: #76767f; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .ih-card.fc-done .fc-see { margin-top: 10px; width: 100%; }
-#fc-result { scroll-margin-top: calc(var(--promo-h) + 140px); }
+
 .fr { margin-top: 32px; animation: fc-pop .45s ease; }
 .fr-steps { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
 .fr-steps li > button, .fr-steps li > span { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; width: 100%; height: 100%; padding: 10px 12px; border-radius: 14px; background: #f8f9fc; cursor: pointer; transition: background .2s, box-shadow .2s; }
@@ -3705,7 +3756,7 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
 .fx-stage img:not([src*="/front/"]) { width: 128%; max-width: none; max-height: none; aspect-ratio: 4 / 3; }
 @media (max-width: 860px) { .fx-done .fx-stage img:not([src*="/front/"]) { width: 100%; max-height: 240px; } }
 /* the finder swaps its card and mounts the details below: keep the browser from re-anchoring (it cancels our scroll) */
-.ih-products .fx, #fc-result { overflow-anchor: none; }
+.ih-finder .fx, #fc-result { overflow-anchor: none; }
 
 /* ===== Home trust strip (above "Watch OneLaser in action") ===== */
 .ih-trust { margin-top: 56px; }

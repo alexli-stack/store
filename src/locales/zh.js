@@ -362,7 +362,7 @@ export default {
   "U.S.-based engineers": "美国本土工程师",
   "Call OneLaser and you talk to a U.S.-based engineer with more than five years of laser experience on average.": "致电 OneLaser，接听的是美国本土工程师，平均拥有五年以上的激光经验。",
   "Which machine is right for me?": "哪台机器适合我？",
-  "Answer the four questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer.": "回答上方“帮你选机”中的四个问题，并排比较所有型号，或预约与 OneLaser 工程师通话。",
+  "Answer the questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer.": "回答上方“帮你选机”中的问题，并排比较所有型号，或预约与 OneLaser 工程师通话。",
   "Can I return a machine?": "可以退货吗？",
   "Is financing available?": "可以分期付款吗？",
   "Yes. OneLaser works with Shop Pay Installments, Affirm and ClickLease. Rates and terms depend on the lender's approval.": "可以。OneLaser 支持 Shop Pay Installments、Affirm 和 ClickLease。利率和条款取决于贷款方的审批。",

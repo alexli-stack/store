@@ -8,12 +8,7 @@ import { M, STEPS, rank as rankAll, roundFocus, hasRound, ready } from "./finder
 
 const rank = (a) => rankAll(a, (h) => !!byHandle[h], (h) => byHandle[h]?.price || 0);
 
-/* "Find your machine": a compact card in the last cell of the home product grid.
-   The questions follow the four-step finder on thunderlaserusa.com (material → work → pieces → shop → machine), adapted to the
-   OneLaser line-up. What is different: single-choice steps move on by themselves, every step can be skipped or revisited, the
-   current best match is named while you answer, and the card ends as a shoppable product card (reasons, price, 24-month figure,
-   add to cart, buy now) instead of sending you to another page.
-   The matching rules live in finderRules.js. */
+// The matching rules for the home machine finder live in finderRules.js.
 
 /** Accessories the answers call for: a rotary for round items (not for VertiGo, which has one built in) and an indoor fume filter. */
 function addOnsFor(a, key) {
@@ -59,14 +54,9 @@ function MachineMorph() {
   );
 }
 
-/** Machine finder: spans two cells of the home product grid (one row below on phones).
-    Left: one question at a time with a labelled stepper. Right: the best match so far, which updates with every answer,
-    so the visitor sees where the answers lead before the end. When done, the card shows the pick and the full
-    result opens under the grid (FinderResult). */
+// Remember answers when the visitor leaves the homepage and returns to the finder.
 const memo = { answers: {}, step: 0 };
 
-/* modal: the finder opened from a home-page dialog. Its details render into the dialog (#fc-result-modal) and every
-   scroll stays inside the dialog, so the page underneath never moves. */
 /* Confetti for the reveal: 64 pieces thrown out from behind the machine on a golden-angle spread, mostly upward,
    then falling and spinning. Fixed positions (no randomness) so every reveal looks the same. */
 const CONFETTI = Array.from({ length: 64 }, (_, i) => {
@@ -78,15 +68,15 @@ const CONFETTI = Array.from({ length: 64 }, (_, i) => {
   };
 });
 
-export default function FinderCard({ modal = false }) {
-  const scope = modal ? ".tdlg .fx" : ".ih-products .fx";
+export default function FinderCard() {
+  const cardRef = useRef(null);
   const [answers, setAnswersRaw] = useState(memo.answers);
   const [step, setStepRaw] = useState(memo.step);
   const setAnswers = (v) => { memo.answers = v; setAnswersRaw(v); };
   const setStep = (v) => setStepRaw((s) => { const n = typeof v === "function" ? v(s) : v; memo.step = n; return n; });
   const [slot, setSlot] = useState(null);
   const [lead, setLead] = useState(null);
-  useEffect(() => setSlot(document.getElementById(modal ? "fc-result-modal" : "fc-result")), [modal]);
+  useEffect(() => setSlot(document.getElementById("fc-result")), []);
   const done = step >= STEPS.length;
   const cur = STEPS[Math.min(step, STEPS.length - 1)];
   const ranked = useMemo(() => rank(answers), [answers]);
@@ -94,29 +84,8 @@ export default function FinderCard({ modal = false }) {
   const answered = lines.length > 0;
   const top = ranked[0] && byHandle[M[ranked[0].key].handle];
   const has = (s) => (s.multi ? (answers[s.id] || []).length > 0 : !!answers[s.id]);
-  const reveal = () => setTimeout(() => document.getElementById(modal ? "fc-result-modal" : "fc-result")?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
-  /* After "See my match", park the whole result card just under the sticky header and tabs, so the buy buttons and the
-     expert-call CTA are in view; the details below are one tap away ("Specs and good to know"). */
-  const cardTarget = () => {
-    const card = document.querySelector(scope);
-    if (!card) return null;
-    const bar = document.querySelector(".ih-sticky");
-    const under = bar ? parseFloat(getComputedStyle(bar).top) + bar.offsetHeight : 80;
-    const top = card.getBoundingClientRect().top + window.scrollY - under - 16; // card top just under the tabs
-    const cta = card.querySelector(".fx-call-cta");
-    const low = cta ? cta.getBoundingClientRect().bottom + window.scrollY - window.innerHeight + 16 : top; // CTA bottom on screen
-    const name = card.querySelector(".fx-name");
-    const cap = name ? name.getBoundingClientRect().top + window.scrollY - under - 8 : low; // never hide the machine's name
-    // short screens: show as much of the card as fits, but the name always stays below the tabs
-    return Math.max(0, Math.min(Math.max(top, low), cap));
-  };
-  /* One smooth scroll, computed once; nothing scrolls the page again afterwards (scroll anchoring is off around the
-     finder in CSS, so the card swap cannot push the page either). */
-  const showCard = () => setTimeout(() => {
-    if (modal) { document.querySelector(scope)?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
-    const y = cardTarget();
-    if (y != null) window.scrollTo({ top: y, behavior: "smooth" });
-  }, 120);
+  const reveal = () => slot?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const showCard = () => setTimeout(() => cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
   const finish = () => { setStep(STEPS.length); showCard(); };
   const pick = (id) => {
     if (cur.multi) {
@@ -129,7 +98,7 @@ export default function FinderCard({ modal = false }) {
     }
   };
   const reset = () => { setAnswers({}); setStep(0); };
-  const edit = (n) => { setStep(n); document.querySelector(scope)?.scrollIntoView({ behavior: "smooth", block: modal ? "start" : "center" }); };
+  const edit = (n) => { setStep(n); showCard(); };
   const leadDialog = lead && <LeadDialog mode={lead} product={answered ? top : null} lines={lines} onClose={() => setLead(null)} />;
 
   const stepper = (
@@ -150,7 +119,7 @@ export default function FinderCard({ modal = false }) {
   if (done && top) {
     const reasons = answered ? ranked[0].reasons : [];
     return (
-      <article className="fx fx-done" aria-live="polite">
+      <article ref={cardRef} className="fx fx-done" aria-live="polite">
         <div className="fx-main">
           <p className="fx-kicker"><Icon name="check" size={14} />{t("Your match is ready")}</p>
           <p className="fx-sub">{fill(t("Based on {n} of {total} answers"), { n: lines.length, total: STEPS.length })}</p>
@@ -187,12 +156,9 @@ export default function FinderCard({ modal = false }) {
   }
 
   return (
-    <article className="fx">
+    <article ref={cardRef} className="fx">
       <div className="fx-main">
-        <div className="fx-top">
-          <p className="fx-kicker"><Icon name="search" size={14} />{t("Find your machine")}</p>
-          <span className="fx-time">{t("6 quick questions · about 30 seconds")}</span>
-        </div>
+        <p className="fx-kicker"><Icon name="search" size={14} />{t("6 quick questions · about 30 seconds")}</p>
         {stepper}
         <div className="fx-q" key={cur.id}>
           <p className="fx-count">{fill(t("Question {n} of {total}"), { n: step + 1, total: STEPS.length })} · <span className={cur.required ? "req" : ""}>{t(cur.required ? "Required" : "Optional")}</span></p>
@@ -437,7 +403,7 @@ function FinderResult({ answers, ranked }) {
   );
 }
 
-/** Links and the "talk to us" card under the grid, after the same block on thunderlaserusa.com. */
+/** Comparison, financing and consultation links below the finder. */
 export function FinderHelp() {
   return (
     <>

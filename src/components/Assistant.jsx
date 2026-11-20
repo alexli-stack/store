@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getLang, t } from "../i18n.js";
-import { byHandle, frontImg, img, money, products } from "../lib.js";
+import { byHandle, frontImg, img, money, products, openMachineFinder } from "../lib.js";
 import { useCart } from "../cart.jsx";
 import { AddButton, Icon, Link } from "./ui.jsx";
 import { M, STEPS, rank } from "./finderRules.js";
@@ -377,11 +377,7 @@ export default function Assistant({ product }) {
   const cat = ([k, name, h, model]) => (model ? (window.location.hash = `#/products/${h}`) : ask(k === "deals" ? "Show me Black Friday deals" : k === "rotary" ? "Rotary attachments" : tx("Show me the {name}", { name: { tpl: name } })));
   const toFinder = () => {
     setOpen(false);
-    if (!document.querySelector(".fx")) window.location.hash = "#/"; // the finder lives on the home page
-    window.dispatchEvent(new Event("onelaser:finder"));
-    let tries = 0;
-    const seek = () => { const el = document.querySelector(".fx"); if (el) el.scrollIntoView({ behavior: "smooth", block: "center" }); else if (tries++ < 20) setTimeout(seek, 100); };
-    setTimeout(seek, 120);
+    openMachineFinder();
   };
 
   return (

@@ -110,3 +110,9 @@ export const go = (path) => {
   intent = same ? null : "new"; // same page: no hashchange will consume the flag
   window.location.hash = path;
 };
+
+export function openMachineFinder() {
+  const finder = document.getElementById("machine-finder");
+  if (finder) finder.scrollIntoView({ behavior: "smooth", block: "start" });
+  else go("/?finder=1");
+}

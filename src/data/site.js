@@ -179,21 +179,27 @@ export const addOns = {
 
 
 /* ---------- Home, Insta360-style (2026-11-17) ---------- */
-// Tabs of the product block. Each tab shows up to six cards; "all" is the View all link.
-/* Home product tabs: machines grouped by what the buyer needs (desktop → value → industrial → clearance), not by series name;
-   the series name stays in each tab's note line. */
-export const homeTabs = [
-  { label: "Most Popular", all: "/collections/machines", picks: ["onelaser-xrf-desktop-laser-machine", "hydra-9-gen-2-70w-rf-co2-dual-laser-machine", "cobra-10-100w-co2-laser-engraver-cutter", "vertigo-vertical-laser-engraver", "hydra-7-gen-2-70w-rf-co2-dual-laser-machine", "cobra-8-90w-co2-laser-engraver-cutter"] },
-  { label: "Desktop Studio", note: "XRF and VertiGo · all-in-one 38W RF for a home studio or first business", all: "/collections/machines", picks: ["onelaser-xrf-desktop-laser-machine", "vertigo-vertical-laser-engraver"] },
-  { label: "Value Line", note: "Cobra Series · 90–130W glass CO₂ cutting power at an entry price", all: "/collections/cobra-series", picks: ["cobra-8-90w-co2-laser-engraver-cutter", "cobra-10-100w-co2-laser-engraver-cutter", "cobra-14-130w-co2-laser-engraver-cutter"] },
-  { label: "Industrial Performance", note: "Hydra Gen2 · RF and hybrid dual-laser systems for daily production", all: "/collections/hydra-gen2", picks: ["hydra-7-gen-2-70w-rf-co2-dual-laser-machine", "hydra-9-gen-2-70w-rf-co2-dual-laser-machine", "hydra-13-gen-2-70w-rf-co2-dual-laser-machine", "hydra-16-gen-2-70w-rf-co2-dual-laser-machine"] },
-  { label: "Last Units", note: "Previous generation · proven machines, very limited inventory", all: "/collections/previous-generation", picks: ["onelaser-xt-desktop-laser-machine", "onelaser-hydra-9-laser-engraving-machine", "onelaser-hydra-16-cabinet-dual-laser-system-with150w-glass-tube-and-38w-rf-metal-tube"] },
-  { label: "Materials", all: "/collections/materials", collection: "materials" },
-  { label: "Rotary Attachments", all: "/collections/rotary", collection: "rotary" },
-  { label: "Fume Extractors", all: "/collections/fume", collection: "fume" },
-  { label: "Chillers", all: "/collections/cooling", collection: "cooling" },
-  { label: "Lens & Optics", all: "/collections/optics", collection: "optics" },
+const machineCollections = {
+  "X Series": "xrf-series",
+  "Cobra Series": "cobra-series",
+  "Hydra Series": "hydra-gen2",
+};
+
+export const homeMachineSeries = nav.find((entry) => entry.label === "Machines").series.map((series) => {
+  const collection = machineCollections[series.title];
+  return {
+    label: series.title === "Hydra Series" ? collections[collection].title : series.title,
+    description: series.desc,
+    handles: series.items,
+    to: collection ? `/collections/${collection}` : series.to,
+  };
+});
+
+export const homeShopCategories = [
+  { label: "Accessories", types: ["Rotary Attachments", "Fume Extractors"], image: "hot-piburn.jpg", to: "/collections/accessories" },
+  { label: "Materials", types: ["Acrylic Sheets", "Leatherette"], image: "material-acrylic.webp", to: "/collections/materials" },
 ];
+
 export const newHandles = ["onelaser-xrf-desktop-laser-machine", "vertigo-vertical-laser-engraver"];
 export const homeFeature = { title: "Hydra 9 Gen2", text: ["70W RF + CO₂ dual laser.", "Save up to $3,000 this Black Friday."], image: "promo-hydra9.jpg", to: "/products/hydra-9-gen-2-70w-rf-co2-dual-laser-machine" };
 export const interests = [
@@ -213,19 +219,6 @@ export const homeStories = [
   ["VertiGo: built for drinkware", "Built-in vertical rotary. No setup, no alignment.", "hot-vertigo.jpg", "/products/vertigo-vertical-laser-engraver"],
   ["PiBurn OMNI: rotary engraving", "Roller and chuck modes with two drive systems and two motors.", "hot-piburn.jpg", "/products/piburn-omni-for-onelaser"],
 ];
-
-// One-line card slogans (Insta360 cards carry a single short line). Facts come from the product names and specs.
-export const shortSlogans = {
-  "onelaser-xrf-desktop-laser-machine": "38W RF desktop laser.",
-  "vertigo-vertical-laser-engraver": "Vertical laser for drinkware.",
-  "cobra-8-90w-co2-laser-engraver-cutter": "90W CO₂ workshop laser.",
-  "cobra-10-100w-co2-laser-engraver-cutter": "100W CO₂ laser cutter.",
-  "cobra-14-130w-co2-laser-engraver-cutter": "130W large-format CO₂ laser.",
-  "hydra-7-gen-2-70w-rf-co2-dual-laser-machine": "Compact RF dual-laser system.",
-  "hydra-9-gen-2-70w-rf-co2-dual-laser-machine": "RF + CO₂ dual-laser system.",
-  "hydra-13-gen-2-70w-rf-co2-dual-laser-machine": "Large-format dual-laser system.",
-  "hydra-16-gen-2-70w-rf-co2-dual-laser-machine": "Our largest dual-laser system.",
-};
 
 // Home video module. Lists supplied by the team on 2026-11-18; titles and channels read from YouTube. [id, title, channel]
 // The brand, TV, news and trade-show videos play in the home credibility block; this module keeps the machine videos.
@@ -272,7 +265,7 @@ export const homeProof = [
 
 // Home buying FAQ (after "Questions? Answers." on thunderlaserusa.com). Answers restate the policies and pages on 1laser.com.
 export const homeFaq = [
-  ["Which machine is right for me?", "Answer the four questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer."],
+  ["Which machine is right for me?", "Answer the questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer."],
   ["What warranty is included?", "The 3-2-1 warranty covers XRF and Hydra machines: 3-year mechanical, 2-year electrical and 1-year optics. Other products follow the official warranty policy."],
   ["Can I return a machine?", "OneLaser offers 30-day easy returns. See the Refund Policy on 1laser.com for conditions."],
   ["Is financing available?", "Yes. OneLaser works with Shop Pay Installments, Affirm and ClickLease. Rates and terms depend on the lender's approval."],
