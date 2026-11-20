@@ -1,0 +1,488 @@
+[
+ {
+  "id": "xrf-38",
+  "family": "xrf",
+  "name": "XRF™ 38W",
+  "label": "BEST SELLER",
+  "generation": "Current lineup",
+  "summary": "All-in-one RF desktop laser for fast, fine-detail production.",
+  "bestFor": "Personalized goods, photo engraving and compact shops",
+  "specs": [
+   "38W RF",
+   "23.6 × 11.8 in",
+   "1,200 mm/s"
+  ],
+  "powers": [
+   38
+  ],
+  "laser": "38W RF CO₂",
+  "workArea": "23.6 × 11.8 in",
+  "maxSpeed": "1,200 mm/s",
+  "keyCapability": "Air-cooled RF · 0.07 mm laser spot",
+  "acceleration": "True 3G",
+  "positioningAccuracy": "≤0.01 mm",
+  "maxResolution": "2,000 DPI",
+  "productLine": "XRF™ Series",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "engraving",
+   "both"
+  ],
+  "price": 4999,
+  "compareAt": 6499,
+  "handle": "onelaser-xrf-desktop-laser-machine",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/XRF_360cdcd1-c129-44be-a750-7da43a587a00.png?v=1782463970&width=900"
+ },
+ {
+  "id": "cobra-8",
+  "family": "cobra",
+  "name": "Cobra™ 8",
+  "label": "WORKSHOP ESSENTIAL",
+  "generation": "Current lineup",
+  "summary": "The compact entry into Cobra glass CO₂ cutting power.",
+  "bestFor": "Growing workshops cutting wood, acrylic and leather",
+  "specs": [
+   "90W Glass",
+   "31.5 × 19.7 in",
+   "1,200 mm/s"
+  ],
+  "powers": [
+   90
+  ],
+  "laser": "90W Glass CO₂; 2W / 3W / 5W IR optional",
+  "workArea": "31.50 × 19.69 in (800 × 500 mm)",
+  "maxSpeed": "1,200 mm/s",
+  "keyCapability": "Smart Dual Air-Assist · optional IR upgrade",
+  "acceleration": "2G",
+  "positioningAccuracy": "±0.02 mm",
+  "maxResolution": "1,000 DPI",
+  "productLine": "Cobra™ Series",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "cutting",
+   "both"
+  ],
+  "price": 5999,
+  "compareAt": 6999,
+  "handle": "cobra-8-90w-co2-laser-engraver-cutter",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/Cobra_8.png?v=1782460144&width=900"
+ },
+ {
+  "id": "cobra-10",
+  "family": "cobra",
+  "name": "Cobra™ 10",
+  "label": "BALANCED CUTTING FIT",
+  "generation": "Current lineup",
+  "summary": "Balanced cutting power for a broader production catalog.",
+  "bestFor": "Sign shops and businesses balancing size with throughput",
+  "specs": [
+   "100W Glass",
+   "39.4 × 23.6 in",
+   "1,200 mm/s"
+  ],
+  "powers": [
+   100
+  ],
+  "laser": "100W Glass CO₂; 2W / 3W / 5W IR optional",
+  "workArea": "39.37 × 23.62 in (1,000 × 600 mm)",
+  "maxSpeed": "1,200 mm/s",
+  "keyCapability": "Smart Dual Air-Assist · optional IR upgrade",
+  "acceleration": "2G",
+  "positioningAccuracy": "±0.02 mm",
+  "maxResolution": "1,000 DPI",
+  "productLine": "Cobra™ Series",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "cutting",
+   "both",
+   "production"
+  ],
+  "price": 6999,
+  "compareAt": 7999,
+  "handle": "cobra-10-100w-co2-laser-engraver-cutter",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/Cobra_10.png?v=1782460375&width=900"
+ },
+ {
+  "id": "cobra-14",
+  "family": "cobra",
+  "name": "Cobra™ 14",
+  "label": "MAXIMUM COBRA POWER",
+  "generation": "Current lineup",
+  "summary": "The largest Cobra cutting tier for demanding workshop jobs.",
+  "bestFor": "Large-format work and higher-power material cutting",
+  "specs": [
+   "130W Glass",
+   "55.1 × 35.4 in",
+   "1,200 mm/s"
+  ],
+  "powers": [
+   130
+  ],
+  "laser": "130W Glass CO₂; 2W / 3W / 5W IR optional",
+  "workArea": "55.12 × 35.43 in (1,400 × 900 mm)",
+  "maxSpeed": "1,200 mm/s",
+  "keyCapability": "Smart Dual Air-Assist · optional IR upgrade",
+  "acceleration": "2G",
+  "positioningAccuracy": "±0.02 mm",
+  "maxResolution": "1,000 DPI",
+  "productLine": "Cobra™ Series",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "cutting",
+   "production"
+  ],
+  "price": 8999,
+  "compareAt": 9999,
+  "handle": "cobra-14-130w-co2-laser-engraver-cutter",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/Cobra_14.png?v=1782460438&width=900"
+ },
+ {
+  "id": "hydra-7-gen2",
+  "family": "hydra",
+  "name": "Hydra™ 7 Gen2",
+  "label": "PURE RF PRODUCTION",
+  "generation": "Current lineup",
+  "summary": "A dedicated 70W RF platform for crisp detail at industrial scale.",
+  "bestFor": "High-volume engraving where RF detail comes first",
+  "specs": [
+   "70W RF",
+   "27.6 × 19.7 in",
+   "2,000 mm/s"
+  ],
+  "powers": [
+   70
+  ],
+  "laser": "70W RF CO₂",
+  "workArea": "27.56 × 19.69 in",
+  "maxSpeed": "2,000 mm/s",
+  "keyCapability": "Air-cooled 70W RF · optional fiber upgrade",
+  "acceleration": "4G",
+  "positioningAccuracy": "≤0.01 mm",
+  "maxResolution": "2,000 DPI",
+  "productLine": "Hydra™ Gen2",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "engraving",
+   "production"
+  ],
+  "price": 10999,
+  "compareAt": 11999,
+  "handle": "hydra-7-gen-2-70w-rf-co2-dual-laser-machine",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/Hydra_7Gen2.png?v=1782813665&width=900"
+ },
+ {
+  "id": "hydra-9-gen2",
+  "family": "hydra",
+  "name": "Hydra™ 9 Gen2",
+  "label": "INDUSTRIAL HYBRID",
+  "generation": "Current lineup",
+  "summary": "A hybrid production system for cutting range and RF detail.",
+  "bestFor": "Businesses moving between fine engraving and cutting",
+  "specs": [
+   "38W RF + 100W Glass",
+   "70W RF option",
+   "2,000 mm/s"
+  ],
+  "powers": [
+   38,
+   70,
+   100
+  ],
+  "laser": "38W RF + 100W Glass CO₂, or 70W RF",
+  "workArea": "35.43 × 23.62 in",
+  "maxSpeed": "2,000 mm/s",
+  "keyCapability": "Hybrid or Pro configuration · Smart Dual Air-Assist",
+  "acceleration": "4G",
+  "positioningAccuracy": "≤0.01 mm",
+  "maxResolution": "2,000 DPI",
+  "productLine": "Hydra™ Gen2",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "engraving",
+   "cutting",
+   "both",
+   "production"
+  ],
+  "price": 10999,
+  "compareAt": 11999,
+  "handle": "hydra-9-gen-2-70w-rf-co2-dual-laser-machine",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/Hydra_9Gen2.png?v=1782813672&width=900"
+ },
+ {
+  "id": "hydra-13-gen2",
+  "family": "hydra",
+  "name": "Hydra™ 13 Gen2",
+  "label": "EXPANDED CAPACITY",
+  "generation": "Current lineup",
+  "summary": "More room for mixed production without giving up RF precision.",
+  "bestFor": "Established shops with larger work and varied orders",
+  "specs": [
+   "38W RF + 130W Glass",
+   "70W RF option",
+   "2,000 mm/s"
+  ],
+  "powers": [
+   38,
+   70,
+   130
+  ],
+  "laser": "38W RF + 130W Glass CO₂, or 70W RF",
+  "workArea": "51.18 × 35.43 in",
+  "maxSpeed": "2,000 mm/s",
+  "keyCapability": "Hybrid or Pro configuration · Smart Dual Air-Assist",
+  "acceleration": "4G",
+  "positioningAccuracy": "≤0.01 mm",
+  "maxResolution": "2,000 DPI",
+  "productLine": "Hydra™ Gen2",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "engraving",
+   "cutting",
+   "both",
+   "production"
+  ],
+  "price": 12999,
+  "compareAt": 13999,
+  "handle": "hydra-13-gen-2-70w-rf-co2-dual-laser-machine",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/Hydra_13Gen2.png?v=1782813672&width=900"
+ },
+ {
+  "id": "hydra-16-gen2",
+  "family": "hydra",
+  "name": "Hydra™ 16 Gen2",
+  "label": "MAXIMUM HYDRA CAPACITY",
+  "generation": "Current lineup",
+  "summary": "The largest Gen2 hybrid platform for demanding production floors.",
+  "bestFor": "High-output teams that need maximum capacity",
+  "specs": [
+   "38W RF + 150W Glass",
+   "70W RF option",
+   "2,000 mm/s"
+  ],
+  "powers": [
+   38,
+   70,
+   150
+  ],
+  "laser": "38W RF + 150W Glass CO₂, or 70W RF",
+  "workArea": "62.99 × 39.37 in",
+  "maxSpeed": "2,000 mm/s",
+  "keyCapability": "Hybrid or Pro configuration · Smart Dual Air-Assist",
+  "acceleration": "4G",
+  "positioningAccuracy": "≤0.01 mm",
+  "maxResolution": "2,000 DPI",
+  "productLine": "Hydra™ Gen2",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "cutting",
+   "both",
+   "production"
+  ],
+  "price": 13999,
+  "compareAt": 14999,
+  "handle": "hydra-16-gen-2-70w-rf-co2-dual-laser-machine",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/Hydra_16Gen2.png?v=1782813672&width=900"
+ },
+ {
+  "id": "vertigo-38",
+  "family": "vertigo",
+  "name": "VertiGo™ 38W",
+  "label": "DRINKWARE SPECIALIST",
+  "generation": "Current lineup",
+  "summary": "A vertical RF workflow purpose-built for cylindrical products.",
+  "bestFor": "Tumblers, cups, bottles and repeat drinkware jobs",
+  "specs": [
+   "38W RF",
+   "Ø 16–230 mm",
+   "800 mm/s"
+  ],
+  "powers": [
+   38
+  ],
+  "laser": "38W RF CO₂",
+  "workArea": "300 mm X travel; Ø 16–230 mm manual focus",
+  "maxSpeed": "800 mm/s",
+  "keyCapability": "Integrated rotary · Ø 89–230 mm autofocus range",
+  "acceleration": "3G",
+  "positioningAccuracy": "≤0.01 mm",
+  "maxResolution": "1,000 DPI",
+  "productLine": "VertiGo™",
+  "materials": [
+   "drinkware",
+   "coated-metal"
+  ],
+  "intents": [
+   "engraving",
+   "drinkware",
+   "production"
+  ],
+  "price": 5599,
+  "compareAt": 5999,
+  "handle": "vertigo-vertical-laser-engraver",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/VertiGo_3c806291-bd5f-4153-9ca8-d54e3fd1cd0b.png?v=1782698357&width=900"
+ },
+ {
+  "id": "xt-55",
+  "family": "xrf",
+  "name": "XT™ 55W",
+  "label": "CLEARANCE",
+  "generation": "Previous generation",
+  "summary": "A previous-generation desktop glass CO₂ platform.",
+  "bestFor": "Value-focused desktop cutting",
+  "specs": [
+   "55W Glass",
+   "23.6 × 11.8 in",
+   "1,000 mm/s"
+  ],
+  "laser": "55W Glass CO₂",
+  "workArea": "23.6 × 11.8 in",
+  "maxSpeed": "1,000 mm/s",
+  "keyCapability": "Built-in water cooling · 5MP camera",
+  "acceleration": "3G",
+  "positioningAccuracy": "≤0.01 mm",
+  "maxResolution": "1,000 DPI",
+  "productLine": "X Series",
+  "materials": [
+   "organic"
+  ],
+  "intents": [
+   "cutting",
+   "both"
+  ],
+  "price": 3599,
+  "compareAt": 4599,
+  "handle": "onelaser-xt-desktop-laser-machine",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/XT_1.png?v=1782464798&width=900"
+ },
+ {
+  "id": "hydra-7",
+  "family": "hydra",
+  "name": "Hydra™ 7",
+  "label": "CLEARANCE",
+  "generation": "Previous generation",
+  "summary": "Previous-generation dual-source Hydra platform.",
+  "bestFor": "Value-focused hybrid capability",
+  "specs": [
+   "80W Glass + 38W RF",
+   "28 × 20 in",
+   "1,200 mm/s"
+  ],
+  "laser": "80W Glass CO₂ + 38W RF CO₂",
+  "workArea": "28 × 20 in",
+  "maxSpeed": "1,200 mm/s",
+  "keyCapability": "Dual-laser cabinet · 5MP camera",
+  "acceleration": "3G",
+  "positioningAccuracy": "≤0.01 mm",
+  "maxResolution": "2,000 DPI",
+  "productLine": "Hydra™ Series",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "engraving",
+   "cutting",
+   "both"
+  ],
+  "price": 6299,
+  "compareAt": 6999,
+  "handle": "onelaser-hydra-7-cabinet-dual-laser-system-with-80-glass-tube-and-38w-rf-metal-tube",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/80W_d0085122-d2b3-4e5a-a510-6b0e8409eb5c.png?v=1742910341&width=900"
+ },
+ {
+  "id": "hydra-9",
+  "family": "hydra",
+  "name": "Hydra™ 9",
+  "label": "CLEARANCE",
+  "generation": "Previous generation",
+  "summary": "Previous-generation hybrid Hydra with RF detail capability.",
+  "bestFor": "Established shops seeking a clearance hybrid",
+  "specs": [
+   "100W Glass + 38W RF",
+   "35.4 × 23.6 in",
+   "1,200 mm/s"
+  ],
+  "laser": "100W Glass CO₂ + 38W RF CO₂",
+  "workArea": "35.43 × 23.62 in",
+  "maxSpeed": "1,200 mm/s",
+  "keyCapability": "Dual-laser cabinet · 5MP camera",
+  "acceleration": "3G",
+  "positioningAccuracy": "≤0.01 mm",
+  "maxResolution": "2,000 DPI",
+  "productLine": "Hydra™ Series",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "engraving",
+   "cutting",
+   "both",
+   "production"
+  ],
+  "price": 8999,
+  "compareAt": 9999,
+  "handle": "onelaser-hydra-9-laser-engraving-machine",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/d4f70b20ae08baa91175811c4f952f6f_b9af453b-621f-4432-93f1-d8e7e635b31e.png?v=1745220554&width=900"
+ },
+ {
+  "id": "hydra-16",
+  "family": "hydra",
+  "name": "Hydra™ 16",
+  "label": "CLEARANCE",
+  "generation": "Previous generation",
+  "summary": "The largest previous-generation Hydra hybrid platform.",
+  "bestFor": "Large jobs at a clearance price",
+  "specs": [
+   "150W Glass + 38W RF",
+   "63 × 39.4 in",
+   "1,200 mm/s"
+  ],
+  "laser": "150W Glass CO₂ + 38W RF CO₂",
+  "workArea": "62.99 × 39.37 in",
+  "maxSpeed": "1,200 mm/s",
+  "keyCapability": "Dual-laser cabinet · 5MP camera",
+  "acceleration": "3G",
+  "positioningAccuracy": "≤0.01 mm",
+  "maxResolution": "2,000 DPI",
+  "productLine": "Hydra™ Series",
+  "materials": [
+   "organic",
+   "coated-metal"
+  ],
+  "intents": [
+   "engraving",
+   "cutting",
+   "both",
+   "production"
+  ],
+  "price": 12599,
+  "compareAt": 13999,
+  "handle": "onelaser-hydra-16-cabinet-dual-laser-system-with150w-glass-tube-and-38w-rf-metal-tube",
+  "image": "https://cdn.shopify.com/s/files/1/0747/8748/7778/files/b208d4aba7990af021c0b2224580ee1c_d8d0feaf-a45d-4019-a54c-ebb36c18496e.png?v=1783933825&width=900"
+ }
+]
