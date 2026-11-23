@@ -2477,7 +2477,6 @@ ul { list-style: none; }
 .fx-q h3 { margin-top: 8px; color: var(--title); font-size: clamp(23px, 3vw, 38px); line-height: 1.18; letter-spacing: -.025em; text-wrap: balance; }
 .fx-q h3:focus, .fx-name:focus { outline: none; }
 .fx-hint { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 1.55; }
-.fx-hint span { display: inline-block; margin-inline-start: 6px; padding: 0 6px; font-size: 12px; font-weight: 500; background: #eeeef2; border-radius: 5px; color: #515157; }
 .fx-q > .ih-btn { margin-top: 16px; }
 .fx-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 24px 0 0; min-inline-size: 0; }
 .fx-option { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; min-height: 76px; padding: 14px 16px; color: var(--title); text-align: left; background: #fff; border: 1px solid #dcdde3; border-radius: 12px; cursor: pointer; transition: background .16s, border-color .16s; }
@@ -2492,8 +2491,23 @@ ul { list-style: none; }
 .fx-option:has(input[type="radio"]) .fx-option-mark { border-radius: 50%; }
 .fx-option:has(input:checked) .fx-option-mark { background: var(--brand-dark); border-color: var(--brand-dark); color: #fff; }
 
+.fx-question-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 14px; margin-top: 24px; text-align: left; }
+.fx-question-groups .fx-question-group { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: #f4f4f7; }
+.fx-group-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; min-height: 32px; }
+.fx-group-heading h4 { margin: 0; color: var(--title); font-size: 16px; line-height: 1.25; }
+.fx-group-status { padding: 2px 6px; border-radius: 5px; background: #e9e9ef; color: #515157; font-size: 11px; line-height: 1.35; font-weight: 550; }
+.fx-clear { min-height: 32px; margin-inline-start: auto; color: var(--brand-dark); font-size: 12px; font-weight: 600; line-height: 1.3; }
+.fx-clear:not([aria-disabled="true"]):hover { text-decoration: underline; text-underline-offset: 3px; }
+.fx-clear[aria-disabled="true"] { color: var(--muted); cursor: default; }
+.fx-clear[aria-disabled="true"]:not(:focus) { visibility: hidden; }
+.fx-question-groups .fx-hint { margin-top: 2px; font-size: 13px; line-height: 1.4; }
+.fx-question-groups .fx-options { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 10px; gap: 8px; }
+.fx-question-groups .fx-option { min-height: 56px; padding: 8px 10px; }
+.fx-question-groups .fx-option b { font-size: 13px; }
+.fx-question-groups .fx-option small { font-size: 11px; }
+
 .fx-nav, .fx-foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px 12px; max-width: 920px; margin: 18px auto 0; }
-.fx-nav-r { margin-inline-start: auto; display: flex; align-items: center; gap: 10px; }
+.fx-nav .fx-next { margin-inline-start: auto; }
 .fx-link, .fx-foot a, .fx-foot button { display: inline-flex; min-height: 44px; align-items: center; gap: 6px; text-align: start; color: #515157; font-size: 13px; font-weight: 600; line-height: 1.35; }
 .fx-link:hover, .fx-foot a:hover, .fx-foot button:hover { color: var(--brand-dark); text-decoration: underline; text-underline-offset: 3px; }
 .fx-foot svg { flex: none; }
@@ -2530,6 +2544,7 @@ ul { list-style: none; }
   .fx-cta { max-width: none; }
 }
 @media (max-width: 650px) {
+  .ih-finder .fx { scroll-margin-top: calc(var(--promo-h) + 56px); }
   .fx { border-radius: 18px; padding: 16px 12px; }
   .fx-step-number { width: 29px; height: 29px; font-size: 13px; }
   .fx-step-label { font-size: 11px; }
@@ -2539,6 +2554,14 @@ ul { list-style: none; }
   .fx-option-copy small { font-size: 12px; }
   .fx-option-mark { width: 16px; height: 16px; }
   .fx-option-mark svg { width: 11px; height: 11px; }
+  .fx-q:has(.fx-question-groups) { margin-top: 16px; }
+  .fx-question-groups { grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
+  .fx-question-groups .fx-question-group { padding: 8px; }
+  .fx-group-heading, .fx-clear { min-height: 26px; }
+  .fx-question-groups .fx-options { gap: 6px; margin-top: 7px; }
+  .fx-question-groups .fx-option { min-height: 46px; padding: 6px 7px; }
+  .fx-question-groups .fx-option b { font-size: 12px; }
+  .fx-question-groups .fx-option small { line-height: 1.25; }
   .fx-nav { margin-top: 12px; }
 }
 

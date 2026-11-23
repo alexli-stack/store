@@ -26,19 +26,19 @@ const STAGES = [
   { label: "Your work", questions: ["work"] },
   { label: "Your pieces", questions: ["size", "round"] },
   { label: "Your shop", questions: ["shop", "vent"] },
-];
-const QUESTION_STAGE = STEPS.map(({ id }) => STAGES.findIndex(({ questions }) => questions.includes(id)));
-const FINISHED = STEPS.length;
+].map(({ label, questions }) => ({ label, questions: questions.map((id) => STEPS.find((question) => question.id === id)) }));
+const FINISHED = STAGES.length;
+const hasAnswer = (answer) => Array.isArray(answer) ? answer.length > 0 : Boolean(answer);
 
 // Keep answers when the visitor opens a product and then comes back to the finder.
-const memo = { answers: {}, step: 0 };
+const memo = { answers: {}, stage: 0 };
 
 function FinderProgress({ stage, answers, onEdit }) {
   return (
     <ol className="fx-steps" aria-label={t("Progress")} style={{ "--progress": stage / STAGES.length * 100 + "%" }}>
       {[...STAGES.map(({ label }) => label), "Your machine"].map((label, i) => {
         const canEdit = i < stage;
-        const completed = canEdit && STAGES[i].questions.some((id) => Array.isArray(answers[id]) ? answers[id].length : answers[id]);
+        const completed = canEdit && STAGES[i].questions.some(({ id }) => hasAnswer(answers[id]));
         const current = i === stage;
         const content = (
           <>
@@ -50,7 +50,7 @@ function FinderProgress({ stage, answers, onEdit }) {
         );
         return (
           <li key={label} className={completed ? "done" : undefined} aria-current={current ? "step" : undefined}>
-            {canEdit ? <button type="button" onClick={() => onEdit(QUESTION_STAGE.indexOf(i))}>{content}</button> : content}
+            {canEdit ? <button type="button" onClick={() => onEdit(i)}>{content}</button> : content}
           </li>
         );
       })}
@@ -58,19 +58,70 @@ function FinderProgress({ stage, answers, onEdit }) {
   );
 }
 
+function FinderQuestion({ question, grouped, selection, onChange }) {
+  const { id, required, multi, hint, options } = question;
+  const titleId = grouped ? `finder-group-${id}` : "finder-question";
+  const hintId = `finder-hint-${id}`;
+  const label = id === "size" ? "Largest piece" : question.short;
+  const selected = multi ? selection || [] : null;
+  const canClear = hasAnswer(selection);
+  const pick = (value, checked) => {
+    if (!multi) {
+      onChange(id, value);
+      return;
+    }
+    onChange(id, checked ? [...selected, value] : selected.filter((item) => item !== value));
+  };
+
+  return (
+    <div className="fx-question-group">
+      {grouped && (
+        <div className="fx-group-heading">
+          <h4 id={titleId}>{t(label)}</h4>
+          <span className="fx-group-status">{t(required ? "Required" : "Optional")}</span>
+          {!required && (
+            <button
+              type="button"
+              className="fx-clear"
+              aria-disabled={!canClear}
+              aria-describedby={titleId}
+              tabIndex={canClear ? 0 : -1}
+              onClick={() => { if (canClear) onChange(id, undefined); }}
+            >{t("Clear selection")}</button>
+          )}
+        </div>
+      )}
+      <p className="fx-hint" id={hintId}>{t(hint)}</p>
+      <fieldset className="fx-options" aria-labelledby={titleId} aria-describedby={hintId}>
+        {options.map(([value, text, detail]) => (
+          <label className="fx-option" key={value}>
+            <input
+              type={multi ? "checkbox" : "radio"}
+              name={id}
+              checked={multi ? selected.includes(value) : selection === value}
+              onChange={(event) => pick(value, event.target.checked)}
+            />
+            <span className="fx-option-copy"><b>{t(text)}</b>{detail && <small>{t(detail)}</small>}</span>
+            <span className="fx-option-mark" aria-hidden="true"><Icon name="check" size={13} /></span>
+          </label>
+        ))}
+      </fieldset>
+    </div>
+  );
+}
+
 export default function FinderCard() {
   const [answers, setAnswers] = useState(memo.answers);
-  const [step, setStep] = useState(memo.step);
+  const [stage, setStage] = useState(memo.stage);
   const cardRef = useRef(null);
   const titleRef = useRef(null);
   const resultRef = useRef(null);
   const shouldFocus = useRef(false);
-  const done = step === FINISHED;
-  const question = STEPS[step];
-  const stage = done ? STAGES.length : QUESTION_STAGE[step];
-  const selection = question && answers[question.id];
-  const hasAnswer = Array.isArray(selection) ? selection.length > 0 : Boolean(selection);
-  const last = step === FINISHED - 1;
+  const done = stage === FINISHED;
+  const { label, questions } = STAGES[stage] || {};
+  const grouped = questions?.length > 1;
+  const last = stage === FINISHED - 1;
+  const canContinue = last ? ready(answers) : questions?.every(({ id, required }) => !required || hasAnswer(answers[id]));
   const ranked = done ? rank(answers) : [];
   const top = ranked[0] && byHandle[M[ranked[0].key].handle];
 
@@ -84,32 +135,19 @@ export default function FinderCard() {
     if (top < offset - 1 || top > window.innerHeight * 0.5) {
       card.scrollIntoView({ block: "start" });
     }
-  }, [step]);
+  }, [stage]);
 
   const saveAnswers = (next) => {
     memo.answers = next;
     setAnswers(next);
   };
   const goTo = (next) => {
-    if (next === step) return;
+    if (next === stage) return;
     shouldFocus.current = true;
-    memo.step = next;
-    setStep(next);
+    memo.stage = next;
+    setStage(next);
   };
-  const pick = (value, checked) => {
-    const next = question.multi
-      ? checked ? [...(selection || []), value] : selection.filter((item) => item !== value)
-      : value;
-    saveAnswers({ ...answers, [question.id]: next });
-  };
-  const skip = () => {
-    if (hasAnswer) {
-      const next = { ...answers };
-      delete next[question.id];
-      saveAnswers(next);
-    }
-    goTo(step + 1);
-  };
+  const setAnswer = (id, value) => saveAnswers({ ...answers, [id]: value });
   const startOver = () => {
     saveAnswers({});
     goTo(0);
@@ -163,37 +201,21 @@ export default function FinderCard() {
           </>
         ) : (
           <>
-            <div className="fx-q" key={question.id}>
-              <p className="fx-count">{fill(t("Step {n} of {total}"), { n: stage + 1, total: STAGES.length })} · {t(STAGES[stage].label)}</p>
-              <h3 id="finder-question" ref={titleRef} tabIndex={-1}>{t(question.title)}</h3>
-              <p className="fx-hint" id="finder-hint">{t(question.hint)} {!question.required && <span>{t("Optional")}</span>}</p>
-              <fieldset className="fx-options" aria-labelledby="finder-question" aria-describedby="finder-hint">
-                {question.options.map(([id, label, detail]) => (
-                  <label className="fx-option" key={id}>
-                    <input
-                      type={question.multi ? "checkbox" : "radio"}
-                      name={question.id}
-                      checked={question.multi ? (selection || []).includes(id) : selection === id}
-                      onChange={(event) => pick(id, event.target.checked)}
-                    />
-                    <span className="fx-option-copy"><b>{t(label)}</b>{detail && <small>{t(detail)}</small>}</span>
-                    <span className="fx-option-mark" aria-hidden="true"><Icon name="check" size={13} /></span>
-                  </label>
-                ))}
-              </fieldset>
+            <div className="fx-q" key={stage}>
+              <p className="fx-count">{fill(t("Step {n} of {total}"), { n: stage + 1, total: STAGES.length })}{!grouped && ` · ${t(label)}`}</p>
+              <h3 id="finder-question" ref={titleRef} tabIndex={-1}>{t(grouped ? label : questions[0].title)}</h3>
+              <div className={grouped ? "fx-question-groups" : undefined}>
+                {questions.map((question) => <FinderQuestion key={question.id} question={question} grouped={grouped} selection={answers[question.id]} onChange={setAnswer} />)}
+              </div>
             </div>
             <div className="fx-nav">
-              {step > 0 && <button type="button" className="fx-link" onClick={() => goTo(step - 1)}>← {t("Back")}</button>}
-              <div className="fx-nav-r">
-                {!question.required && (!last || hasAnswer) && <button type="button" className="fx-link" onClick={skip}>{t("Skip")}</button>}
-                <button type="button" className="fx-next" disabled={!hasAnswer && !last} onClick={() => goTo(step + 1)}>
-                  {t(last ? "See my match" : "Continue")} <span aria-hidden="true">→</span>
-                </button>
-              </div>
+              {stage > 0 && <button type="button" className="fx-link" onClick={() => goTo(stage - 1)}>← {t("Back")}</button>}
+              <button type="button" className="fx-next" disabled={!canContinue} onClick={() => goTo(stage + 1)}>
+                {t(last ? "See my match" : "Continue")} <span aria-hidden="true">→</span>
+              </button>
             </div>
             <div className="fx-foot">
               <a href={`tel:${contact.tel}`}><Icon name="phone" size={15} />{t("Rather talk to an expert?")}</a>
-              {!last && ready(answers) && <button type="button" onClick={() => goTo(FINISHED)}>{t("See my match")} →</button>}
             </div>
           </>
         )}
