@@ -1556,21 +1556,22 @@ ul { list-style: none; }
 /* After you buy */
 .iown .ist-kicker { margin: 0 0 8px; }
 .iown-layout { display: grid; grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); gap: 16px; margin-top: clamp(20px, 2.5vw, 32px); }
-.iown-support { position: relative; isolation: isolate; display: flex; flex-direction: column; align-items: flex-start; overflow: hidden; padding: clamp(20px, 3vw, 42px); border-radius: 20px; background: #242122; color: #fff; }
-.iown-backdrop { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: right center; }
-.iown-support::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(17 15 16 / .8), rgb(17 15 16 / .64) 60%, rgb(17 15 16 / .42)), linear-gradient(0deg, rgb(12 10 11 / .46), transparent 44%); }
+.iown-support { display: grid; grid-template-columns: minmax(0, 1fr); overflow: hidden; border: 1px solid #e5e5e8; border-radius: 20px; background: #f8f7f6; color: var(--title); }
+.iown-support-copy { display: flex; flex-direction: column; align-items: flex-start; padding: clamp(19px, 2vw, 30px); }
+.iown-support-media { grid-row: 1; position: relative; width: 100%; aspect-ratio: 4 / 3; background: #e8e5e2; }
+.iown-support-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
 .iown-icon { display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; color: var(--brand-dark); background: var(--brand-soft); }
-.iown-support .iown-icon { width: 52px; height: 52px; color: #ffb29e; background: #53312b; }
-.iown-support h3 { max-width: 18ch; margin: 16px 0 8px; font-size: clamp(23px, 2.2vw, 34px); font-weight: 650; line-height: 1.15; text-wrap: balance; }
-.iown-support p { max-width: 36ch; color: #eadedb; font-size: 15px; line-height: 1.55; }
-.iown-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-top: auto; padding-top: clamp(16px, 2.5vw, 30px); }
+.iown-support-copy .iown-icon { width: 44px; height: 44px; }
+.iown-support h3 { margin: 13px 0 8px; font-size: clamp(22px, 1.8vw, 26px); font-weight: 650; line-height: 1.16; }
+.iown-support p { max-width: 36ch; color: #4d4d54; font-size: 15px; line-height: 1.55; }
+.iown-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 13px; margin-top: auto; padding-top: 17px; }
 .iown-actions a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; font-weight: 650; line-height: 1.35; }
 .iown-actions svg { flex: none; }
-.iown-ticket { padding: 9px 13px; border-radius: 8px; background: #fff; color: #251b1a; }
-.iown-ticket:hover { background: #fae9e4; }
-.iown-phone { color: #fff; border-radius: 4px; }
+.iown-ticket { padding: 9px 12px; border-radius: 8px; background: var(--brand-dark); color: #fff; }
+.iown-ticket:hover { background: #a4240e; }
+.iown-phone { color: var(--title); border-radius: 4px; }
+.iown-phone svg { color: var(--brand-dark); }
 .iown-phone:hover { text-decoration: underline; text-underline-offset: 3px; }
-.iown-actions a:focus-visible { outline-color: #ffbeac; }
 .iown-resources { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1px; border: 1px solid #e5e5e8; border-radius: 20px; background: #e5e5e8; }
 .iown-resources a { display: grid; height: 100%; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: clamp(10px, 1.2vw, 18px); padding: clamp(14px, 1.5vw, 22px); background: #fff; }
 .iown-resources li:first-child a { border-radius: 19px 19px 0 0; }
@@ -1582,7 +1583,11 @@ ul { list-style: none; }
 .iown-resources a > svg { color: var(--brand-dark); }
 @media (max-width: 860px) {
   .iown-layout { grid-template-columns: minmax(0, 1fr); }
-  .iown-support::before { background: linear-gradient(90deg, rgb(17 15 16 / .83), rgb(17 15 16 / .65)); }
+}
+@media (min-width: 620px) and (max-width: 860px), (min-width: 1160px) {
+  .iown-support { grid-template-columns: minmax(0, 1.18fr) minmax(0, 1fr); }
+  .iown-support-media { grid-row: auto; aspect-ratio: auto; }
+  .iown-support-media img { object-position: 50% center; }
 }
 @media (max-width: 420px) {
   .iown-icon { width: 34px; height: 34px; }

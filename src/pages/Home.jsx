@@ -662,15 +662,19 @@ function AfterYouBuy() {
         <h2 className="ih-h2" id="after-you-buy-title">{t("Support for your OneLaser")}</h2>
         <div className="iown-layout">
           <div className="iown-support">
-            <img className="iown-backdrop" src={asset("home-support-workbench.webp")} alt="" width="1200" height="800" loading="lazy" decoding="async" />
-            <span className="iown-icon"><Icon name="headset" size={26} /></span>
-            <h3>{t("U.S.-based technical support")}</h3>
-            <p>{t("Get help with machine setup, error messages, or a job that isn’t running as expected.")}</p>
-            <div className="iown-actions">
-              <Link href={contact.supportTicket} className="iown-ticket">{t("Open a support ticket")} <Icon name="arrow" size={17} /></Link>
-              <a href={`tel:${contact.tel}`} className="iown-phone" aria-label={`${t("Call tech support")} ${contact.phone}`}>
-                <Icon name="phone" size={17} /> <span>{contact.phone}</span>
-              </a>
+            <div className="iown-support-copy">
+              <span className="iown-icon"><Icon name="headset" size={24} /></span>
+              <h3>{t("U.S.-based technical support")}</h3>
+              <p>{t("Get help with machine setup, error messages, or a job that isn’t running as expected.")}</p>
+              <div className="iown-actions">
+                <Link href={contact.supportTicket} className="iown-ticket">{t("Open a support ticket")} <Icon name="arrow" size={17} /></Link>
+                <a href={`tel:${contact.tel}`} className="iown-phone" aria-label={`${t("Call tech support")} ${contact.phone}`}>
+                  <Icon name="phone" size={17} /> <span>{contact.phone}</span>
+                </a>
+              </div>
+            </div>
+            <div className="iown-support-media">
+              <img src={asset("home-support-video-call.webp")} alt="" width="840" height="840" loading="lazy" decoding="async" />
             </div>
           </div>
           <ul className="iown-resources">
