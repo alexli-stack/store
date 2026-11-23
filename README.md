@@ -13,7 +13,7 @@
 
 | 页面 | 地址 | 模块（自上而下） |
 | --- | --- | --- |
-| 首页 | `#/` | 主视觉轮播（黑五、XRF、VertiGo、About Us）→ 保障条 → 精选机型卡（XRF 38W、Cobra 10、Hydra 9 Gen2、VertiGo 38W）→ 独立选机问答（4 步，工件和工作室各在同页集中选择）→ 品牌与用户证据 → 购买保障 → 活动 → 配件、材料入口 → 下一步与 FAQ。精选机型与分类入口在 `src/data/site.js`，选机界面在 `src/components/Finder.jsx`，推荐规则在 `src/components/finderRules.js`。 |
+| 首页 | `#/` | 主视觉轮播（黑五、XRF、VertiGo、About Us）→ 保障条 → 精选机型卡（XRF 38W、Cobra 8、Hydra 7 Gen2、VertiGo 38W）→ 独立选机问答（4 步，工件和工作室各在同页集中选择）→ 品牌与用户证据 → 购买保障 → 活动 → 配件、材料入口 → 下一步与 FAQ。精选机型与分类入口在 `src/data/site.js`，选机界面在 `src/components/Finder.jsx`，推荐规则在 `src/components/finderRules.js`。 |
 | 列表 | `#/collections/:handle` | 照 **Insta360 商城列表页**（实测 1440）：灰底页面 → 吸顶白色分类条（124×148 图块）→ 左侧 240 筛选栏（Offers / Category）+ 三列白色卡片 316×395 圆角 16（191 图、18/24 标题、14 号价格、36 高深色胶囊按钮） |
 | 商品详情 | `#/products/:handle` | 购买区照 **Insta360 商城商品页**（实测 1440）：左侧通栏灰色大图区（吸顶，599 高）+ 胶囊缩略图 / 右侧 464 宽栏（32 号标题、选项摘要行、黑五卡、图标信息卡、带图选项卡、Frequently bought together、灰底订单小结、配送说明）；底部固定 80 高购买条（24 号价格、180×56 胶囊按钮）。下方同样照 Insta360：吸顶 49 高白色菜单（左商品名，右 Overview / Compare / Specs / FAQ / Accessories）→ 黑底概览（首图、Take a closer look 四列、数据行、居中卖点 800×450、左右卖点 620+420、带胶囊标签的轮播卖点，见 `src/components/Story.jsx`）→ Compare models（64 号标题、250 宽列）→ Specs（44 号标题、28 号分组、240 宽标签）→ 白底 FAQ（32 号标题、编号行）→ You might also like（288×534 卡片）。没做：评价、以旧换新、保障计划、云服务（没有数据或业务） |
 | 购物车 | `#/cart` | 照 **Insta360 商城购物车**：灰底、Shopping cart 32 号粗体、左 800 白卡（商品行：图、20/24 粗体名称、标签、数量、价格）+ 右 480 白卡 Order details（24 号加粗合计、56 高胶囊 Check out、服务说明） |

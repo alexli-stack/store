@@ -4490,5 +4490,5 @@ body:has(.ip-bar) .ai-pill, .pdp ~ .ai-pill { bottom: 104px; }
 /* best-match picture: no fade-in on every answer (the card re-keys per machine); the picture is already cached */
 
 /* NEW as a corner tab in the card's top-left corner (follows the card's own rounding) */
-.ih-card > .ih-new { position: absolute; left: 0; top: 0; z-index: 2; transform: none; padding: 0 16px; border-radius: 24px 0 14px 0; background: #e7310e; color: #fff; font-size: 13px; line-height: 30px; font-weight: 800; letter-spacing: .06em; }
+.ih-card > .ih-new { position: absolute; left: 0; top: 0; z-index: 2; transform: none; padding: 0 16px; border-radius: 24px 0 14px 0; background: #e7310e; color: #fff; font-size: 13px; line-height: 30px; font-weight: 800; letter-spacing: .06em; text-transform: none; }
 @media (max-width: 1180px) { .ih-card > .ih-new { border-radius: 16px 0 12px 0; line-height: 28px; font-size: 12px; } }

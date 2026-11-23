@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { t } from "../i18n.js";
 import { asset, byHandle, img, lockScroll, money, frontImg, openMachineFinder } from "../lib.js";
-import { contact, footer, heroSlides, homeFaq, homeProof, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, trustpilot, newHandles, promo } from "../data/site.js";
+import { contact, footer, heroSlides, homeFaq, homeProof, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, trustpilot, promo } from "../data/site.js";
 import { AddButton, Countdown, Icon, Link, SpecIcon, useDragScroll } from "../components/ui.jsx";
 import FinderCard, { FinderHelp } from "../components/Finder.jsx";
 
@@ -144,7 +144,7 @@ function Hero() {
 
 const FINANCE_MONTHS = 24;
 
-function HomeCard({ product, description }) {
+function HomeCard({ product, description, badge }) {
   const { handle, name, price, compareAt, priceVaries } = product;
   const productPath = `/products/${handle}`;
   const savings = compareAt - price;
@@ -152,7 +152,7 @@ function HomeCard({ product, description }) {
 
   return (
     <article className="ih-card">
-      {newHandles.includes(handle) && <span className="ih-new">{t("NEW")}</span>}
+      {badge && <span className="ih-new">{t(badge)}</span>}
       <div className="ih-card-info">
         <h3><Link to={productPath}>{name}</Link></h3>
         <p>{t(description)}</p>
@@ -180,9 +180,9 @@ function FeaturedMachines() {
       <h2 className="ih-h2" id="featured-machines-title">{t("Choose a machine for your work")}</h2>
       <div className="ih-grid">
         <div className="ih-row">
-          {homeFeaturedMachines.map(({ handle, description }) => {
+          {homeFeaturedMachines.map(({ handle, description, badge }) => {
             const product = byHandle[handle];
-            return product && <HomeCard key={handle} product={product} description={description} />;
+            return product && <HomeCard key={handle} product={product} description={description} badge={badge} />;
           })}
         </div>
       </div>
