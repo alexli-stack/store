@@ -596,8 +596,8 @@ function QuoteReel() {
 const ASSURANCES = [
   { kind: "company", icon: "pin", label: "U.S. company", detail: "Local team for sales and support" },
   { kind: "training", icon: "user", label: "1-on-1 training", detail: "Live video" },
-  { kind: "warranty", icon: "shield", label: "Warranty and returns", detail: "Read the warranty policy" },
-  { kind: "support", icon: "headset", label: "Tech Support", detail: "Talk to real laser engineers." },
+  { kind: "warranty", icon: "shield", label: "12-month parts warranty", detail: "1 year on every machine" },
+  { kind: "support", icon: "headset", label: "Under 10 minutes", detail: "Typical support response, business hours" },
 ];
 
 function AssuranceBar({ onOpen }) {
