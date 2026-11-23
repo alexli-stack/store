@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { t } from "../i18n.js";
 import { asset, byHandle, img, lockScroll, money, frontImg, openMachineFinder } from "../lib.js";
-import { contact, footer, heroSlides, homeFaq, homeProof, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, trustpilot, promo } from "../data/site.js";
+import { contact, footer, heroSlides, homeFaq, homeWhy, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, trustpilot, promo } from "../data/site.js";
 import { AddButton, Countdown, Icon, Link, SpecIcon, useDragScroll } from "../components/ui.jsx";
 import FinderCard, { FinderHelp } from "../components/Finder.jsx";
 
@@ -703,41 +703,30 @@ function AssuranceBar({ onOpen }) {
   );
 }
 
-/* Why OneLaser cards animate when they scroll into view (and again on each later visit): figures count up, bars grow. */
-const SeenCtx = createContext(false);
-// Confetti bits thrown out from each multiple badge as it pops: fixed angles and distances, five brand colours.
-const BADGE_BITS = Array.from({ length: 16 }, (_, k) => {
-  const a = (k / 16) * Math.PI * 2 + (k % 2) * 0.2;
-  const r = 34 + (k % 3) * 16;
-  return { "--x": `${Math.round(Math.cos(a) * r * 1.4)}px`, "--y": `${Math.round(Math.sin(a) * r)}px`, "--c": ["#e7310e", "#38bdf8", "#fbbf24", "#34d399", "#f472b6"][k % 5], "--r": `${(k * 67) % 360}deg` };
-});
-function ProofGrid({ children }) {
-  const ref = useRef(null);
-  const [seen, setSeen] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || !("IntersectionObserver" in window) || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) { setSeen(true); return undefined; }
-    // play when a good part of the cards is on screen; reset once they have left the screen, so it plays again next time
-    const io = new IntersectionObserver(([e]) => { if (e.intersectionRatio >= 0.35) setSeen(true); else if (!e.isIntersecting) setSeen(false); }, { threshold: [0, 0.35] });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  return <SeenCtx.Provider value={seen}><div ref={ref} className={`ip2-grid${seen ? " seen" : ""}`}>{children}</div></SeenCtx.Provider>;
-}
-function CountUp({ text }) {
-  const seen = useContext(SeenCtx);
-  const [, num, unit] = text.match(/^([\d,]+)\s*(.*)$/) || [null, null, text];
-  const target = num ? Number(num.replace(/,/g, "")) : 0;
-  const [v, setV] = useState(0);
-  useEffect(() => {
-    if (!seen || !num) { setV(0); return undefined; }
-    const t0 = performance.now(); let raf;
-    const tick = (now) => { const k = Math.min(1, (now - t0) / 1400); setV(Math.round(target * (1 - Math.pow(1 - k, 3)))); if (k < 1) raf = requestAnimationFrame(tick); };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [seen]);
-  if (!num) return t(text);
-  return <>{(seen ? v : 0).toLocaleString("en-US")}{unit && <> {t(unit)}</>}</>;
+function WhyOneLaser() {
+  return (
+    <section className="ih-block iwhy" id="why-onelaser" aria-labelledby="why-onelaser-title">
+      <div className="ih-wrap">
+        <p className="ist-kicker">{t("Why OneLaser")}</p>
+        <h2 className="ih-h2" id="why-onelaser-title">{t("From fine details to full production runs.")}</h2>
+        <div className="iwhy-grid">
+          {homeWhy.map(({ id, label, title, text, image, alt, cta, href, to }) => (
+            <article className={`iwhy-card iwhy-card--${id}`} key={id}>
+              <div className="iwhy-photo">
+                <img src={asset(image)} alt={t(alt)} loading="lazy" decoding="async" />
+              </div>
+              <div className="iwhy-copy">
+                <p className="iwhy-label">{t(label)}</p>
+                <h3>{t(title)}</h3>
+                <p className="iwhy-text">{t(text)}</p>
+                <Link to={to} href={href} className="iwhy-link">{t(cta)} <Icon name="arrow" size={16} /></Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default function Home({ openFinder = false }) {
@@ -758,29 +747,7 @@ export default function Home({ openFinder = false }) {
       <OwnerReviews onReadAll={() => setDlg("reviews")} />
       {reviewsOpen && <ReviewsDialog onClose={() => setReviewsOpen(false)} />}
 
-      {/* Why OneLaser */}
-      <section className="ih-block ip2 iwhy">
-        <div className="ih-wrap">
-          <p className="ist-kicker">{t("Why OneLaser")}</p>
-          <div className="ip2-head">
-            <h2 className="ih-h2">{t("Faster, steadier, and dependable day after day.")}</h2>
-            <p>{t("What decides whether a laser keeps running job after job, year after year.")}</p>
-          </div>
-          <ProofGrid>
-            {homeProof.map((x, n) => (
-              <article key={x.figure} style={{ "--n": n }}>
-                <div className="ip2-top"><span className="ip2-badge"><em>{t(x.times)}</em><span className="ip2-pop" aria-hidden="true">{BADGE_BITS.map((s, k) => <i key={k} style={s} />)}</span></span><b><CountUp text={x.figure} /></b></div>
-                <h3>{t(x.title)}</h3>
-                <dl className="ip2-vs">
-                  <div className="me"><dt>OneLaser</dt><dd><i><u style={{ width: `${x.us}%` }} /></i><span>{t(x.usLabel)}</span></dd></div>
-                  <div><dt>{t("Typical glass-tube laser")}</dt><dd><i><u style={{ width: `${x.them}%` }} /></i><span>{t(x.themLabel)}</span></dd></div>
-                </dl>
-                <p>{t(x.meaning)}</p>
-              </article>
-            ))}
-          </ProofGrid>
-        </div>
-      </section>
+      <WhyOneLaser />
 
       {/* Ownership: five promises, each one opens the policy or service behind it */}
       <section className="ih-block iprom">

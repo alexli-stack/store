@@ -19,7 +19,7 @@ body { margin: 0; background: #fff; font-size: 16px; line-height: 24px; -webkit-
    overscroll-behavior stops a swipe that reaches the end of a card row from dragging the whole page with it (iOS rubber band). */
 html, body { overflow-x: clip; overscroll-behavior-x: none; }
 @supports not (overflow-x: clip) { body { overflow-x: hidden; } }
-.ih-tabs, .ih-scroller, .ih-grid, .iv-list, .ip2-grid, .ist-points, .il-strip > div, .ip-thumbs, .is-pills, .is-videos ul, .im-menu ul, .is-table-scroll, .is-compare-scroll, .compare-scroll { overscroll-behavior-x: contain; }
+.ih-tabs, .ih-scroller, .ih-grid, .iv-list, .ist-points, .il-strip > div, .ip-thumbs, .is-pills, .is-videos ul, .im-menu ul, .is-table-scroll, .is-compare-scroll, .compare-scroll { overscroll-behavior-x: contain; }
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 button, input, select { font: inherit; color: inherit; }
@@ -1536,24 +1536,45 @@ ul { list-style: none; }
   .iv-thumb { width: 100%; } .iv-text b { font-size: 14px; line-height: 19px; }
 }
 
-/* ================= Home proof points + FAQ (content blocks after thunderlaserusa.com, Insta360 type and radii) ================= */
-.ip2-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 40px; flex-wrap: wrap; }
-.ip2-head h2 { max-width: 720px; }
-.ip2-head p { font-size: 16px; line-height: 24px; color: #76767f; margin-bottom: 6px; }
-.ip2-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin-top: 32px; }
-.ip2-grid article { padding: 32px 28px 36px; background: #f8f9fc; border-radius: 24px; transition: background .25s, transform .25s; }
-.ip2-grid article:hover { background: #f1f3f8; transform: translateY(-3px); }
-.ip2-grid b { display: block; font-size: 38px; line-height: 46px; font-weight: 600; color: var(--accent-ink); letter-spacing: -0.01em; white-space: nowrap; }
-.ip2-grid h3 { margin-top: 14px; font-size: 20px; line-height: 26px; font-weight: 600; color: #262629; }
-.ip2-grid p { margin-top: 8px; font-size: 15px; line-height: 23px; color: #76767f; }
+/* Why OneLaser product and support stories */
+.iwhy .ist-kicker { margin: 0 0 8px; }
+.iwhy .ih-h2 { max-width: 38ch; text-wrap: balance; }
+.iwhy-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: clamp(20px, 2.5vw, 32px); }
+.iwhy-card { display: grid; grid-template-columns: minmax(0, 1fr); overflow: hidden; border: 1px solid #e5e5e8; border-radius: 20px; background: #f6f5f3; }
+.iwhy-photo { position: relative; min-height: 0; aspect-ratio: 16 / 9; background: #e6e2df; }
+.iwhy-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.iwhy-card--production { background: #f5f6f8; }
+.iwhy-card--production img { object-position: center 40%; }
+.iwhy-card--support { background: #faf3ef; }
+.iwhy-card--support .iwhy-photo { background: #eadfd8; }
+.iwhy-card--support img { object-position: center top; }
+.iwhy-copy { display: flex; flex-direction: column; align-items: flex-start; padding: clamp(18px, 2vw, 30px); }
+.iwhy-label { color: var(--brand-dark); font-size: 12px; line-height: 18px; font-weight: 650; }
+.iwhy-copy h3 { margin: 5px 0 8px; color: var(--title); font-size: clamp(20px, 1.75vw, 26px); line-height: 1.18; font-weight: 650; text-wrap: balance; }
+.iwhy-card--detail h3 { font-size: clamp(24px, 2.25vw, 34px); }
+.iwhy-text { max-width: 52ch; margin-bottom: 10px; color: #4d4d54; font-size: 14px; line-height: 1.55; }
+.iwhy-card--detail .iwhy-text { font-size: clamp(14px, 1.2vw, 16px); }
+.iwhy-link { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; margin-top: auto; border-radius: 4px; color: var(--brand-dark); font-size: 14px; font-weight: 650; line-height: 1.35; }
+.iwhy-link svg { flex: none; }
+.iwhy-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (min-width: 681px) and (max-width: 1039px) {
+  .iwhy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .iwhy-card--detail { grid-column: 1 / -1; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+  .iwhy-card--detail .iwhy-photo { aspect-ratio: auto; min-height: 210px; }
+}
+@media (min-width: 1040px) {
+  .iwhy-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr); grid-template-rows: repeat(2, 1fr); }
+  .iwhy-card { grid-template-columns: minmax(0, 37fr) minmax(0, 63fr); }
+  .iwhy-card .iwhy-photo { aspect-ratio: auto; }
+  .iwhy-card--detail { grid-row: 1 / span 2; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(235px, 1fr) auto; }
+}
+
+/* Homepage FAQ */
 .ifq .iw-faq { margin-top: 32px; }
 .ifq .iw-faq summary span { font-weight: 600; font-size: 18px; line-height: 26px; }
 .ifq .iw-faq p { font-size: 15px; line-height: 24px; max-width: 880px; }
-@media (max-width: 1180px) { .ip2-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; } .ip2-grid article { padding: 28px; } .ip2-grid b { font-size: 36px; line-height: 42px; } }
 @media (max-width: 860px) {
-  .ip2-head p { font-size: 14px; line-height: 20px; margin: 0; }
-  .ip2-grid { display: flex; gap: 12px; margin: 20px -24px 0; padding: 0 24px 4px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 24px; scrollbar-width: none; } .ip2-grid::-webkit-scrollbar { display: none; } .ip2-grid article { flex: none; width: 76%; scroll-snap-align: start; } .ip2-grid article { padding: 24px 20px; border-radius: 16px; }
-  .ip2-grid b { font-size: 32px; line-height: 38px; } .ip2-grid h3 { font-size: 18px; margin-top: 8px; } .ip2-grid p { font-size: 14px; line-height: 21px; }
   .ifq .iw-faq { margin-top: 16px; } .ifq .iw-faq summary span { font-size: 15px; line-height: 22px; }
 }
 
@@ -1637,7 +1658,7 @@ ul { list-style: none; }
 
 /* ================= Home owner videos ("made with OneLaser") ================= */
 /* one full-bleed row that scrolls sideways; the first card lines up with the page content */
-.iu .ist-kicker { margin-top: 0; } .iu .ip2-head { margin-top: 8px; } .iu .ip2-head h2 { max-width: none; flex-basis: 100%; }
+.iu .ist-kicker { margin-top: 0; }
 .iu-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 28px; }
 /* pill switch as on 1laser.com: grey track, white active pill */
 .iu-seg { display: flex; gap: 4px; padding: 5px; border-radius: 999px; background: #eaeaec; }
@@ -1670,7 +1691,7 @@ ul { list-style: none; }
 @media (max-width: 1180px) { .iu-card, .iu-intro { width: 340px; } .iu-row { gap: 16px; } }
 @media (max-width: 860px) {
   .iu-row { gap: 12px; margin-top: 16px; } .iu-card { width: 72%; } .iu-intro { width: 80%; min-height: 300px; } .iu-card b { font-size: 15px; line-height: 21px; }
-  .iu .ip2-head p { text-align: left; flex-basis: 100%; } .iu .ih-arrows { display: none; }
+  .iu .ih-arrows { display: none; }
   .iu-bar { margin-top: 20px; } .iu-seg { width: 100%; } .iu-seg button { flex: 1; min-width: 0; padding: 0 8px; }
 }
 
@@ -3697,7 +3718,6 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
 .iu-sub { margin-top: 48px; }
 .iu-subhead { font-size: 24px; line-height: 32px; font-weight: 700; color: var(--title); margin-bottom: 16px; }
 
-.iwhy .icmp { margin-top: 40px; padding: 28px 32px; border-radius: 20px; background: var(--page); }
 .icmp h3 { font-size: 22px; line-height: 30px; font-weight: 700; color: var(--title); }
 .icmp-scroll { margin-top: 16px; overflow-x: auto; }
 .icmp table { width: 100%; min-width: 560px; border-collapse: separate; border-spacing: 0; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px #e6e8ec; }
@@ -3736,7 +3756,6 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
 }
 @media (max-width: 860px) {
   .iu-sub { margin-top: 32px; } .iu-subhead { font-size: 20px; line-height: 26px; }
-  .iwhy .icmp { margin-top: 28px; padding: 18px 14px; border-radius: 16px; margin-left: -4px; margin-right: -4px; }
   .icmp h3 { font-size: 18px; line-height: 24px; }
   .icmp table { min-width: 0; }
   .icmp th, .icmp td { padding: 10px 10px; font-size: 14px; line-height: 19px; }
@@ -4026,32 +4045,6 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
   .tdlg-train-points li { padding: 9px 10px; font-size: 14px; }
 }
 
-/* Why OneLaser cards with a side-by-side: figure + multiple, OneLaser vs a typical glass-tube laser as two bars, then what it means for you. */
-.ip2-grid article { display: flex; flex-direction: column; }
-.ip2-top { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
-.ip2-grid .ip2-top b { font-size: 34px; line-height: 42px; white-space: nowrap; }
-.ip2-top em { flex: none; font-style: normal; padding: 4px 10px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 14px; line-height: 20px; font-weight: 700; white-space: nowrap; }
-.ip2-vs { margin: 16px 0 0; display: grid; gap: 10px; }
-.ip2-vs > div { display: grid; gap: 4px; }
-.ip2-vs dt { font-size: 13px; line-height: 18px; font-weight: 700; color: #6e6e73; }
-.ip2-vs .me dt { color: var(--accent-ink); }
-.ip2-vs dd { margin: 0; display: grid; gap: 4px; }
-.ip2-vs dd i { display: block; height: 8px; border-radius: 8px; background: #d4d6dc; }
-.ip2-vs .me dd i { background: linear-gradient(90deg, var(--accent), var(--accent-ink)); }
-.ip2-vs dd span { font-size: 14px; line-height: 20px; color: #515157; }
-.ip2-vs .me dd span { color: var(--title); font-weight: 600; }
-.ip2-grid article p { margin-top: auto; padding-top: 16px; font-size: 15px; line-height: 23px; color: #515157; }
-.ip2-grid article p strong { color: var(--title); }
-.ip2-note { margin-top: 14px; font-size: 13px; line-height: 19px; color: #6e6e73; }
-@media (max-width: 767px) { .ip2-grid .ip2-top b { font-size: 28px; line-height: 36px; } }
-
-/* Bars on a visible track, the comparison bar in a solid mid grey so it reads at a glance. */
-.ip2-vs dd i { height: 10px; border-radius: 10px; background: #e6e8ec; overflow: hidden; }
-.ip2-vs .me dd i { background: #e6e8ec; }
-.ip2-vs dd i u { display: block; height: 100%; border-radius: 10px; background: #8e8f98; }
-.ip2-vs .me dd i u { background: linear-gradient(90deg, var(--accent), var(--accent-ink)); }
-.ip2-vs dd span { color: #3a3a40; }
-
 /* Credibility, re-laid: one wide cinematic brand-film card (HQ photo, copy on a dark fade at left, a big play button),
    then a labelled row of four press and show clips. Each plays in place. */
 .icred-film-card { position: relative; margin: 32px 0 0; border-radius: 24px; overflow: hidden; background: #111; aspect-ratio: 21 / 9; }
@@ -4129,15 +4122,6 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
 }
 @media (prefers-reduced-motion: reduce) { .icv-play::before { animation: none; } }
 
-/* Proof cards: bars grow and the multiple badge pops once the grid is in view. */
-.ip2-vs dd i u { transform-origin: left center; transform: scaleX(0); transition: transform 1.3s cubic-bezier(.2, .8, .2, 1); transition-delay: calc(var(--n, 0) * 0.12s + .15s); }
-.ip2-vs div:not(.me) dd i u { transition-delay: calc(var(--n, 0) * 0.12s + .45s); }
-.ip2-grid.seen .ip2-vs dd i u { transform: scaleX(1); }
-.ip2-top em { opacity: 0; transform: scale(.6); transition: opacity .3s, transform .45s cubic-bezier(.3, 1.6, .5, 1); transition-delay: calc(var(--n, 0) * 0.12s + 1.2s); }
-.ip2-grid.seen .ip2-top em { opacity: 1; transform: none; }
-.ip2-top b { font-variant-numeric: tabular-nums; }
-@media (prefers-reduced-motion: reduce) { .ip2-vs dd i u, .ip2-top em { transition: none; } }
-
 /* Countdown flip: changed digits drop in like a split-flap card; tiles get a glassy split line; the seconds tile glows. */
 .countdown strong { display: inline-flex; justify-content: center; perspective: 300px; }
 .countdown strong i { display: inline-block; font-style: normal; transform-origin: 50% 0; animation: cd-flip .55s cubic-bezier(.2, .8, .25, 1.2) both; backface-visibility: hidden; }
@@ -4148,28 +4132,7 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
 @keyframes cd-pulse { 0% { box-shadow: inset 0 0 0 1px rgba(255, 138, 110, 0.7), 0 0 0 0 rgba(231, 49, 14, 0.55); } 100% { box-shadow: inset 0 0 0 1px rgba(255, 138, 110, 0.7), 0 0 0 12px rgba(231, 49, 14, 0); } }
 .ih-banner .countdown .cd-seconds strong { color: #ffb199; }
 @media (prefers-reduced-motion: reduce) { .countdown strong i, .ih-banner .countdown .cd-seconds { animation: none; } }
-.ip2-grid:not(.seen) .ip2-vs dd i u, .ip2-grid:not(.seen) .ip2-top em { transition: none; }
 
-/* Badge celebration: as each multiple badge pops, a ring of confetti bursts out of it and a light sweep crosses it. */
-.ip2-badge { position: relative; display: inline-flex; }
-.ip2-top .ip2-badge em { position: relative; overflow: hidden; }
-.ip2-top .ip2-badge em::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; background: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0)); transform: skewX(-20deg); opacity: 0; }
-.ip2-grid.seen .ip2-top .ip2-badge em::after { animation: ip2-shine .9s ease-out calc(var(--n, 0) * 0.12s + 1.45s) both; }
-@keyframes ip2-shine { 0% { left: -60%; opacity: 1; } 100% { left: 130%; opacity: 1; } }
-.ip2-pop { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; z-index: 2; }
-.ip2-pop i { position: absolute; left: -4px; top: -3px; width: 8px; height: 6px; border-radius: 2px; background: var(--c); opacity: 0; }
-.ip2-pop i:nth-child(3n) { border-radius: 50%; width: 7px; height: 7px; }
-.ip2-pop i:nth-child(3n + 1) { width: 4px; height: 10px; }
-.ip2-grid.seen .ip2-pop i { animation: ip2-bit .9s cubic-bezier(.15, .75, .3, 1) calc(var(--n, 0) * 0.12s + 1.25s) both; }
-@keyframes ip2-bit {
-  0% { opacity: 0; transform: translate(0, 0) rotate(0) scale(.4); }
-  15% { opacity: 1; }
-  70% { opacity: 1; transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1); }
-  100% { opacity: 0; transform: translate(calc(var(--x) * 1.1), calc(var(--y) + 18px)) rotate(var(--r)) scale(.8); }
-}
-.ip2-grid.seen .ip2-top em { animation: ip2-badge-pop .6s cubic-bezier(.3, 1.8, .5, 1) calc(var(--n, 0) * 0.12s + 1.2s) both; transition: none; opacity: 1; transform: none; }
-@keyframes ip2-badge-pop { 0% { opacity: 0; transform: scale(.4); } 55% { opacity: 1; transform: scale(1.25); } 100% { transform: scale(1); } }
-@media (prefers-reduced-motion: reduce) { .ip2-pop { display: none; } .ip2-grid.seen .ip2-top em, .ip2-grid.seen .ip2-top .ip2-badge em::after { animation: none; } }
 /* faster reel: words and author arrive sooner */
 
 /* Next-step cards, final pass: three identical white cards. Soft brand-tinted icon tile, a faint oversized icon in the
@@ -4326,7 +4289,7 @@ body:has(.ip-bar) .ai-pill, .pdp ~ .ai-pill { bottom: 104px; }
 @media (hover: none) {
   .inext li > a:hover, .inext li > button:hover { transform: none; }
   .inext li > :hover .inext-mark { transform: none; }
-  .iprom li > button:hover, .ih-card:hover, .ip2-grid article:hover { transform: none; }
+  .iprom li > button:hover, .ih-card:hover { transform: none; }
 }
 
 /* Feature icon tiles (promises, next steps, dialog heads, finder call card): one look. A soft warm gradient squircle with a
@@ -4350,20 +4313,20 @@ body:has(.ip-bar) .ai-pill, .pdp ~ .ai-pill { bottom: 104px; }
    Feature cards read like the technical plate on a machine: a fine engineering grid, four corner crop marks, a monospace
    index and spec figure, a technical line drawing with blue dimension marks and one red point, and a monospace action line. */
 :root { --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; --grid-line: rgba(11, 127, 192, 0.07); }
-.plate, .ip2-grid article {
+.plate {
   position: relative; border-radius: 6px; border: 1px solid #e1e4e9; box-shadow: none;
   background-color: #fbfcfd; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 16px 16px; background-position: -1px -1px;
   transition: transform .25s cubic-bezier(.2, .7, .2, 1), box-shadow .25s, border-color .25s;
 }
-.plate::before, .ip2-grid article::before {
+.plate::before {
   content: ""; position: absolute; inset: 8px; border: 1.5px solid var(--title); pointer-events: none; transform: none; height: auto; width: auto; background: none; z-index: 1;
   -webkit-mask: linear-gradient(#000 0 0) 0 0 / 12px 12px no-repeat, linear-gradient(#000 0 0) 100% 0 / 12px 12px no-repeat, linear-gradient(#000 0 0) 0 100% / 12px 12px no-repeat, linear-gradient(#000 0 0) 100% 100% / 12px 12px no-repeat;
           mask: linear-gradient(#000 0 0) 0 0 / 12px 12px no-repeat, linear-gradient(#000 0 0) 100% 0 / 12px 12px no-repeat, linear-gradient(#000 0 0) 0 100% / 12px 12px no-repeat, linear-gradient(#000 0 0) 100% 100% / 12px 12px no-repeat;
   transition: border-color .25s, inset .25s;
 }
-.plate:hover, .ip2-grid article:hover { transform: translateY(-4px); background-color: #fff; border-color: #d3d7de; box-shadow: 0 20px 36px -24px rgba(17, 24, 39, 0.45); }
-.plate:hover::before, .ip2-grid article:hover::before { border-color: var(--brand); inset: 6px; }
+.plate:hover { transform: translateY(-4px); background-color: #fff; border-color: #d3d7de; box-shadow: 0 20px 36px -24px rgba(17, 24, 39, 0.45); }
+.plate:hover::before { border-color: var(--brand); inset: 6px; }
 .spec-idx { position: relative; z-index: 2; width: 100%; display: flex; justify-content: space-between; gap: 8px; font-family: var(--mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: #6e6e73; }
 .spec-idx span:last-child { color: var(--brand); font-weight: 700; }
 .spec-ico { display: block; width: 96px; height: 72px; margin: 10px 0 8px; overflow: visible; }
@@ -4391,15 +4354,11 @@ body:has(.ip-bar) .ai-pill, .pdp ~ .ai-pill { bottom: 104px; }
 .inext li > .plate:hover em { background: var(--brand); }
 .inext .inext-mark, .inext .inext-top { display: none; }
 
-/* "Why OneLaser" cards share the plate */
-.ip2-grid article { padding: 28px 24px 26px; }
-.ip2-top em { border-radius: 4px; font-family: var(--mono); letter-spacing: .02em; }
-
 /* dialog heads: a small plate with the drawing */
 .tdlg-head-ico.plate-mini { width: 96px; height: 72px; padding: 0; border-radius: 6px; display: block; background-color: #fbfcfd; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 12px 12px; box-shadow: inset 0 0 0 1px #e1e4e9; }
 .tdlg-head-ico.plate-mini .spec-ico { margin: 0; }
 
-@media (hover: none) { .plate:hover, .ip2-grid article:hover, .inext li > .plate:hover { transform: none; } }
+@media (hover: none) { .plate:hover, .inext li > .plate:hover { transform: none; } }
 @media (max-width: 767px) {
   .spec-ico { width: 84px; height: 63px; }
   .tdlg-head-ico.plate-mini { width: 84px; height: 63px; }
