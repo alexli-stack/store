@@ -168,7 +168,7 @@ function HomeCard({ product, description }) {
       <p className="ih-card-monthly">{t("or")} <b>${monthly}</b>{t("/mo for 24 months")}</p>
       <div className="ih-card-btns">
         <AddButton product={product} className="ih-btn line sm" />
-        <Link to={productPath} className="ih-btn dark sm">{t("Buy now")}</Link>
+        <Link to={productPath} className="ih-btn dark sm">{t("Learn more")}</Link>
       </div>
     </article>
   );
