@@ -31,6 +31,7 @@ export const collections = {
 // Top navigation: labels, order and grouping follow www.1laser.com (read 2026-11-18). Shop links point to this store's pages;
 // service links go to the official site.
 const SITE = "https://www.1laser.com";
+const SUPPORT_TICKET = "https://zohodesk.1laser.com/portal/en/newticket";
 export const nav = [
   {
     label: "Machines", to: "/collections/machines",
@@ -56,7 +57,7 @@ export const nav = [
       ["Get a Quote", `${SITE}/products/sales-consultation-call`, `${SITE}/cdn/shop/files/Consultation_Call_Session_f357d165-c36d-445e-8589-cd76cb193639.png?v=1764916744`],
       ["1-on-1 Support", `${SITE}/products/engineer-1-on-1-training-support`, `${SITE}/cdn/shop/files/1-on-1_training.png?v=1764920272`],
     ],
-    links: [["Contact Support", "https://zohodesk.1laser.com/portal/en/newticket"], ["Financing", "/pages/financing"], ["Policy", `${SITE}/pages/shipping-policy`], ["Blogs", `${SITE}/blogs/topic`], ["Product Knowledge Base", "https://wiki.1laser.com"]],
+    links: [["Contact Support", SUPPORT_TICKET], ["Financing", "/pages/financing"], ["Policy", `${SITE}/pages/shipping-policy`], ["Blogs", `${SITE}/blogs/topic`], ["Product Knowledge Base", "https://wiki.1laser.com"]],
   },
   {
     label: "Community", href: `${SITE}/pages/laser-engraving-community`,
@@ -68,7 +69,7 @@ export const nav = [
   },
   { label: "Contact", href: `${SITE}/pages/contact-us` },
 ];
-export const contact = { phone: "626-800-4130", tel: "+16268004130", call: "/pages/sales-consultation" };
+export const contact = { phone: "626-800-4130", tel: "+16268004130", call: "/pages/sales-consultation", supportTicket: SUPPORT_TICKET };
 
 // Footer: columns, links, contact lines and social accounts as on www.1laser.com (read 2026-11-18).
 export const footer = {
@@ -309,11 +310,34 @@ export const homeWhy = [
   },
 ];
 
+const RETURN_TERMS = "Submit requests within 30 days of delivery. Eligibility, restocking fees, and shipping terms apply.";
+
+export const homeOwnership = [
+  {
+    icon: "user",
+    title: "1-on-1 training",
+    text: "A paid, one-hour video session with a OneLaser engineer covers machine setup, software, and troubleshooting.",
+    href: `${SITE}/products/engineer-1-on-1-training-support`,
+  },
+  {
+    icon: "shield",
+    title: "Warranty by model",
+    text: "X Series and Hydra have 3 years on mechanical parts, 2 on electrical, and 1 on optics and laser-source parts. Cobra and VertiGo have separate terms.",
+    href: `${SITE}/pages/warranty-policy`,
+  },
+  {
+    icon: "refresh",
+    title: "Returns and exchanges",
+    text: RETURN_TERMS,
+    href: `${SITE}/pages/refund-policy`,
+  },
+];
+
 // Home buying FAQ (after "Questions? Answers." on thunderlaserusa.com). Answers restate the policies and pages on 1laser.com.
 export const homeFaq = [
   ["Which machine is right for me?", "Answer the six questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer."],
   ["What warranty is included?", "X Series (XRF, XT) and Hydra: 3-year mechanical parts, 2-year electrical components, 1-year optics and laser source. Cobra: 1-year mechanical and electrical (optical lenses not covered). VertiGo: 1-year mechanical and electrical, 6-month laser source, 1-month lens and mirror."],
-  ["Can I return a machine?", "OneLaser offers 30-day easy returns. See the Refund Policy on 1laser.com for conditions."],
+  ["Can I return a machine?", RETURN_TERMS],
   ["Is financing available?", "Yes. OneLaser works with Shop Pay Installments, Affirm and ClickLease. Rates and terms depend on the lender's approval."],
   ["Which software does it work with?", "OneLaser machines work with LightBurn, MakerBoost AI and RDWorks on Windows and macOS."],
   ["How does support work after I buy?", "You talk to U.S.-based engineers who have built, tuned and repaired these machines. Contact them from the Support page."],

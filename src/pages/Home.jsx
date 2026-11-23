@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { t } from "../i18n.js";
 import { asset, byHandle, img, lockScroll, money, frontImg, openMachineFinder } from "../lib.js";
-import { contact, footer, heroSlides, homeFaq, homeWhy, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, trustpilot, promo } from "../data/site.js";
-import { AddButton, Countdown, Icon, Link, SpecIcon, useDragScroll } from "../components/ui.jsx";
+import { contact, footer, heroSlides, homeFaq, homeOwnership, homeWhy, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, trustpilot } from "../data/site.js";
+import { AddButton, Icon, Link, SpecIcon, useDragScroll } from "../components/ui.jsx";
 import FinderCard, { FinderHelp } from "../components/Finder.jsx";
 
 const SLIDE_MS = 10000;
@@ -221,7 +221,7 @@ const faqText = (q) => homeFaq.find(([k]) => k.startsWith(q))?.[1] || "";
     the financing options and OneLaser's own videos. The payment figure is a plain estimate, marked as such. */
 const DLG_HEAD = {
   reviews: ["star", "Owner reviews"], company: ["flag", "U.S. company"], warranty: ["shield", "Warranty and returns"],
-  returns: ["refresh", "Worried about choosing wrong?"], support: ["headset", "Stuck on a job?"], training: ["user", "First laser?"],
+  support: ["headset", "U.S.-based technical support"],
   financing: ["card", "Budget tight?"], fox: ["tv", "TV feature"],
 };
 const FIN_MACHINES = ["onelaser-xrf-desktop-laser-machine", "cobra-10-100w-co2-laser-engraver-cutter", "hydra-9-gen-2-70w-rf-co2-dual-laser-machine", "hydra-16-gen-2-70w-rf-co2-dual-laser-machine"];
@@ -325,26 +325,10 @@ function TrustDialog({ kind, onClose, onTrustpilot }) {
           <div><b>Cobra</b><span>{t("1 year on mechanical and electrical parts. Optical lenses are not covered.")}</span></div>
           <div><b>VertiGo</b><span>{t("1 year on mechanical and electrical parts, 6 months on the laser source, 1 month on lens and mirror.")}</span></div>
         </div>
-        <div className="tdlg-cards"><section><b className="tdlg-big">30</b><p className="tdlg-days">{t("day returns")}</p><p>{t(faqText("Can I return"))}</p></section>
+        <div className="tdlg-cards"><section><p className="tdlg-days">{t("Returns and exchanges")}</p><p>{t(faqText("Can I return"))}</p></section>
           <section><Faces /><p className="tdlg-days">{t("U.S.-based support")}</p><p>{t(faqText("How does support"))}</p></section></div>
         <div className="tdlg-links">
           <More href="https://www.1laser.com/pages/warranty-policy">{t("Warranty policy")}</More>
-          <More href="https://www.1laser.com/pages/refund-policy" ghost>{t("Refund policy")}</More>
-        </div>
-      </>
-    );
-  } else if (kind === "returns") {
-    body = (
-      <>
-        <Head title={t("Use it on real jobs first")} />
-        <ol className="tdlg-steps">
-          <li><b>1</b><span><strong>{t("Order your machine")}</strong><small>{t("Pay in full, or spread the cost with financing.")}</small></span></li>
-          <li><b>2</b><span><strong>{t("Put it to work")}</strong><small>{t("Run real jobs on your own materials.")}</small></span></li>
-          <li><b>3</b><span><strong>{t("Not right? Return it within 30 days")}</strong><small>{t(faqText("Can I return"))}</small></span></li>
-        </ol>
-        <div className="tdlg-callout"><Faces /><span><b>{t("Want to pick right the first time?")}</b><small>{t("Not sure it is the right machine? A free call with a laser expert before you order is the surest way to pick right.")}</small></span></div>
-        <div className="tdlg-links">
-          <More to="/pages/sales-consultation">{t("Book a free call")}</More>
           <More href="https://www.1laser.com/pages/refund-policy" ghost>{t("Refund policy")}</More>
         </div>
       </>
@@ -364,31 +348,8 @@ function TrustDialog({ kind, onClose, onTrustpilot }) {
           </div>
         )}
         <div className="tdlg-links">
-          <More href="https://zohodesk.1laser.com/portal/en/newticket">{t("Open a support ticket")}</More>
+          <More href={contact.supportTicket}>{t("Open a support ticket")}</More>
           <More href="https://wiki.1laser.com" ghost>{t("Product knowledge base")}</More>
-        </div>
-      </>
-    );
-  } else if (kind === "training") {
-    const p = byHandle["engineer-1-on-1-training-support"];
-    body = (
-      <>
-        <div className="tdlg-train">
-          {p && <div className="tdlg-train-pic"><img src={img(p.images[0], 1000)} alt="" /></div>}
-          <div className="tdlg-train-body">
-            <p className="tdlg-kicker">{t("First laser?")}</p>
-            <h3>{t("One hour, one engineer, your machine")}</h3>
-            <p className="tdlg-chips"><span><Icon name="clock" size={16} />{t("1 hour")}</span><span><Icon name="calendar" size={16} />{t("Live video")}</span><span><Icon name="user" size={16} />{t("One-on-one")}</span></p>
-            <p className="tdlg-sub">{t("A 1-hour live video session with an experienced OneLaser technician: machine assembly, software setup and troubleshooting, so you start cutting and engraving faster and avoid costly mistakes.")}</p>
-            <ul className="tdlg-train-points">{["Machine assembly", "Software setup", "Troubleshooting", "Fine-tuning your workflow"].map((x) => <li key={x}><Icon name="check" size={16} />{t(x)}</li>)}</ul>
-            {p && <div className="tdlg-train-buy">
-              <p className="tdlg-price"><b>{money(p.price)}</b>{p.compareAt > p.price && <><s>{money(p.compareAt)}</s><em>{t("Save")} {money(p.compareAt - p.price)}</em></>}</p>
-              <div className="tdlg-links">
-                <AddButton product={p} className="tdlg-more" drop="up" />
-                <More to={`/products/${p.handle}`} ghost>{t("Full details")}</More>
-              </div>
-            </div>}
-          </div>
         </div>
       </>
     );
@@ -529,17 +490,6 @@ function ReviewsDialog({ onClose }) {
     </div>
   );
 }
-
-
-/* Ownership promises, each one a door to the policy or service behind it. Copy speaks to the buyer's worry first. */
-/* spec-plate labels per promise: [section code, figure] */
-const PROMISE_SPEC = { returns: ["Returns", "30 days"], warranty: ["Warranty", "3·2·1"], support: ["Support", "U.S."], training: ["Training", "1:1"] };
-const PROMISES = [ // [icon, worry, promise, link label, dialog]
-  ["refresh", "Worried about choosing wrong?", "30-day returns. Use it on real jobs first.", "Refund policy", "returns"],
-  ["shield", "Something breaks?", "3-2-1 warranty on X Series and Hydra: 3 years mechanical, 2 electrical, 1 optics and laser source.", "Warranty policy", "warranty"],
-  ["headset", "Stuck on a job?", "Call U.S. engineers who build, tune and repair these machines.", "Contact support", "support"],
-  ["user", "First laser?", "One-on-one training, so you are not figuring it out alone.", "1-on-1 training", "training"],
-];
 
 
 // The front row covers the machine families represented in the collected product reviews.
@@ -729,6 +679,44 @@ function WhyOneLaser() {
   );
 }
 
+function AfterYouBuy() {
+  return (
+    <section className="ih-block iown" id="after-you-buy" aria-labelledby="after-you-buy-title">
+      <div className="ih-wrap">
+        <p className="ist-kicker">{t("After you buy")}</p>
+        <h2 className="ih-h2" id="after-you-buy-title">{t("Support for your OneLaser")}</h2>
+        <div className="iown-layout">
+          <div className="iown-support">
+            <span className="iown-icon"><Icon name="headset" size={26} /></span>
+            <h3>{t("U.S.-based technical support")}</h3>
+            <p>{t("Get help with machine setup, error messages, or a job that isn’t running as expected.")}</p>
+            <div className="iown-actions">
+              <Link href={contact.supportTicket} className="iown-ticket">{t("Open a support ticket")} <Icon name="arrow" size={17} /></Link>
+              <a href={`tel:${contact.tel}`} className="iown-phone" aria-label={`${t("Call tech support")} ${contact.phone}`}>
+                <Icon name="phone" size={17} /> <span>{contact.phone}</span>
+              </a>
+            </div>
+          </div>
+          <ul className="iown-resources">
+            {homeOwnership.map(({ icon, title, text, href }) => (
+              <li key={icon}>
+                <Link href={href} aria-labelledby={`ownership-${icon}-title`} aria-describedby={`ownership-${icon}-text`}>
+                  <span className="iown-icon"><Icon name={icon} size={21} /></span>
+                  <span className="iown-copy">
+                    <span className="iown-resource-title" id={`ownership-${icon}-title`}>{t(title)}</span>
+                    <span id={`ownership-${icon}-text`}>{t(text)}</span>
+                  </span>
+                  <Icon name="arrow" size={18} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home({ openFinder = false }) {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [dlg, setDlg] = useState(null); // promise / next-step dialogs, so the visitor stays on the home page
@@ -749,32 +737,7 @@ export default function Home({ openFinder = false }) {
 
       <WhyOneLaser />
 
-      {/* Ownership: five promises, each one opens the policy or service behind it */}
-      <section className="ih-block iprom">
-        <div className="ih-wrap">
-          <p className="ist-kicker">{t("After you buy")}</p>
-          <h2 className="ih-h2 narrow">{t("U.S. engineers have you covered.")}</h2>
-          <ul>
-            {PROMISES.map(([icon, worry, promise, label, kind], n) => (
-              <li key={worry}><button type="button" className="plate" onClick={() => setDlg(kind)} aria-haspopup="dialog"><span className="spec-idx"><span>{String(n + 1).padStart(2, "0")} / {t(PROMISE_SPEC[kind][0])}</span><span>{t(PROMISE_SPEC[kind][1])}</span></span><SpecIcon name={icon} /><b>{t(worry)}</b><p>{t(promise)}</p><em className="spec-cta">{t(label)}<span aria-hidden="true">↗</span></em></button></li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="ih-block">
-        <div className="ih-wrap">
-          <Link href={promo.link} className="ih-banner">
-            <img src={asset("home-bf-lineup.jpg")} alt="" loading="lazy" />
-            <span className="ih-banner-copy">
-              <small>{t(promo.label)}</small>
-              <b>{t(promo.headline)}</b>
-              <Countdown endsAt={promo.endsAt} />
-              <span className="ih-btn light">{t("Learn more")}</span>
-            </span>
-          </Link>
-        </div>
-      </section>
+      <AfterYouBuy />
 
       <ShopCategories />
 
