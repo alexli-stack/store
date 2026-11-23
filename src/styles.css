@@ -1210,7 +1210,7 @@ ul { list-style: none; }
 .ih-assurance { background: #222426; color: #fff; border-top: 1px solid #393b3e; }
 .ih-assurance-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .ih-assurance-list li + li { border-inline-start: 1px solid #424548; }
-.ih-assurance-list button {
+.ih-assurance-list :is(button, a) {
   width: 100%;
   height: 100%;
   min-height: 76px;
@@ -1221,8 +1221,8 @@ ul { list-style: none; }
   text-align: start;
   transition: background-color .2s;
 }
-.ih-assurance-list button:hover { background: #303234; }
-.ih-assurance-list button:focus-visible { outline-color: #ff9681; outline-offset: -3px; }
+.ih-assurance-list :is(button, a):hover { background: #303234; }
+.ih-assurance-list :is(button, a):focus-visible { outline-color: #ff9681; outline-offset: -3px; }
 .ih-assurance-icon {
   flex: 0 0 auto;
   display: grid;
@@ -1240,7 +1240,7 @@ ul { list-style: none; }
   .ih-assurance-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ih-assurance-list li:nth-child(odd) { border-inline-start: 0; }
   .ih-assurance-list li:nth-child(n + 3) { border-top: 1px solid #424548; }
-  .ih-assurance-list button { padding: 12px 8px; gap: 8px; }
+  .ih-assurance-list :is(button, a) { padding: 12px 8px; gap: 8px; }
   .ih-assurance-icon { width: 30px; height: 30px; }
   .ih-assurance-icon svg { width: 18px; height: 18px; }
   .ih-assurance-copy strong { font-size: 14px; }
@@ -2343,10 +2343,6 @@ ul { list-style: none; }
 .fr-specs div { padding: 12px 16px; background: #fff; }
 .fr-specs dt { font-size: 13px; line-height: 17px; color: #76767f; }
 .fr-specs dd { margin: 2px 0 0; font-size: 14px; line-height: 20px; font-weight: 600; color: #262629; }
-.fr-notes { margin-top: 20px; padding: 18px 20px; border-radius: 16px; background: #f8f9fc; }
-.fr-notes ul { margin: 10px 0 0; padding-left: 18px; display: grid; gap: 6px; }
-.fr-notes li { font-size: 14px; line-height: 21px; color: #3f3f46; }
-.fr-notes li::marker { color: var(--accent-ink); }
 .fr-warranty { margin-top: 16px; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 20px; color: #76767f; }
 .fr-warranty svg { flex: none; margin-top: 1px; color: #262629; }
 .fr-lead { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px; }
@@ -2376,7 +2372,6 @@ ul { list-style: none; }
   .fr-lede { font-size: 14px; line-height: 21px; }
   .fr-why li { font-size: 14px; line-height: 20px; }
   .fr-specs div { padding: 10px 12px; } .fr-specs dd { font-size: 14px; line-height: 19px; }
-  .fr-notes { padding: 14px 16px; } .fr-notes li { font-size: 14px; line-height: 20px; }
   .fr-lead { display: grid; } .fr-btn { width: 100%; }
   .fr-foot a { margin-left: 0; flex-basis: 100%; }
 }
@@ -2579,9 +2574,9 @@ ul { list-style: none; }
 .fr-col + .fr-col { border-left: 1px solid #eceef2; }
 .fr-col h3 { font-size: 14px; line-height: 19px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #262629; }
 .fr-col .fr-specs { margin-top: 12px; }
-.fr-notes { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
-.fr-notes li { position: relative; padding-left: 16px; font-size: 14px; line-height: 21px; color: #3f3f46; }
-.fr-notes li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 2px; background: var(--accent); }
+.fr-notes { list-style: none; margin: 12px 0 0; padding: 14px 16px; display: grid; gap: 10px; border-radius: 12px; background: #f8f9fc; }
+.fr-notes li { position: relative; padding-inline-start: 16px; font-size: 14px; line-height: 21px; color: #3f3f46; }
+.fr-notes li::before { content: ""; position: absolute; inset-inline-start: 0; inset-block-start: 7.5px; width: 6px; height: 6px; border-radius: 2px; background: var(--accent); }
 .fr-link { display: inline-block; margin-top: 14px; font-size: 14px; font-weight: 600; color: var(--accent-ink); }
 .fr-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 .fr-alt { margin-top: 18px; display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; border-radius: 12px; background: #f6f7fa; transition: background .2s; }
@@ -2597,6 +2592,7 @@ ul { list-style: none; }
   .fr-card { grid-template-columns: 1fr; }
   .fr-col { padding: 18px 18px; }
   .fr-col + .fr-col { border-left: 0; border-top: 1px solid #eceef2; }
+  .fr-notes { padding: 12px; }
 }
 
 /* Add-to-cart option menu: each option reads as a button */

@@ -4,7 +4,7 @@ import { t } from "../i18n.js";
 import { asset, byHandle, frontImg, img, lockScroll, money } from "../lib.js";
 import { AddButton, Icon, Link } from "./ui.jsx";
 import { contact } from "../data/site.js";
-import { M, STEPS, rank as rankAll, roundFocus, hasRound, ready } from "./finderRules.js";
+import { M, STEPS, rank as rankAll, hasRound, ready } from "./finderRules.js";
 
 const rank = (a) => rankAll(a, (h) => !!byHandle[h], (h) => byHandle[h]?.price || 0);
 
@@ -240,20 +240,18 @@ function summary(answers) {
 }
 
 /** "Good to know": plain notes built only from catalog facts (work areas, prices, accessories) and the published warranty. */
-function notesFor(answers, key, product) {
+function notesFor(answers, key, product, ranked) {
   const out = [];
-  const mats = answers.material || [];
-  const round = mats.includes("drinkware") || answers.round === "some" || answers.round === "most";
   const area = product.specs?.["Work area"];
-  if (answers.size && key !== "vertigo" && area) out.push(fill(t("Your largest piece (up to {size}) fits inside its {area} work area."), { size: SIZE_TEXT[answers.size], area }));
-  if (round && key === "vertigo") out.push(fill(t("The rotary is built in: {range}."), { range: product.specs?.["Key capability"] || "" }));
+  if (answers.size && key !== "vertigo" && area) out.push(fill(t("The machine has a {area} work area. Your selected piece is up to {size}"), { size: SIZE_TEXT[answers.size], area }));
+  if (key === "vertigo" && hasRound(answers)) out.push(fill(t("The rotary is built in: {range}."), { range: product.specs?.["Key capability"] || "" }));
   if (key === "vertigo" && byHandle[M.xrf.handle]) out.push(fill(t("VertiGo only engraves round items. For flat pieces like signs or coasters, pair it with a flatbed such as the {name} ({price})."), { name: byHandle[M.xrf.handle].name, price: money(byHandle[M.xrf.handle].price) }));
   addOnsFor(answers, key).forEach(([label, h]) => {
     const a = { ...byHandle[h], name: byHandle[h].name.split(/ [–-] /)[0] };
     if (label === "Rotary attachment") out.push(fill(t("Round items need a rotary, sold separately: {name} ({price})."), { name: a.name, price: money(a.price) }));
     else out.push(fill(t("No outside vent? The {name} ({price}) is the indoor fume filter we pair with it."), { name: a.name, price: money(a.price) }));
   });
-  if (roundFocus(answers) && key !== "vertigo" && byHandle[M.vertigo.handle]) {
+  if (key !== "vertigo" && ranked.some((match) => match.key === "vertigo")) {
     const v = byHandle[M.vertigo.handle];
     out.push(fill(t("Mostly tumblers? {name} ({price}) has a vertical rotary built in."), { name: v.name, price: money(v.price) }));
   }
@@ -357,7 +355,7 @@ function FinderResult({ answers, ranked }) {
   const top = byHandle[M[key].handle];
   const alt = ranked[1] && byHandle[M[ranked[1].key].handle];
   const lines = summary(answers);
-  const notes = notesFor(answers, key, top);
+  const notes = notesFor(answers, key, top, ranked);
   const specs = ["Laser source", "Work area", "Max engraving speed", "Acceleration"].filter((k) => top.specs?.[k]);
   return (
     <section className="fr" aria-label={t("Specs and good to know")}>

@@ -607,27 +607,34 @@ function QuoteReel() {
 }
 
 const ASSURANCES = [
-  { kind: "company", icon: "pin", label: "U.S. company", detail: "Local team for sales and support" },
-  { kind: "training", icon: "user", label: "1-on-1 training", detail: "Live video" },
-  { kind: "warranty", icon: "shield", label: "12-month parts warranty", detail: "1 year on every machine" },
   { kind: "support", icon: "headset", label: "Under 10 minutes", detail: "Typical support response, business hours" },
+  { kind: "warranty", icon: "shield", label: "12-month parts warranty", detail: "1 year on every machine" },
+  { kind: "shipping", icon: "truck", label: "Fast shipping", detail: "Ships From California", href: "https://www.1laser.com/pages/shipping-policy" },
+  { kind: "company", icon: "pin", label: "U.S. company", detail: "Local team for sales and support" },
 ];
 
 function AssuranceBar({ onOpen }) {
   return (
     <section className="ih-assurance" aria-label={t("Support and warranty")}>
       <ul className="ih-wrap ih-assurance-list">
-        {ASSURANCES.map(({ kind, icon, label, detail }) => (
-          <li key={kind}>
-            <button type="button" aria-haspopup="dialog" onClick={() => onOpen(kind)}>
+        {ASSURANCES.map(({ kind, icon, label, detail, href }) => {
+          const content = (
+            <>
               <span className="ih-assurance-icon"><Icon name={icon} size={22} /></span>
               <span className="ih-assurance-copy">
                 <strong>{t(label)}</strong>
                 <small>{t(detail)}</small>
               </span>
-            </button>
-          </li>
-        ))}
+            </>
+          );
+          return (
+            <li key={kind}>
+              {href ? <Link href={href}>{content}</Link> : (
+                <button type="button" aria-haspopup="dialog" onClick={() => onOpen(kind)}>{content}</button>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
