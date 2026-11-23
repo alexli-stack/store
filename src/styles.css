@@ -2491,7 +2491,7 @@ ul { list-style: none; }
 .fx-option:has(input[type="radio"]) .fx-option-mark { border-radius: 50%; }
 .fx-option:has(input:checked) .fx-option-mark { background: var(--brand-dark); border-color: var(--brand-dark); color: #fff; }
 
-.fx-question-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 14px; margin-top: 24px; text-align: left; }
+.fx-question-groups { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 24px; text-align: left; }
 .fx-question-groups .fx-question-group { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: #f4f4f7; }
 .fx-group-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; min-height: 32px; }
 .fx-group-heading h4 { margin: 0; color: var(--title); font-size: 16px; line-height: 1.25; }
@@ -2501,7 +2501,7 @@ ul { list-style: none; }
 .fx-clear[aria-disabled="true"] { color: var(--muted); cursor: default; }
 .fx-clear[aria-disabled="true"]:not(:focus) { visibility: hidden; }
 .fx-question-groups .fx-hint { margin-top: 2px; font-size: 13px; line-height: 1.4; }
-.fx-question-groups .fx-options { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 10px; gap: 8px; }
+.fx-question-groups .fx-options { grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); margin-top: 10px; gap: 8px; }
 .fx-question-groups .fx-option { min-height: 56px; padding: 8px 10px; }
 .fx-question-groups .fx-option b { font-size: 13px; }
 .fx-question-groups .fx-option small { font-size: 11px; }
@@ -2555,10 +2555,10 @@ ul { list-style: none; }
   .fx-option-mark { width: 16px; height: 16px; }
   .fx-option-mark svg { width: 11px; height: 11px; }
   .fx-q:has(.fx-question-groups) { margin-top: 16px; }
-  .fx-question-groups { grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
+  .fx-question-groups { gap: 8px; margin-top: 12px; }
   .fx-question-groups .fx-question-group { padding: 8px; }
   .fx-group-heading, .fx-clear { min-height: 26px; }
-  .fx-question-groups .fx-options { gap: 6px; margin-top: 7px; }
+  .fx-question-groups .fx-options { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 7px; }
   .fx-question-groups .fx-option { min-height: 46px; padding: 6px 7px; }
   .fx-question-groups .fx-option b { font-size: 12px; }
   .fx-question-groups .fx-option small { line-height: 1.25; }
