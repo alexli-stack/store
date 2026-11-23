@@ -222,8 +222,15 @@ export const homeFeaturedMachines = [
 ];
 
 export const homeShopCategories = [
-  { label: "Accessories", types: ["Rotary Attachments", "Fume Extractors"], image: "hot-piburn.jpg", to: "/collections/accessories" },
-  { label: "Materials", types: ["Acrylic Sheets", "Leatherette"], image: "material-acrylic.webp", to: "/collections/materials" },
+  { label: "Accessories", types: ["Rotary Attachments", "Fume Extractors"], image: "home-category-accessories.webp", to: "/collections/accessories" },
+  { label: "Materials", types: ["Acrylic Sheets", "Leatherette"], image: "home-category-materials.webp", to: "/collections/materials" },
+];
+
+// Creator and model names are checked against the original videos and OneLaser's linked guides.
+export const homeMakerVideos = [
+  { id: "LG3wz6y-tOE", title: "Engraving a bamboo cutting board", creator: "Peachy Creations", model: "XRF 38W", preview: "home-maker-bamboo.webp" },
+  { id: "0gGxQMZZhOs", title: "Making leather patch hats", creator: "Wrico Goods", model: "Hydra 9", preview: "home-maker-leather.webp" },
+  { id: "sk-OcNSGa1o", title: "Engraving a batch of tumblers", creator: "Woodwork by Allan", model: "Hydra 7", preview: "home-maker-tumblers.webp" },
 ];
 
 export const newHandles = ["onelaser-xrf-desktop-laser-machine", "vertigo-vertical-laser-engraver"];

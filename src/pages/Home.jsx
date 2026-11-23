@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { t } from "../i18n.js";
 import { asset, byHandle, img, lockScroll, money, frontImg, openMachineFinder } from "../lib.js";
-import { contact, footer, heroSlides, homeFaq, homeOwnership, homeWhy, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, trustpilot } from "../data/site.js";
-import { AddButton, Icon, Link, SpecIcon, useDragScroll } from "../components/ui.jsx";
+import { contact, footer, heroSlides, homeFaq, homeOwnership, homeWhy, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, homeMakerVideos, trustpilot } from "../data/site.js";
+import { AddButton, Icon, Link, useDragScroll } from "../components/ui.jsx";
 import FinderCard, { FinderHelp } from "../components/Finder.jsx";
 
 const SLIDE_MS = 10000;
@@ -191,7 +191,7 @@ function ShopCategories() {
         {homeShopCategories.map(({ label, types, image, to }) => (
           <li key={label}>
             <Link to={to}>
-              <img src={asset(image)} alt="" loading="lazy" />
+              <img src={asset(image)} alt="" width="800" height="800" loading="lazy" decoding="async" />
               <div className="ih-shop-copy">
                 <h3>{t(label)}</h3>
                 <span>{types.map((type) => t(type)).join(" · ")}</span>
@@ -216,16 +216,12 @@ const thumbFallback = (e, id) => { if (!e.target.dataset.fb) { e.target.dataset.
 /* Judge.me averages per product page (read 2026-11-18, as in site.js homeReviews): the 4.92 is review-weighted across these. */
 const faqText = (q) => homeFaq.find(([k]) => k.startsWith(q))?.[1] || "";
 
-/** One dialog per trust fact or promise, so visitors stay on the home page; each ends with a link to the full page.
-    Everything shown is real: Judge.me averages, homeStandard, footer contacts, homeFaq answers, the training product,
-    the financing options and OneLaser's own videos. The payment figure is a plain estimate, marked as such. */
+/** Details behind the homepage assurance bar and the owner review score. */
 const DLG_HEAD = {
   reviews: ["star", "Owner reviews"], company: ["flag", "U.S. company"], warranty: ["shield", "Warranty and returns"],
   support: ["headset", "U.S.-based technical support"],
-  financing: ["card", "Budget tight?"], fox: ["tv", "TV feature"],
+  fox: ["tv", "TV feature"],
 };
-const FIN_MACHINES = ["onelaser-xrf-desktop-laser-machine", "cobra-10-100w-co2-laser-engraver-cutter", "hydra-9-gen-2-70w-rf-co2-dual-laser-machine", "hydra-16-gen-2-70w-rf-co2-dual-laser-machine"];
-const perMonth = (amount, apr, n) => { const r = apr / 1200; return r ? (amount * r) / (1 - (1 + r) ** -n) : amount / n; };
 const Faces = () => <span className="tdlg-faces" aria-hidden="true">{[1, 2, 3].map((n) => <img key={n} src={asset(`team-${n}.jpg`)} alt="" />)}</span>;
 
 /** Phone sheets: drag down from the top (sheet scrolled to its top) to close; a short drag springs back. */
@@ -249,7 +245,6 @@ function useSwipeClose(onClose) {
 function TrustDialog({ kind, onClose, onTrustpilot }) {
   const [film, setFilm] = useState(false);
   const [clip, setClip] = useState(PRESS[0]);
-  const [fin, setFin] = useState({ h: FIN_MACHINES[2], n: 36 });
   const quotes = useRef(null);
   const swipe = useSwipeClose(onClose);
   useEffect(() => {
@@ -351,26 +346,6 @@ function TrustDialog({ kind, onClose, onTrustpilot }) {
           <More href={contact.supportTicket}>{t("Open a support ticket")}</More>
           <More href="https://wiki.1laser.com" ghost>{t("Product knowledge base")}</More>
         </div>
-      </>
-    );
-  } else if (kind === "financing") {
-    const m = byHandle[fin.h];
-    const pay = m ? perMonth(m.price, 15, fin.n) : 0;
-    body = (
-      <>
-        <Head title={t("Spread the cost four ways")} />
-        <div className="tdlg-calc">
-          <label><span>{t("Machine")}</span><select value={fin.h} onChange={(e) => setFin((f) => ({ ...f, h: e.target.value }))}>{FIN_MACHINES.map((h) => byHandle[h] && <option key={h} value={h}>{byHandle[h].name} · {money(byHandle[h].price)}</option>)}</select></label>
-          <div className="tdlg-seg">{[12, 24, 36, 60].map((n) => <button key={n} type="button" className={fin.n === n ? "on" : ""} onClick={() => setFin((f) => ({ ...f, n }))}>{n} {t("mo")}</button>)}</div>
-          <p className="tdlg-pay"><b>{money(Math.round(pay))}</b><span>/{t("mo")}</span><small>{t("Estimate at 15% APR. Your rate is set by the lender.")}</small></p>
-        </div>
-        <ul className="tdlg-fin">
-          <li><b>{t("OneLaser Subsidy Loan")}</b><span>{t("$0 down, first 3 months payment-free, up to 60 months.")}</span></li>
-          <li><b>{t("First Citizens Bank")}</b><span>{t("Equipment finance for established businesses.")}</span></li>
-          <li><b>{t("Shop Pay Installments")}</b><span>{t("3, 6 or 12 monthly payments, chosen at checkout.")}</span></li>
-          <li><b>ClickLease</b><span>{t("Lease to own, $0 down, approval in minutes.")}</span></li>
-        </ul>
-        <div className="tdlg-links"><More to={`/pages/financing?p=${fin.h}`}>{t("Compare all financing options")}</More></div>
       </>
     );
   } else {
@@ -687,6 +662,7 @@ function AfterYouBuy() {
         <h2 className="ih-h2" id="after-you-buy-title">{t("Support for your OneLaser")}</h2>
         <div className="iown-layout">
           <div className="iown-support">
+            <img className="iown-backdrop" src={asset("home-support-workbench.webp")} alt="" width="1200" height="800" loading="lazy" decoding="async" />
             <span className="iown-icon"><Icon name="headset" size={26} /></span>
             <h3>{t("U.S.-based technical support")}</h3>
             <p>{t("Get help with machine setup, error messages, or a job that isn’t running as expected.")}</p>
@@ -717,6 +693,81 @@ function AfterYouBuy() {
   );
 }
 
+function MakerVideoCard({ video, onPlay }) {
+  const [usePreview, setUsePreview] = useState(false);
+  const { id, title, creator, model, preview } = video;
+  return (
+    <li className="imakers-card">
+      <button type="button" aria-haspopup="dialog" aria-labelledby={`maker-video-${id}-title`} aria-describedby={`maker-video-${id}-credit`} onClick={() => onPlay(video)}>
+        <span className="imakers-media">
+          <img
+            src={usePreview ? asset(preview) : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+            onError={usePreview ? undefined : () => setUsePreview(true)}
+            alt=""
+            width="480"
+            height="270"
+            loading="lazy"
+            decoding="async"
+          />
+          {usePreview && <small className="imakers-preview" aria-hidden="true">{t("Project reference image")}</small>}
+          <span className="imakers-play" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+          </span>
+        </span>
+        <span className="imakers-info">
+          <span className="imakers-credit" id={`maker-video-${id}-credit`}>{creator} <span aria-hidden="true">·</span> {model}</span>
+          <span className="imakers-project" id={`maker-video-${id}-title`}>{t(title)}</span>
+        </span>
+      </button>
+    </li>
+  );
+}
+
+function MakerVideoDialog({ video, onClose }) {
+  const dialogRef = useRef(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog.open) dialog.showModal();
+    return lockScroll();
+  }, []);
+
+  return (
+    <dialog ref={dialogRef} className="imakers-dialog" aria-labelledby="maker-video-title" onClose={onClose} onClick={(event) => {
+      if (event.target === event.currentTarget) event.currentTarget.close();
+    }}>
+      <div className="imakers-dialog-content">
+        <header className="imakers-dialog-head">
+          <div>
+            <h3 id="maker-video-title">{t(video.title)}</h3>
+            <p>{video.creator} <span aria-hidden="true">·</span> {video.model}</p>
+          </div>
+          <button type="button" aria-label={t("Close video")} onClick={() => dialogRef.current.close()}><Icon name="close" size={22} /></button>
+        </header>
+        <div className="imakers-player">{embed(video.id, t(video.title))}</div>
+        <Link href={`https://www.youtube.com/watch?v=${video.id}`} className="imakers-more">{t("Watch on YouTube")} <Icon name="arrow" size={16} /></Link>
+      </div>
+    </dialog>
+  );
+}
+
+function MakerVideos() {
+  const [selected, setSelected] = useState(null);
+  return (
+    <section className="ih-block imakers" id="maker-videos" aria-labelledby="maker-videos-title">
+      <div className="ih-wrap">
+        <div className="imakers-heading">
+          <h2 className="ih-h2" id="maker-videos-title">{t("See what creators make with OneLaser")}</h2>
+          <Link href="https://www.1laser.com/pages/community-videos" className="imakers-more">{t("More community videos")} <Icon name="arrow" size={16} /></Link>
+        </div>
+        <ul className="imakers-grid">
+          {homeMakerVideos.map((video) => <MakerVideoCard key={video.id} video={video} onPlay={setSelected} />)}
+        </ul>
+        {selected && <MakerVideoDialog video={selected} onClose={() => setSelected(null)} />}
+      </div>
+    </section>
+  );
+}
+
 export default function Home({ openFinder = false }) {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [dlg, setDlg] = useState(null); // promise / next-step dialogs, so the visitor stays on the home page
@@ -741,17 +792,7 @@ export default function Home({ openFinder = false }) {
 
       <ShopCategories />
 
-      {/* Next step: three ways forward, side by side */}
-      <section className="ih-block inext">
-        <div className="ih-wrap">
-          <h2 className="ih-h2">{t("Your next step.")}</h2>
-          <ul>
-            <li><button type="button" className="plate" onClick={openMachineFinder}><span className="spec-idx"><span>01 / {t("Finder")}</span><span>{t("4 steps")}</span></span><SpecIcon name="search" /><small>{t("Choose it yourself")}</small><b>{t("Find your machine in 30 seconds")}</b><p>{t("Answer a few questions about your materials and jobs, and get a matched machine.")}</p><em>{t("Start the finder")}<Icon name="chevron" size={16} /></em></button></li>
-            <li><Link to="/pages/sales-consultation" className="plate"><span className="spec-idx"><span>02 / {t("Call")}</span><span>{t("Free")}</span></span><SpecIcon name="calendar" /><small>{t("Talk it through")}</small><b>{t("Book a free 30-minute call with a laser expert")}</b><p>{t("Talk through your materials, space and budget before you choose.")}</p><em>{t("Pick a time")}<Icon name="chevron" size={16} /></em></Link></li>
-            <li><button type="button" className="plate" onClick={() => setDlg("financing")} aria-haspopup="dialog"><span className="spec-idx"><span>03 / {t("Finance")}</span><span>{t("Estimate")}</span></span><SpecIcon name="card" /><small>{t("Do the math")}</small><b>{t("See your monthly payment")}</b><p>{t("Pick a machine and a term to see a rough monthly payment right away.")}</p><em>{t("Open the estimator")}<Icon name="chevron" size={16} /></em></button></li>
-          </ul>
-        </div>
-      </section>
+      <MakerVideos />
 
       <section className="ih-block ifq">
         <div className="ih-wrap">

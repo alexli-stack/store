@@ -1276,7 +1276,7 @@ ul { list-style: none; }
 .ih-finder-intro { margin: 10px 0 24px; max-width: 620px; color: var(--muted); }
 .ih-shop-categories { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .ih-shop-categories a { flex-direction: row; align-items: stretch; }
-.ih-shop-categories img { width: 43%; min-height: 144px; object-fit: cover; }
+.ih-shop-categories img { width: 43%; height: auto; min-height: 144px; object-fit: cover; }
 .ih-shop-copy { justify-content: center; }
 @media (max-width: 650px) {
   .ih-shop-copy { padding: 12px; }
@@ -1556,11 +1556,13 @@ ul { list-style: none; }
 /* After you buy */
 .iown .ist-kicker { margin: 0 0 8px; }
 .iown-layout { display: grid; grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); gap: 16px; margin-top: clamp(20px, 2.5vw, 32px); }
-.iown-support { display: flex; flex-direction: column; align-items: flex-start; padding: clamp(20px, 3vw, 42px); border-radius: 20px; background: linear-gradient(135deg, #242122, #34211d); color: #fff; }
+.iown-support { position: relative; isolation: isolate; display: flex; flex-direction: column; align-items: flex-start; overflow: hidden; padding: clamp(20px, 3vw, 42px); border-radius: 20px; background: #242122; color: #fff; }
+.iown-backdrop { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: right center; }
+.iown-support::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(17 15 16 / .8), rgb(17 15 16 / .64) 60%, rgb(17 15 16 / .42)), linear-gradient(0deg, rgb(12 10 11 / .46), transparent 44%); }
 .iown-icon { display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; color: var(--brand-dark); background: var(--brand-soft); }
 .iown-support .iown-icon { width: 52px; height: 52px; color: #ffb29e; background: #53312b; }
-.iown-support h3 { margin: 16px 0 8px; font-size: clamp(23px, 2.2vw, 34px); font-weight: 650; line-height: 1.15; text-wrap: balance; }
-.iown-support p { max-width: 42ch; color: #eadedb; font-size: 15px; line-height: 1.55; }
+.iown-support h3 { max-width: 18ch; margin: 16px 0 8px; font-size: clamp(23px, 2.2vw, 34px); font-weight: 650; line-height: 1.15; text-wrap: balance; }
+.iown-support p { max-width: 36ch; color: #eadedb; font-size: 15px; line-height: 1.55; }
 .iown-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-top: auto; padding-top: clamp(16px, 2.5vw, 30px); }
 .iown-actions a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; font-weight: 650; line-height: 1.35; }
 .iown-actions svg { flex: none; }
@@ -1578,11 +1580,47 @@ ul { list-style: none; }
 .iown-copy { display: grid; gap: 4px; color: #4d4d54; font-size: 14px; line-height: 1.5; }
 .iown-resource-title { color: var(--title); font-size: clamp(16px, 1.35vw, 20px); line-height: 1.25; font-weight: 650; }
 .iown-resources a > svg { color: var(--brand-dark); }
-@media (max-width: 860px) { .iown-layout { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 860px) {
+  .iown-layout { grid-template-columns: minmax(0, 1fr); }
+  .iown-support::before { background: linear-gradient(90deg, rgb(17 15 16 / .83), rgb(17 15 16 / .65)); }
+}
 @media (max-width: 420px) {
   .iown-icon { width: 34px; height: 34px; }
   .iown-resources a { align-items: start; }
   .iown-resources a > svg { margin-top: 2px; }
+}
+
+/* Homepage creator videos */
+.imakers-heading { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; }
+.imakers-heading h2 { max-width: 32ch; text-wrap: balance; }
+.imakers-more { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; color: var(--brand-dark); font-size: 14px; font-weight: 650; }
+.imakers-more:hover { text-decoration: underline; text-underline-offset: 3px; }
+.imakers-more svg { flex: none; }
+.imakers-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: clamp(16px, 2.3vw, 32px); }
+.imakers-card > button { display: flex; flex-direction: column; width: 100%; height: 100%; text-align: left; border: 1px solid var(--line); border-radius: 18px; background: #f7f7f8; overflow: hidden; }
+.imakers-card > button:hover { background: #fff; border-color: #c9ccd0; }
+.imakers-media { position: relative; display: grid; width: 100%; aspect-ratio: 16 / 9; place-items: center; isolation: isolate; background: #272426; }
+.imakers-media img { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; }
+.imakers-preview { position: absolute; left: 10px; bottom: 10px; padding: 2px 7px; border-radius: 4px; color: #fff; background: rgb(20 17 18 / .86); font-size: 10px; line-height: 1.4; }
+.imakers-play { display: grid; width: 58px; height: 58px; place-items: center; border: 1px solid rgb(255 255 255 / .55); border-radius: 50%; color: #fff; background: rgb(24 20 21 / .87); }
+.imakers-card button:hover .imakers-play, .imakers-card button:focus-visible .imakers-play { background: var(--brand-dark); }
+.imakers-info { display: grid; gap: 5px; padding: clamp(14px, 1.5vw, 22px); }
+.imakers-credit { color: #5a5557; font-size: 13px; line-height: 1.45; }
+.imakers-project { color: var(--title); font-size: clamp(17px, 1.45vw, 22px); line-height: 1.2; font-weight: 650; }
+.imakers-dialog { width: min(880px, calc(100% - 24px)); max-width: none; max-height: calc(100dvh - 24px); padding: 0; border: 0; border-radius: 18px; color: var(--title); background: #fff; }
+.imakers-dialog::backdrop { background: rgb(20 17 19 / .8); }
+.imakers-dialog-content { padding: clamp(14px, 2.25vw, 28px); }
+.imakers-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.imakers-dialog-head h3 { font-size: clamp(18px, 2vw, 24px); line-height: 1.2; }
+.imakers-dialog-head p { margin-top: 4px; color: #5a5557; font-size: 13px; line-height: 1.45; }
+.imakers-dialog-head button { display: grid; flex: 0 0 42px; height: 42px; place-items: center; border-radius: 8px; background: #f3f2f3; }
+.imakers-dialog-head button:hover { background: var(--brand-soft); }
+.imakers-player { aspect-ratio: 16 / 9; overflow: hidden; border-radius: 10px; background: #181517; }
+.imakers-player iframe { display: block; width: 100%; height: 100%; border: 0; }
+.imakers-dialog .imakers-more { margin-top: 8px; }
+@media (max-width: 700px) {
+  .imakers-grid { grid-template-columns: minmax(0, 1fr); }
+  .imakers-heading { gap: 6px; }
 }
 
 /* Homepage FAQ */
@@ -3748,8 +3786,6 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
 .icmp-note { margin-top: 12px; font-size: 14px; line-height: 20px; color: #6e6e73; }
 .icmp-note a { color: var(--accent-ink); font-weight: 600; }
 
-.inext ul { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-
 .iquick { margin-top: 48px; }
 .iquick p { font-size: 14px; line-height: 20px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6e6e73; }
 .iquick ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; }
@@ -3766,7 +3802,6 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
   .icmp table { min-width: 0; }
   .icmp th, .icmp td { padding: 10px 10px; font-size: 14px; line-height: 19px; }
   .icmp tbody th { width: 34%; }
-  .inext ul { grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 20px; }
   .iquick { margin-top: 32px; }
   .iquick ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .iquick a { padding: 14px; font-size: 15px; }
@@ -3864,9 +3899,6 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
 .tdlg-contact svg { flex: none; color: var(--brand); }
 .tdlg-contact span { display: grid; gap: 2px; min-width: 0; } .tdlg-contact b { font-size: 16px; } .tdlg-contact small { font-size: 14px; color: #6e6e73; }
 .tdlg-links .addbtn { display: inline-flex; } .tdlg-links .addbtn .tdlg-more { height: 46px; }
-.tdlg-fin { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 10px; }
-.tdlg-fin li { display: grid; gap: 2px; padding: 14px 16px; border-radius: 14px; background: var(--page); }
-.tdlg-fin b { font-size: 16px; } .tdlg-fin span { font-size: 15px; line-height: 22px; color: #4b4b52; }
 @media (max-width: 860px) { .tdlg-contact { grid-template-columns: minmax(0, 1fr); } }
 
 /* ===== Video module as machine demos: machine tabs, buy card beside the playlist ===== */
@@ -3941,15 +3973,6 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
 .tdlg-upsell { margin-top: 14px; display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px; border-radius: 14px; box-shadow: inset 0 0 0 1px #e6e8ec; }
 .tdlg-upsell img { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; }
 .tdlg-upsell span { display: grid; gap: 2px; } .tdlg-upsell b { font-size: 15px; line-height: 20px; } .tdlg-upsell small { font-size: 15px; font-weight: 700; } .tdlg-upsell s { margin-left: 6px; font-weight: 400; color: #76767f; }
-.tdlg-calc { margin-top: 6px; display: grid; gap: 12px; padding: 18px; border-radius: 16px; background: #111113; color: #fff; }
-.tdlg-calc label { display: grid; gap: 6px; } .tdlg-calc label span { font-size: 14px; color: #b4b4bb; }
-.tdlg-calc select { height: 46px; padding: 0 12px; border-radius: 8px; border: 1px solid #3a3a42; background: #1c1c20; color: #fff; font: inherit; font-size: 16px; }
-.tdlg-seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-.tdlg-seg button { height: 40px; border-radius: 8px; border: 1px solid #3a3a42; color: #fff; font-size: 15px; }
-.tdlg-seg button.on { background: #fff; color: var(--title); border-color: #fff; }
-.tdlg-pay { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 6px; }
-.tdlg-pay b { font-size: 38px; line-height: 42px; font-weight: 800; color: #ff8a6e; } .tdlg-pay span { font-size: 16px; }
-.tdlg-pay small { flex-basis: 100%; font-size: 13px; color: #a8a8b0; }
 .tdlg-clips { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .tdlg-clips button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 12px; background: var(--page); text-align: left; color: var(--title); }
 .tdlg-clips button.on { box-shadow: inset 0 0 0 2px var(--brand); background: #fff; }
@@ -3976,32 +3999,6 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
   .tdlg-finder .fx { height: auto; }
 }
 .tdlg-team .tdlg-faces, .tdlg-cards .tdlg-faces { display: inline-flex; gap: 0; }
-
-/* Next-step cards: one shape for all three; the free call is marked by a brand outline and a filled button, not a different colour. */
-.inext li > a, .inext li > button { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 28px; border-radius: 20px; background: var(--page); border: 1.5px solid transparent; text-align: left; color: var(--title); transition: transform .2s, box-shadow .2s, border-color .2s, background-color .2s; }
-.inext li > a:hover, .inext li > button:hover { transform: translateY(-4px); background: #fff; border-color: #e3e3e8; box-shadow: 0 24px 44px -26px rgba(17, 24, 39, 0.4); }
-.inext li.hot > a { background: #fff; border-color: rgba(231, 49, 14, 0.45); }
-.inext li.hot > a:hover { border-color: var(--brand); }
-.inext-top { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.inext-ico { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 14px; background: #fff; color: var(--brand); box-shadow: 0 0 0 1px #ececf0; transition: background-color .2s, color .2s; }
-.inext li.hot .inext-ico, .inext li > :hover .inext-ico { background: var(--brand); color: #fff; box-shadow: none; }
-.inext-top i { font-style: normal; font-size: 14px; line-height: 20px; font-weight: 600; padding: 4px 12px; border-radius: 999px; background: #fff; color: #6e6e73; box-shadow: 0 0 0 1px #ececf0; }
-.inext li.hot .inext-top i { background: rgba(231, 49, 14, 0.08); color: var(--brand); box-shadow: none; }
-.inext small { font-size: 14px; line-height: 20px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--brand); }
-.inext b { font-size: 22px; line-height: 30px; font-weight: 700; }
-.inext li p { flex: 1; margin: 2px 0 0; font-size: 16px; line-height: 24px; color: #6e6e73; }
-.inext em { margin-top: 18px; display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 8px; font-style: normal; font-size: 16px; line-height: 22px; font-weight: 600; color: var(--title); background: #fff; box-shadow: inset 0 0 0 1.5px #d9d9de; transition: background-color .2s, color .2s, box-shadow .2s; }
-.inext em svg { transition: transform .2s; }
-.inext li > :hover em svg { transform: translateX(3px); }
-.inext li > :hover em { box-shadow: inset 0 0 0 1.5px var(--title); }
-.inext li.hot em, .inext li.hot > :hover em { background: var(--brand); color: #fff; box-shadow: none; }
-.inext li > :focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
-@media (max-width: 767px) {
-  .inext li > a, .inext li > button { padding: 20px; border-radius: 16px; }
-  .inext b { font-size: 19px; line-height: 26px; }
-  .inext li p { font-size: 15px; line-height: 22px; }
-  .inext em { margin-top: 14px; }
-}
 
 /* Per-machine ratings as stars filled to the average (not bars sized by review count, which read as a worse score for fewer reviews). */
 .tdlg-bars i.tdlg-stars { position: relative; height: auto; width: max-content; border-radius: 0; background: none; overflow: visible; font-style: normal; font-size: 18px; line-height: 1; letter-spacing: 2px; }
@@ -4093,21 +4090,6 @@ body:has(.ip-bar) .ai-nudge { bottom: 168px; }
 
 /* faster reel: words and author arrive sooner */
 
-/* Next-step cards, final pass: three identical white cards. Soft brand-tinted icon tile, a faint oversized icon in the
-   corner, a dark button; on hover the card lifts, a brand line draws across the top and the button turns brand red. */
-.inext li > a, .inext li > button, .inext li.hot > a { overflow: hidden; background: #fff; border: 1px solid #e8e9ee; box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04), 0 16px 36px -28px rgba(17, 24, 39, 0.35); }
-.inext li > a::before, .inext li > button::before { content: ""; position: absolute; left: 0; top: 0; height: 3px; width: 100%; background: linear-gradient(90deg, var(--brand), #ff8a5c); transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(.2, .7, .2, 1); }
-.inext li > a:hover, .inext li > button:hover, .inext li.hot > a:hover { transform: translateY(-6px); background: #fff; border-color: #e3e4ea; box-shadow: 0 30px 50px -28px rgba(17, 24, 39, 0.45); }
-.inext li > a:hover::before, .inext li > button:hover::before { transform: scaleX(1); }
-.inext-mark { position: absolute; right: -26px; bottom: -30px; color: var(--brand); opacity: .05; pointer-events: none; transition: transform .6s cubic-bezier(.2, .7, .2, 1), opacity .3s; }
-.inext li > :hover .inext-mark { transform: rotate(-8deg) scale(1.06); opacity: .09; }
-.inext-ico, .inext li.hot .inext-ico { border-radius: 14px; background: linear-gradient(145deg, #fff1ec, #ffe1d6); color: var(--brand); box-shadow: none; }
-.inext li > :hover .inext-ico { background: var(--brand); color: #fff; }
-.inext-top i, .inext li.hot .inext-top i { background: #f4f5f8; color: #515157; box-shadow: none; }
-.inext em, .inext li.hot em { background: #1d1d1f; color: #fff; box-shadow: none; }
-.inext li > :hover em, .inext li.hot > :hover em { background: var(--brand); color: #fff; box-shadow: 0 10px 20px -10px rgba(231, 49, 14, 0.7); }
-.inext li > * > *:not(.inext-mark) { position: relative; }
-
 /* "Talk it through" call card in the finder result: a light sweep crosses it every few seconds, the calendar icon sends
    out a ring and the arrow nudges right, inviting the click without shouting. Stops on hover. */
 
@@ -4173,9 +4155,6 @@ body:has(.ip-bar) .ai-pill, .pdp ~ .ai-pill { bottom: 104px; }
   .ai-pill { right: 74px; }
 }
 
-/* financing estimate figure in brand red */
-.tdlg-calc .tdlg-pay b { color: var(--brand); }
-
 /* ===== Dialog usability (all home dialogs, phone first) =====
    - the close button never scrolls away: it is sticky in the sheet's top-right corner
    - the main buttons stay pinned to the bottom of the sheet on a white fade, so it is clear there is an action
@@ -4233,36 +4212,20 @@ body:has(.ip-bar) .ai-pill, .pdp ~ .ai-pill { bottom: 104px; }
 
 /* Quote reel: the line wraps inside the card (the word spans made it as wide as the whole sentence on phones);
    horizontal swipes change the quote, vertical scrolling still scrolls the page. */
-
-/* No sideways wobble on phones: the next-step cards clip their own paint, the faint corner icon sits inside the card, and
-   the section clips anything that still pokes out. On touch screens a tap does not leave the cards "hovered" (lifted,
-   icon rotated), which was the moment the page could pan sideways. */
-.inext { overflow: hidden; }
-.inext li > a, .inext li > button { contain: paint; }
-.inext-mark { right: -14px; bottom: -22px; }
-.inext-mark svg { width: 120px; height: 120px; }
 @media (hover: none) {
-  .inext li > a:hover, .inext li > button:hover { transform: none; }
-  .inext li > :hover .inext-mark { transform: none; }
   .ih-card:hover { transform: none; }
 }
 
-/* Feature icon tiles (next steps, dialog heads, finder call card): one look. A soft warm gradient squircle with a
+/* Feature icon tiles (dialog heads and the finder call card): one look. A soft warm gradient squircle with a
    hairline ring and a small inner highlight; the icon is the two-tone brand version. Hover deepens it. */
-.inext-ico, .inext li.hot .inext-ico, .tdlg-head-ico {
+.tdlg-head-ico {
   width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; color: var(--brand);
   background: linear-gradient(145deg, #fff 0%, #ffeee8 100%);
   box-shadow: inset 0 0 0 1px rgba(231, 49, 14, 0.14), inset 0 1px 0 #fff, 0 6px 14px -8px rgba(231, 49, 14, 0.45);
   transition: background .25s, color .25s, box-shadow .25s, transform .25s;
 }
-.inext li > :hover .inext-ico {
-  background: linear-gradient(145deg, #ff5a36 0%, var(--brand) 100%); color: #fff;
-  box-shadow: 0 10px 20px -10px rgba(231, 49, 14, 0.8); transform: translateY(-1px) rotate(-4deg);
-}
-.inext li > :hover .inext-ico .ico-tone { fill-opacity: .28; }
 .fx-call-ico { border-radius: 10px; background: linear-gradient(145deg, #fff, #e3f4fd); color: var(--accent-ink); box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.3); }
-@media (hover: none) { .inext li > :hover .inext-ico { transform: none; } }
-@media (max-width: 767px) { .inext-ico, .tdlg-head-ico { width: 46px; height: 46px; border-radius: 14px; } }
+@media (max-width: 767px) { .tdlg-head-ico { width: 46px; height: 46px; border-radius: 14px; } }
 
 /* ===== Design direction B: engineering spec plates =====
    Feature cards read like the technical plate on a machine: a fine engineering grid, four corner crop marks, a monospace
@@ -4292,30 +4255,16 @@ body:has(.ip-bar) .ai-pill, .pdp ~ .ai-pill { bottom: 104px; }
 .plate:hover .sp-acc { animation: sp-blink .9s ease-in-out 2; }
 @keyframes sp-blink { 50% { opacity: .25; } }
 
-/* next-step cards: same plate, the main action stays a solid button */
-.inext li > a.plate, .inext li > button.plate { padding: 24px 22px 22px; border-radius: 6px; overflow: visible; contain: none; background-color: #fbfcfd; border: 1px solid #e1e4e9; box-shadow: none; }
-.inext li > .plate:hover { transform: translateY(-4px); background-color: #fff; box-shadow: 0 20px 36px -24px rgba(17, 24, 39, 0.45); }
-.inext li > .plate::before { transform: none; }
-.inext li > .plate small { margin-top: 2px; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; }
-.inext li > .plate em { border-radius: 6px; background: var(--title); color: #fff; box-shadow: none; font-family: inherit; }
-.inext li > .plate:hover em { background: var(--brand); }
-.inext .inext-mark, .inext .inext-top { display: none; }
-
 /* dialog heads: a small plate with the drawing */
 .tdlg-head-ico.plate-mini { width: 96px; height: 72px; padding: 0; border-radius: 6px; display: block; background-color: #fbfcfd; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 12px 12px; box-shadow: inset 0 0 0 1px #e1e4e9; }
 .tdlg-head-ico.plate-mini .spec-ico { margin: 0; }
 
-@media (hover: none) { .plate:hover, .inext li > .plate:hover { transform: none; } }
+@media (hover: none) { .plate:hover { transform: none; } }
 @media (max-width: 767px) {
   .spec-ico { width: 84px; height: 63px; }
   .tdlg-head-ico.plate-mini { width: 84px; height: 63px; }
 }
 @media (prefers-reduced-motion: reduce) { .plate:hover .sp-acc { animation: none; } }
-
-/* next-step plates: replace the old hover top-line pseudo with the corner crop marks */
-.inext li > .plate::before, .inext li > .plate:hover::before { top: 8px; right: 8px; bottom: 8px; left: 8px; width: auto; height: auto; background: none; transform: none; border: 1.5px solid var(--title); border-radius: 0; }
-.inext li > .plate:hover::before { top: 6px; right: 6px; bottom: 6px; left: 6px; border-color: var(--brand); }
-.inext li > .plate::after { display: none; }
 
 /* Plate hover, bigger: the drawing re-draws itself line by line, the blue dimension marks extend after it, their labels
    fade in, and the red point pops with a pulse ring; the drawing lifts and grows a little. */
