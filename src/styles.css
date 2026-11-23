@@ -2570,23 +2570,15 @@ ul { list-style: none; }
 .fr { margin-top: 24px; }
 .fr-steps { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .fr-card { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; }
-.fr-col { padding: 28px 32px; }
+.fr-col { display: flex; flex-direction: column; min-width: 0; padding: 28px 32px; }
 .fr-col + .fr-col { border-left: 1px solid #eceef2; }
 .fr-col h3 { font-size: 14px; line-height: 19px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #262629; }
 .fr-col .fr-specs { margin-top: 12px; }
-.fr-notes { list-style: none; margin: 12px 0 0; padding: 14px 16px; display: grid; gap: 10px; border-radius: 12px; background: #f8f9fc; }
+.fr-notes { list-style: none; flex: 1; margin: 12px 0 0; padding: 14px 16px; display: grid; align-content: space-between; gap: 10px; border-radius: 12px; background: #f8f9fc; }
 .fr-notes li { position: relative; padding-inline-start: 16px; font-size: 14px; line-height: 21px; color: #3f3f46; }
 .fr-notes li::before { content: ""; position: absolute; inset-inline-start: 0; inset-block-start: 7.5px; width: 6px; height: 6px; border-radius: 2px; background: var(--accent); }
-.fr-link { display: inline-block; margin-top: 14px; font-size: 14px; font-weight: 600; color: var(--accent-ink); }
+.fr-link { align-self: flex-start; margin-top: auto; padding-top: 14px; font-size: 14px; font-weight: 600; color: var(--accent-ink); }
 .fr-link:hover { text-decoration: underline; text-underline-offset: 3px; }
-.fr-alt { margin-top: 18px; display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; border-radius: 12px; background: #f6f7fa; transition: background .2s; }
-.fr-alt:hover { background: #eef1f6; }
-.fr-alt img { width: 72px; aspect-ratio: 4 / 3; object-fit: contain; mix-blend-mode: multiply; }
-.fr-alt span { display: grid; min-width: 0; }
-.fr-alt em { font-style: normal; font-size: 13px; line-height: 17px; color: #76767f; }
-.fr-alt b { font-size: 15px; line-height: 20px; font-weight: 600; color: #262629; }
-.fr-alt i { font-style: normal; font-size: 14px; color: #515157; }
-.fr-alt svg { color: #9a9aa2; }
 @media (max-width: 1180px) { .fr-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } .fr-col { padding: 22px 22px; } }
 @media (max-width: 860px) {
   .fr-card { grid-template-columns: 1fr; }

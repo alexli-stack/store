@@ -239,26 +239,48 @@ function summary(answers) {
   }).filter(Boolean);
 }
 
-/** "Good to know": plain notes built only from catalog facts (work areas, prices, accessories) and the published warranty. */
-function notesFor(answers, key, product, ranked) {
-  const out = [];
+const MODEL_HIGHLIGHTS = {
+  rf: [
+    "Air-cooled RF, true 3G acceleration and a 0.07 mm laser spot.",
+    "2,000 DPI for photos and fine detail",
+    "Desktop size and price to start with",
+  ],
+  glass: [
+    "{source} cutting power for wood and acrylic.",
+    "Smart Dual Air-Assist supports cutting and engraving.",
+    "Optional IR upgrade for compatible materials.",
+  ],
+  rf70: [
+    "Air-cooled 70W RF for fine engraving without a water chiller.",
+    "2,000 DPI for photos and fine detail",
+    "Optional fiber upgrade for compatible materials.",
+  ],
+  hybrid: [
+    "Choose Hybrid for RF engraving and glass CO₂ cutting, or Pro for 70W RF.",
+    "Smart Dual Air-Assist supports cutting and engraving.",
+    "2,000 mm/s and 4G for daily production",
+  ],
+  vertigo: [
+    "Built-in vertical rotary for tumblers, bottles and more.",
+    "Autofocus covers round pieces from 89 to 230 mm in diameter.",
+    "Up to 800 mm/s for repeat engraving jobs on drinkware.",
+  ],
+};
+
+/** Lead with the matched machine's strongest feature, then show setup notes and other relevant features. */
+function notesFor(answers, key, product) {
+  const model = M[key];
+  const source = product.specs?.["Laser source"]?.split(";")[0] || "Glass CO₂";
+  const [primary, ...highlights] = MODEL_HIGHLIGHTS[model.vertical ? "vertigo" : model.tube];
+  const out = [fill(t(primary), { source })];
   const area = product.specs?.["Work area"];
-  if (answers.size && key !== "vertigo" && area) out.push(fill(t("The machine has a {area} work area. Your selected piece is up to {size}"), { size: SIZE_TEXT[answers.size], area }));
-  if (key === "vertigo" && hasRound(answers)) out.push(fill(t("The rotary is built in: {range}."), { range: product.specs?.["Key capability"] || "" }));
-  if (key === "vertigo" && byHandle[M.xrf.handle]) out.push(fill(t("VertiGo only engraves round items. For flat pieces like signs or coasters, pair it with a flatbed such as the {name} ({price})."), { name: byHandle[M.xrf.handle].name, price: money(byHandle[M.xrf.handle].price) }));
+  if (answers.size && !model.vertical && area) out.push(fill(t("The machine has a {area} work area. Your selected piece is up to {size}"), { size: SIZE_TEXT[answers.size], area }));
   addOnsFor(answers, key).forEach(([label, h]) => {
     const a = { ...byHandle[h], name: byHandle[h].name.split(/ [–-] /)[0] };
     if (label === "Rotary attachment") out.push(fill(t("Round items need a rotary, sold separately: {name} ({price})."), { name: a.name, price: money(a.price) }));
     else out.push(fill(t("No outside vent? The {name} ({price}) is the indoor fume filter we pair with it."), { name: a.name, price: money(a.price) }));
   });
-  if (key !== "vertigo" && ranked.some((match) => match.key === "vertigo")) {
-    const v = byHandle[M.vertigo.handle];
-    out.push(fill(t("Mostly tumblers? {name} ({price}) has a vertical rotary built in."), { name: v.name, price: money(v.price) }));
-  }
-  const family = Object.entries(M).filter(([k, m]) => k.replace(/\d+$/, "") === key.replace(/\d+$/, "") && m.w > M[key].w).sort((x, y) => x[1].w - y[1].w)[0];
-  const bigger = family && byHandle[family[1].handle];
-  if (bigger) out.push(fill(t("Room to grow: the {name} ({area}) is {price}."), { name: bigger.name, area: bigger.specs?.["Work area"] || "", price: money(bigger.price) }));
-  return out;
+  return [...out, ...highlights.map(t)].slice(0, 4);
 }
 
 const BUDGETS = ["Under $3k", "$3k–$5k", "$5k–$10k", "$10k+"];
@@ -347,15 +369,14 @@ export function LeadDialog({ mode = "quote", product, lines = [], onClose }) {
   );
 }
 
-/** Specifications, alternatives and consultation options below the matched machine. */
+/** Specifications, product highlights and consultation options below the matched machine. */
 function FinderResult({ answers, ranked }) {
   const [lead, setLead] = useState(null);
   // Details under the result card: the pick itself (photo, price, buttons) is shown once, in the card above.
   const key = ranked[0].key;
   const top = byHandle[M[key].handle];
-  const alt = ranked[1] && byHandle[M[ranked[1].key].handle];
   const lines = summary(answers);
-  const notes = notesFor(answers, key, top, ranked);
+  const notes = notesFor(answers, key, top);
   const specs = ["Laser source", "Work area", "Max engraving speed", "Acceleration"].filter((k) => top.specs?.[k]);
   return (
     <section className="fr" aria-label={t("Specs and good to know")}>
@@ -370,19 +391,8 @@ function FinderResult({ answers, ranked }) {
           <Link to={`/products/${top.handle}`} className="fr-link">{t("See full specs and reviews")} ›</Link>
         </div>
         <div className="fr-col">
-          {notes.length > 0 && (
-            <>
-              <h3>{t("Good to know")}</h3>
-              <ul className="fr-notes">{notes.map((n) => <li key={n}>{n}</li>)}</ul>
-            </>
-          )}
-          {alt && (
-            <Link to={`/products/${alt.handle}`} className="fr-alt">
-              <img src={img(frontImg(alt), 300)} alt="" loading="lazy" />
-              <span><em>{t("Also worth a look")}</em><b>{alt.name}</b><i>{money(alt.price)}</i></span>
-              <Icon name="chevron" size={16} />
-            </Link>
-          )}
+          <h3>{t("Good to know")}</h3>
+          <ul className="fr-notes">{notes.map((note) => <li key={note}>{note}</li>)}</ul>
         </div>
       </div>
       <div className="fr-lead">
