@@ -40,7 +40,7 @@ export default {
   "Built-in vertical rotary. No setup, no alignment.": "Integrierte vertikale Rotation. Ohne Aufbau, ohne Ausrichtung.",
   "Previous slide": "Vorherige Folie",
   "Next slide": "Nächste Folie",
-  "Laser machines for makers and growing businesses.": "Lasermaschinen für Maker und wachsende Unternehmen.",
+  "Choose a machine for your work": "Wählen Sie eine Maschine für Ihre Arbeit",
   "Most Popular": "Beliebteste",
   "Desktop Lasers": "Desktoplaser",
   "Rotary Attachments": "Rotationsaufsätze",

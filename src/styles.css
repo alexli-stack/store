@@ -1223,8 +1223,6 @@ ul { list-style: none; }
 .ih-shop-copy h3 { font-size: 21px; line-height: 1.2; font-weight: 650; overflow-wrap: anywhere; }
 .ih-shop-copy > span { color: var(--muted); font-size: 14px; line-height: 1.5; }
 .ih-shop-copy > b { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--accent-dark); font-weight: 650; }
-.ih-machine-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
-.ih-machine-links .ih-btn { height: auto; min-height: 44px; padding-block: 8px; line-height: 1.4; white-space: normal; }
 .ih-finder, .ih-finder .fx, #fc-result { scroll-margin-top: calc(var(--promo-h) + 86px); }
 .ih-finder-intro { margin: 10px 0 24px; max-width: 620px; color: var(--muted); }
 .ih-finder .fx { height: auto; min-height: 490px; }
@@ -1248,7 +1246,10 @@ ul { list-style: none; }
 .ih-tabs button { flex: none; height: 40px; padding: 0 20px; border-radius: 50px; background: #edeff2; color: #262629; font-size: 16px; line-height: 40px; white-space: nowrap; transition: background .2s, color .2s; }
 .ih-tabs button:hover { background: #e2e5ea; }
 .ih-tabs button.on { background: #262629; color: #fff; }
-.ih-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding-top: 16px; animation: panel-in .35s ease; }
+.ih-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-top: 16px; animation: panel-in .35s ease; }
+.ih-grid .ih-card { height: auto; min-height: 554px; padding-inline: clamp(14px, 2vw, 24px); }
+.ih-grid .ih-card h3,
+.ih-grid .ih-card .ih-card-info p { white-space: normal; }
 .ih-card { position: relative; min-width: 0; height: 554px; padding: 52px 40px 40px; background: #f8f9fc; border-radius: 24px; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .ih-card-info { position: relative; width: 100%; }
 .ih-new { position: absolute; left: 50%; top: -30px; transform: translateX(-50%); padding: 0 12px; border-radius: 12px 3px 12px 3px; background: var(--accent); color: #0b0f18; font-size: 13px; line-height: 23px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; white-space: nowrap; }
@@ -1272,7 +1273,7 @@ ul { list-style: none; }
 .ih-card-price s { font-size: 14px; color: #a1a1aa; }
 .ih-card-price em { font-style: normal; font-size: 13px; line-height: 21px; font-weight: 600; color: var(--brand); background: var(--brand-soft); border-radius: 4px; padding: 0 8px; align-self: center; }
 .ih-card-btns { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.ih-card-btns .ih-btn.sm { height: 44px; padding: 0 12px; font-size: 14px; line-height: 44px; letter-spacing: .3px; min-width: 0; }
+.ih-card-btns .ih-btn.sm { height: 44px; padding: 0 6px; gap: 4px; font-size: 14px; line-height: 1.2; letter-spacing: 0; white-space: normal; min-width: 0; }
 .ih-viewall { display: flex; justify-content: center; margin-top: 24px; }
 .ih-viewall a { height: 50px; padding: 0 44px; border: 1px solid #dcdfe4; border-radius: 6px; font-size: 16px; line-height: 48px; font-weight: 500; letter-spacing: .5px; color: #262629; transition: border-color .2s; }
 .ih-viewall a:hover { border-color: #262629; }
@@ -1357,6 +1358,8 @@ ul { list-style: none; }
 
 @media (max-width: 1180px) {
   .site-nav a { padding: 0 8px; } .header-phone span { display: none; } .store-btn span { display: none; } .store-btn { padding: 0 10px; } .promo-bar-link { padding: 0 56px 0 24px; gap: 24px; } .promo-bar img { display: none; } .site-header-bar { padding: 0 24px; } .site-header-bar > .brand { margin-right: 20px; } .site-header .brand span { display: none; }
+  .ih-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ih-grid .ih-card { min-height: 480px; }
   .ih-card { height: 480px; padding: 44px 24px 28px; }
   .ih-card:not(.fc) { --mh: 204px; }
   .ih-card h3 { font-size: 22px; line-height: 28px; }
@@ -2515,8 +2518,6 @@ ul { list-style: none; }
   .ih-row { display: flex; gap: 12px; padding: 16px 24px 4px; margin: 0 -24px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 24px; scrollbar-width: none; overscroll-behavior-x: contain; }
   .ih-row::-webkit-scrollbar { display: none; }
   .ih-row > .ih-card { flex: none; width: 84%; height: auto; min-height: 440px; scroll-snap-align: start; }
-  .ih-row > .ih-card h3,
-  .ih-row > .ih-card .ih-card-info p { white-space: normal; }
   .fx { height: auto; margin-top: 16px; grid-template-columns: 1fr; border-radius: 18px; }
   .fx-main { padding: 20px 18px 16px; }
   .fx-steps span { display: none; }

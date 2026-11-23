@@ -181,8 +181,9 @@ export const addOns = {
 /* ---------- Home, Insta360-style (2026-11-17) ---------- */
 export const homeFeaturedMachines = [
   { handle: "onelaser-xrf-desktop-laser-machine", description: "38W RF desktop laser." },
-  { handle: "hydra-9-gen-2-70w-rf-co2-dual-laser-machine", description: "RF + CO₂ dual-laser system." },
   { handle: "cobra-10-100w-co2-laser-engraver-cutter", description: "100W CO₂ laser cutter." },
+  { handle: "hydra-9-gen-2-70w-rf-co2-dual-laser-machine", description: "RF + CO₂ dual-laser system." },
+  { handle: "vertigo-vertical-laser-engraver", description: "Vertical laser for drinkware." },
 ];
 
 export const homeShopCategories = [

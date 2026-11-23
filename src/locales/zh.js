@@ -40,7 +40,7 @@ export default {
   "Built-in vertical rotary. No setup, no alignment.": "内置立式旋转轴，免安装、免校准。",
   "Previous slide": "上一张",
   "Next slide": "下一张",
-  "Laser machines for makers and growing businesses.": "为创客和成长型企业打造的激光机。",
+  "Choose a machine for your work": "选择适合你工作的机器",
   "Most Popular": "最受欢迎",
   "Desktop Lasers": "桌面激光机",
   "Rotary Attachments": "旋转轴配件",

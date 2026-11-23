@@ -163,7 +163,7 @@ function HomeCard({ product, description }) {
 function FeaturedMachines() {
   return (
     <section className="ih-products ih-wrap" aria-labelledby="featured-machines-title">
-      <h2 className="ih-h2" id="featured-machines-title">{t("Laser machines for makers and growing businesses.")}</h2>
+      <h2 className="ih-h2" id="featured-machines-title">{t("Choose a machine for your work")}</h2>
       <div className="ih-grid">
         <div className="ih-row">
           {homeFeaturedMachines.map(({ handle, description }) => {
@@ -171,10 +171,6 @@ function FeaturedMachines() {
             return product && <HomeCard key={handle} product={product} description={description} />;
           })}
         </div>
-      </div>
-      <div className="ih-machine-links">
-        <Link to="/compare" className="ih-btn dark">{t("Compare machines")}</Link>
-        <Link to="/collections/machines" className="ih-btn line">{t("All laser machines")}</Link>
       </div>
     </section>
   );

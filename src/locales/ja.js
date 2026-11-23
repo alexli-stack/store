@@ -40,7 +40,7 @@ export default {
   "Built-in vertical rotary. No setup, no alignment.": "縦型ロータリー内蔵。セットアップも位置合わせも不要。",
   "Previous slide": "前のスライド",
   "Next slide": "次のスライド",
-  "Laser machines for makers and growing businesses.": "メイカーから成長中のビジネスまで、レーザー加工機をラインナップ。",
+  "Choose a machine for your work": "作業に合ったマシンを選ぶ",
   "Most Popular": "人気ランキング",
   "Desktop Lasers": "デスクトップレーザー",
   "Rotary Attachments": "ロータリーアタッチメント",
