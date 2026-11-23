@@ -24,7 +24,6 @@ export function Header({ path }) {
   const [mobile, setMobile] = useState(false);
   const [search, setSearch] = useState(false);
   const [q, setQ] = useState("");
-  const [langOpen, setLangOpen] = useState(false);
   const [far, setFar] = useState(false);
   const [hover, setHover] = useState(false); // Insta360: the bar turns white as soon as the pointer is on it
   const [promoOn, setPromoOn] = useState(() => { try { return sessionStorage.getItem("onelaser-promo-closed") !== "1"; } catch { return true; } });
@@ -41,7 +40,7 @@ export function Header({ path }) {
   const current = LANGS.find((l) => l.code === getLang()) || LANGS[0];
   const [top, setTop] = useState(true);
   useEffect(() => {
-    setOpen(null); setMobile(false); setSearch(false); setLangOpen(false);
+    setOpen(null); setMobile(false); setSearch(false);
   }, [path]);
   useEffect(() => {
     const onScroll = () => { setTop(window.scrollY < 8); setFar(window.scrollY > 700); };
@@ -70,7 +69,7 @@ export function Header({ path }) {
           </div>
         )}
         <div className="site-header-bar" onMouseEnter={() => setHover(true)}>
-          <button type="button" className="icon-btn only-mobile" aria-label={t("Menu")} onClick={() => setMobile(true)}><Icon name="menu" /></button>
+          <button type="button" className="icon-btn header-menu" aria-label={t("Menu")} onClick={() => setMobile(true)}><Icon name="menu" /></button>
           <Link to="/" className="brand" aria-label={t("OneLaser Store home")}><img src={asset(overlay ? "onelaser-logo-red-white.svg" : "onelaser-logo-transparent.svg")} alt="OneLaser" /></Link>
           <nav className="site-nav" aria-label={t("Primary")}>
             {nav.map((n) => (
@@ -78,19 +77,11 @@ export function Header({ path }) {
             ))}
           </nav>
           <div className="site-actions">
-            <Link href={`tel:${contact.tel}`} className="header-phone"><Icon name="phone" size={16} /><span>{contact.phone}</span></Link>
-            <Link to="/pages/sales-consultation" className="store-btn"><Icon name="calendar" size={16} /><span>{t("Schedule a Sales Call")}</span></Link>
-            <button type="button" className="icon-btn" aria-label={t("Search")} onClick={() => setSearch((s) => !s)}><Icon name="search" size={22} /></button>
-            <Link href="https://www.1laser.com/account/login" className="icon-btn hide-mobile" aria-label={t("Account")}><Icon name="user" size={22} /></Link>
-            <Link to="/cart" className="icon-btn cart-btn" aria-label={`Cart, ${count} items`}><Icon name="cart" size={22} />{count > 0 && <em>{count}</em>}</Link>
-            <div className={`lang-menu hide-mobile${langOpen ? " open" : ""}`} onMouseLeave={() => setLangOpen(false)}>
-              <button type="button" className="icon-btn lang-btn" aria-haspopup="menu" aria-expanded={langOpen} aria-label={t("Choose your language")} onClick={() => setLangOpen((v) => !v)}><Icon name="globe" size={22} /></button>
-              <ul role="menu">
-                {LANGS.map((l) => (
-                  <li key={l.code} role="none"><button type="button" role="menuitemradio" aria-checked={l.code === current.code} lang={l.code === "zh" ? "zh-CN" : l.code} className={l.code === current.code ? "on" : ""} onClick={() => { setLang(l.code); setLangOpen(false); }}><span>{l.label}</span>{l.code === current.code && <Icon name="check" size={16} />}</button></li>
-                ))}
-              </ul>
-            </div>
+            <Link href={`tel:${contact.tel}`} className="header-phone" aria-label={contact.phone}><Icon name="phone" size={16} /><span>{contact.phone}</span></Link>
+            <Link to="/pages/sales-consultation" className="store-btn" aria-label={t("Schedule a Sales Call")}><Icon name="calendar" size={16} /><span>{t("Schedule a Sales Call")}</span></Link>
+            <button type="button" className="icon-btn" aria-label={t("Search")} onClick={() => setSearch((s) => !s)}><Icon name="search" size={20} /></button>
+            <Link href="https://www.1laser.com/account/login" className="icon-btn hide-mobile" aria-label={t("Account")}><Icon name="user" size={20} /></Link>
+            <Link to="/cart" className="icon-btn cart-btn" aria-label={`Cart, ${count} items`}><Icon name="cart" size={20} />{count > 0 && <em>{count}</em>}</Link>
           </div>
         </div>
         {nav.filter((n) => n.label === open).map((n) => (

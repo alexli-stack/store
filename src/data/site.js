@@ -68,7 +68,7 @@ export const nav = [
   },
   { label: "Contact", href: `${SITE}/pages/contact-us` },
 ];
-export const contact = { phone: "626 800 4130", tel: "+16268004130", call: "/pages/sales-consultation" };
+export const contact = { phone: "626-800-4130", tel: "+16268004130", call: "/pages/sales-consultation" };
 
 // Footer: columns, links, contact lines and social accounts as on www.1laser.com (read 2026-11-18).
 export const footer = {
