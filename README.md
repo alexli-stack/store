@@ -13,7 +13,7 @@
 
 | 页面 | 地址 | 模块（自上而下） |
 | --- | --- | --- |
-| 首页 | `#/` | 主视觉轮播 → 保障条 → 精选机型卡（XRF 38W、Cobra 10、Hydra 9 Gen2、VertiGo 38W）→ 独立选机问答（4 个阶段、6 道题）→ 品牌与用户证据 → 购买保障 → 活动 → 配件、材料入口 → 下一步与 FAQ。精选机型与分类入口在 `src/data/site.js`，选机界面在 `src/components/Finder.jsx`，推荐规则在 `src/components/finderRules.js`。 |
+| 首页 | `#/` | 主视觉轮播（黑五、XRF、VertiGo、About Us）→ 保障条 → 精选机型卡（XRF 38W、Cobra 10、Hydra 9 Gen2、VertiGo 38W）→ 独立选机问答（4 个阶段、6 道题）→ 品牌与用户证据 → 购买保障 → 活动 → 配件、材料入口 → 下一步与 FAQ。精选机型与分类入口在 `src/data/site.js`，选机界面在 `src/components/Finder.jsx`，推荐规则在 `src/components/finderRules.js`。 |
 | 列表 | `#/collections/:handle` | 照 **Insta360 商城列表页**（实测 1440）：灰底页面 → 吸顶白色分类条（124×148 图块）→ 左侧 240 筛选栏（Offers / Category）+ 三列白色卡片 316×395 圆角 16（191 图、18/24 标题、14 号价格、36 高深色胶囊按钮） |
 | 商品详情 | `#/products/:handle` | 购买区照 **Insta360 商城商品页**（实测 1440）：左侧通栏灰色大图区（吸顶，599 高）+ 胶囊缩略图 / 右侧 464 宽栏（32 号标题、选项摘要行、黑五卡、图标信息卡、带图选项卡、Frequently bought together、灰底订单小结、配送说明）；底部固定 80 高购买条（24 号价格、180×56 胶囊按钮）。下方同样照 Insta360：吸顶 49 高白色菜单（左商品名，右 Overview / Compare / Specs / FAQ / Accessories）→ 黑底概览（首图、Take a closer look 四列、数据行、居中卖点 800×450、左右卖点 620+420、带胶囊标签的轮播卖点，见 `src/components/Story.jsx`）→ Compare models（64 号标题、250 宽列）→ Specs（44 号标题、28 号分组、240 宽标签）→ 白底 FAQ（32 号标题、编号行）→ You might also like（288×534 卡片）。没做：评价、以旧换新、保障计划、云服务（没有数据或业务） |
 | 购物车 | `#/cart` | 照 **Insta360 商城购物车**：灰底、Shopping cart 32 号粗体、左 800 白卡（商品行：图、20/24 粗体名称、标签、数量、价格）+ 右 480 白卡 Order details（24 号加粗合计、56 高胶囊 Check out、服务说明） |
@@ -25,7 +25,7 @@
 | --- | --- | --- |
 | 字体 | Poppins（Insta360 的 “Poppins Num” 即 Poppins），字重 400–800，正文色 `rgba(0,0,0,.85)` | 同 |
 | 导航 | 固定 64 高，左右 64，首页首屏上透明 | 49 高 |
-| 首页 | 首屏 660、h1 48/56 字重 600、四列精选机型卡 | 手机首屏 600、h1 28/32、横向滑动的精选机型卡 |
+| 首页 | 首屏 540–680 高、四列精选机型卡 | 手机首屏 510–565 高、横向滑动的精选机型卡 |
 | 列表 | 分类块 124×148；卡片 316×395 圆角 16；标题 18/24 字重 500；按钮 36 高胶囊 | 两列 |
 | 商品购买区 | 大图区 916×599；右栏 464；标题 32；底部条 80 高、价格 24、按钮 180×56 | 方形大图，标题 24/32，左右 20 |
 | 商品概览（黑底 `#000`） | 眉题 18/21.6 字重 700 品牌红；标题 44/50.6 字重 700；正文 16/24 `#898A8E`；媒体 800×450 圆角 24；标签条 `#1A1A1A`、16/20 字重 700 | 标题 28/34，正文 14/22 |
@@ -40,6 +40,8 @@
 **沿用官网的部分**（2026-11-18，读取自 www.1laser.com）：顶部黑五广告条（文案、倒计时、产品图，可关闭，页面下滚后收起）；导航菜单的栏目和下拉内容（Laser Machines / Accessories / Material / Black Friday / Support / Community / Contact，外加电话和 Schedule a Sales Call 按钮），商品类链接指向本店页面，服务类链接指向官网；页脚（Community / Machines / Support / Policy / Contact Us 五栏、联系方式、社交账号、版权行）；首页 “The OneLaser Standard” 模块和总部航拍照片。数据都在 `src/data/site.js` 的 `nav`、`contact`、`footer`、`homeStandard`、`promo`。本店自己加的搜索、购物车、语言选择保留在导航右侧。
 
 **多语言**：导航栏右侧只有一个地球图标，鼠标移上去（或点击）下拉出语言列表；手机端在侧边菜单顶部展开，目前有 English、Español、Français、Deutsch、简体中文、日本語。界面文字（导航、按钮、筛选、购物车、结算、FAQ、首页文案）走 `src/i18n.js` 的 `t()`，词典在 `src/locales/*.js`，以英文原文为键，缺的条目自动回退英文；全部键列在 `src/locales/_keys.json`。商品名称、描述、参数和商品页长叙事来自官网，只有英文，没有翻译。译文是机器翻译，上线前需要母语者校对。加一种语言：在 `LANGS` 里加一行，再加一个同名词典文件。
+
+首页轮播素材在 `public/assets/`。XRF 短视频由现有产品图和场景图制作，About Us 短视频剪自[官网黑五页面](https://www.1laser.com/pages/bfcm26)发布的 OneLaser 品牌片。
 
 购物流程：Add to Cart → 购物车页 → Check Out；Buy Now → 直接到结算。
 
@@ -61,7 +63,6 @@ npm run build
 
 ## 初稿待确认 / 已知缺口
 
-- 首页轮播第一张用的是带文字的旧 banner，左侧用深色遮罩盖住了原文字；需要一张无文字的 XRF 主视觉。
 - 「Why buy」里的承诺（30 天退货、3-2-1 保修、美国本土支持等）取自官网现有文案，上线前需老板确认。
 - 商品页推荐配件的兼容性按机型系列粗配（`site.js` 的 `addOns`），需逐型号核对。
 - 机器商品页的卖点、应用、视频、规格、保障内容抓自官网各商品页（`data-source/product-pages.json` → `npm run stories` → `src/data/stories.json`），商品页按官网顺序全部填进 Insta360 的黑底概览版式（`src/components/Story.jsx`）。“Take a closer look” 的 8 张卡是自动挑的，需要人工确认每台机器该放哪几条。

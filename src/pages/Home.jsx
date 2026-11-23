@@ -7,123 +7,137 @@ import FinderCard, { FinderHelp } from "../components/Finder.jsx";
 
 const SLIDE_MS = 10000;
 
-/* Insta360's hero has "Buy now" + "Learn more", both leading to the same page. Here the second button does something else:
-   a product slide adds that product to the cart (first available option, stays on the page); a series slide opens the comparison. */
-function HeroButtons({ s, tab }) {
-  const product = s.to.startsWith("/products/") ? byHandle[s.to.slice(10)] : null;
+function HeroButtons({ slide }) {
+  const product = slide.to?.startsWith("/products/") ? byHandle[slide.to.slice(10)] : null;
   return (
     <div className="ih-btns">
-      <Link to={s.to} className="ih-btn light" tabIndex={tab}>{product ? t("Buy now") : t("Shop now")}</Link>
-      {product && product.available ? (
-        <AddButton product={product} className="ih-btn ghost" drop="down" iconSize={18} />
-      ) : (
-        <Link to="/compare" className="ih-btn ghost" tabIndex={tab}>{t("Compare models")}</Link>
-      )}
+      <Link to={slide.to} href={slide.href} className="ih-btn light">{t(slide.cta)}</Link>
+      {product?.available && <AddButton product={product} className="ih-btn ghost" drop="down" iconSize={18} />}
     </div>
   );
 }
 
-/** Background clip for a hero slide: loads and plays only while its slide is showing, rewinds when it leaves. */
-function HeroVideo({ src, poster, active }) {
+function HeroVideo({ src, paused }) {
   const ref = useRef(null);
   const [ready, setReady] = useState(false);
-  const still = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-  useEffect(() => {
-    const v = ref.current;
-    if (!v || still) return;
-    if (active) v.play().catch(() => {});
-    else { v.pause(); try { v.currentTime = 0; } catch { /* not loaded yet */ } }
-  }, [active, still]);
-  if (still) return null;
-  return <video ref={ref} className={ready ? "ready" : ""} src={active || ready ? src : undefined} poster={poster} muted loop playsInline preload="none" onPlaying={() => setReady(true)} aria-hidden="true" />;
-}
 
-/** Muted YouTube clip over a hero slide. The frame stays invisible until the player itself reports "playing" (state 1) through the
-    IFrame API messages, so a blocked or sign-in-walled player never shows; the slide's own video or image stays in view instead. */
-function HeroYouTube({ id, start = 0, active }) {
-  const ref = useRef(null);
-  const [playing, setPlaying] = useState(false);
-  const still = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   useEffect(() => {
-    if (!active) { setPlaying(false); return undefined; }
-    const onMessage = (e) => {
-      if (!/youtube(-nocookie)?\.com$/.test(new URL(e.origin).hostname) || e.source !== ref.current?.contentWindow) return;
-      let data;
-      try { data = typeof e.data === "string" ? JSON.parse(e.data) : e.data; } catch { return; }
-      const state = data?.info?.playerState;
-      if (state === 1) setPlaying(true);
-    };
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, [active]);
-  if (still || !active) return null;
-  const src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&start=${start}&playsinline=1&rel=0&modestbranding=1&disablekb=1&fs=0&iv_load_policy=3&enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`;
-  const listen = () => ref.current?.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*");
+    const video = ref.current;
+    if (paused) video.pause();
+    else video.play().catch(() => {});
+  }, [paused]);
+
   return (
-    <div className={`ih-yt${playing ? " ready" : ""}`} aria-hidden="true">
-      <iframe ref={ref} src={src} title="" tabIndex={-1} allow="autoplay; encrypted-media" onLoad={() => { listen(); setTimeout(listen, 600); setTimeout(listen, 1500); }} />
-    </div>
+    <video ref={ref} src={src} className={ready ? "ready" : undefined} muted loop playsInline preload="none" aria-hidden="true" onPlaying={() => setReady(true)} />
   );
 }
 
 function Hero() {
-  const [i, setI] = useState(0);
-  const [paused, setPaused] = useState(false);
-  /* Only rotate slides and run the slide videos while the banner is on screen. A YouTube player that starts or loops
-     can make Chrome scroll the page back up to its frame, so off screen the frame is not mounted at all. */
-  const box = useRef(null);
+  const [index, setIndex] = useState(0);
+  const [motionPaused, setMotionPaused] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [touching, setTouching] = useState(false);
   const [seen, setSeen] = useState(true);
-  useEffect(() => {
-    const el = box.current;
-    if (!el || !("IntersectionObserver" in window)) return undefined;
-    const io = new IntersectionObserver(([e]) => setSeen(e.isIntersecting), { threshold: 0.05 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  useEffect(() => {
-    if (paused || !seen) return undefined;
-    const t = setTimeout(() => setI((n) => (n + 1) % heroSlides.length), SLIDE_MS);
-    return () => clearTimeout(t);
-  }, [i, paused, seen]);
-  // Finger swipe (phones and tablets): a mostly horizontal move of 40px or more changes the slide; vertical moves still scroll the page.
+  const [pageVisible, setPageVisible] = useState(() => !document.hidden);
+  const box = useRef(null);
   const touch = useRef(null);
-  const n = heroSlides.length;
-  const onTouchStart = (e) => { const p = e.touches[0]; touch.current = { x: p.clientX, y: p.clientY }; setPaused(true); };
-  const onTouchEnd = (e) => {
-    const s = touch.current; touch.current = null; setPaused(false);
-    if (!s) return;
-    const p = e.changedTouches[0]; const dx = p.clientX - s.x; const dy = p.clientY - s.y;
-    if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(dy) * 1.2) setI((k) => (k + (dx < 0 ? 1 : n - 1)) % n);
+  const count = heroSlides.length;
+  const stopRotation = motionPaused || hovered || focused || touching || !seen || !pageVisible;
+
+  useEffect(() => {
+    if (!("IntersectionObserver" in window)) return undefined;
+    const observer = new IntersectionObserver(([entry]) => setSeen(entry.isIntersecting), { threshold: 0.05 });
+    observer.observe(box.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const handleVisibility = () => setPageVisible(!document.hidden);
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
+
+  useEffect(() => {
+    if (stopRotation) return undefined;
+    const timer = setTimeout(() => setIndex((current) => (current + 1) % count), SLIDE_MS);
+    return () => clearTimeout(timer);
+  }, [index, stopRotation, count]);
+
+  const changeSlide = (direction) => setIndex((current) => (current + direction + count) % count);
+  const onTouchStart = (event) => {
+    const point = event.touches[0];
+    touch.current = { x: point.clientX, y: point.clientY };
+    setTouching(true);
   };
+  const onTouchEnd = (event) => {
+    const start = touch.current;
+    touch.current = null;
+    setTouching(false);
+    if (!start) return;
+    const point = event.changedTouches[0];
+    const dx = point.clientX - start.x;
+    const dy = point.clientY - start.y;
+    if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(dy) * 1.2) changeSlide(dx < 0 ? 1 : -1);
+  };
+
   return (
-    <section ref={box} className="ih-hero" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onTouchCancel={() => { touch.current = null; setPaused(false); }} aria-roledescription="carousel">
-      {heroSlides.map((s, n) => (
-        <article key={s.title} className={`ih-slide${n === i ? " on" : ""}`} aria-hidden={n !== i}>
-          <img src={asset(s.image)} alt="" />
-          {s.video && <HeroVideo src={/^https?:/.test(s.video) ? s.video : asset(s.video)} poster={asset(s.image)} active={n === i && seen} />}
-          {s.youtube && <HeroYouTube id={s.youtube} start={s.start} active={n === i && seen} />}
-          <div className="ih-slide-copy">
-            <p className="ih-top">{t(s.eyebrow)}</p>
-            <h1>{t(s.title)}</h1>
-            <p className="ih-slogan">{t(s.text)}</p>
-            <HeroButtons s={s} tab={n === i ? 0 : -1} />
-          </div>
-        </article>
-      ))}
-      <button type="button" className="ih-hero-arrow prev" aria-label={t("Previous slide")} onClick={() => setI((i + heroSlides.length - 1) % heroSlides.length)}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M16 5L9 12L16 19" stroke="white" strokeWidth="2.5" strokeLinejoin="round" /></svg>
-      </button>
-      <button type="button" className="ih-hero-arrow next" aria-label={t("Next slide")} onClick={() => setI((i + 1) % heroSlides.length)}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 5L15 12L8 19" stroke="white" strokeWidth="2.5" strokeLinejoin="round" /></svg>
-      </button>
-      <div className="ih-pages">
-        {heroSlides.map((s, n) => (
-          <button key={s.title} type="button" aria-label={`Slide ${n + 1}: ${s.title}`} className={n === i ? "on" : ""} onClick={() => setI(n)}>
-            <em>{t(s.title)}</em>
-            <i><span style={n === i ? { animationDuration: `${SLIDE_MS}ms`, animationPlayState: paused ? "paused" : "running" } : undefined} /></i>
-          </button>
-        ))}
+    <section
+      ref={box}
+      className="ih-hero"
+      aria-label={t("Homepage highlights")}
+      aria-roledescription="carousel"
+      onPointerEnter={(event) => { if (event.pointerType === "mouse") setHovered(true); }}
+      onPointerLeave={() => setHovered(false)}
+      onFocusCapture={(event) => setFocused(event.target.matches(":focus-visible"))}
+      onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      onTouchCancel={() => { touch.current = null; setTouching(false); }}
+    >
+      <div className="ih-hero-controls">
+        <div className="ih-pages">
+          {heroSlides.map((slide, position) => (
+            <button key={slide.id} type="button" aria-current={position === index ? "true" : undefined} onClick={() => setIndex(position)}>
+              <span>{t(slide.tab)}</span>
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          className="ih-hero-motion"
+          aria-label={t(motionPaused ? "Play banner" : "Pause banner")}
+          onClick={() => setMotionPaused((paused) => !paused)}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            {motionPaused ? <path d="M5 2.5v11l8-5.5z" /> : <path d="M4 3h2.5v10H4zm5.5 0H12v10H9.5z" />}
+          </svg>
+        </button>
       </div>
+      {heroSlides.map((slide, position) => {
+        const current = position === index;
+        const Title = position === 0 ? "h1" : "h2";
+        return (
+          <article key={slide.id} className={`ih-slide ih-slide--${slide.id}${current ? " on" : ""}`} inert={!current} aria-hidden={!current}>
+            <div className="ih-slide-media" aria-hidden="true">
+              <img src={asset(slide.image)} alt="" fetchPriority={position === 0 ? "high" : undefined} />
+              {slide.video && current && seen && <HeroVideo src={asset(slide.video)} paused={motionPaused || !pageVisible} />}
+            </div>
+            <div className="ih-slide-copy">
+              <p className="ih-top">{t(slide.eyebrow)}</p>
+              <Title className="ih-slide-title">{t(slide.title)}</Title>
+              <p className="ih-slogan">{t(slide.text)}</p>
+              <HeroButtons slide={slide} />
+            </div>
+          </article>
+        );
+      })}
+      <button type="button" className="ih-hero-arrow prev" aria-label={t("Previous slide")} onClick={() => changeSlide(-1)}>
+        <Icon name="chevron" size={23} />
+      </button>
+      <button type="button" className="ih-hero-arrow next" aria-label={t("Next slide")} onClick={() => changeSlide(1)}>
+        <Icon name="chevron" size={23} />
+      </button>
     </section>
   );
 }
