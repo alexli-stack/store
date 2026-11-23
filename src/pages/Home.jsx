@@ -182,7 +182,6 @@ function MachineFinder() {
       <h2 className="ih-h2" id="machine-finder-title">{t("Find your machine")}</h2>
       <p className="ih-finder-intro">{t("Answer a few questions about your materials and jobs, and get a matched machine.")}</p>
       <FinderCard />
-      <div id="fc-result" />
       <FinderHelp />
     </section>
   );

@@ -556,6 +556,7 @@ export default {
   "Your match is ready": "Ihre Empfehlung ist fertig",
   "Based on {n} of {total} answers": "Basierend auf {n} von {total} Antworten",
   "6 quick questions · about 30 seconds": "6 kurze Fragen · etwa 30 Sekunden",
+  "Step {n} of {total}": "Schritt {n} von {total}",
   "Question {n} of {total}": "Frage {n} von {total}",
   "See my match": "Meine Empfehlung",
   "Best match so far": "Bisher beste Wahl",

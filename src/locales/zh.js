@@ -556,6 +556,7 @@ export default {
   "Your match is ready": "推荐结果已生成",
   "Based on {n} of {total} answers": "基于 {total} 题中的 {n} 个回答",
   "6 quick questions · about 30 seconds": "6 个问题 · 约 30 秒",
+  "Step {n} of {total}": "第 {n} / {total} 步",
   "Question {n} of {total}": "第 {n} / {total} 题",
   "See my match": "直接看推荐",
   "Best match so far": "当前最匹配",

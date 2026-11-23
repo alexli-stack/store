@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { t } from "../i18n.js";
-import { asset, byHandle, frontImg, img, lockScroll, money, products } from "../lib.js";
+import { asset, byHandle, frontImg, img, lockScroll, money } from "../lib.js";
 import { AddButton, Icon, Link } from "./ui.jsx";
 import { contact } from "../data/site.js";
 import { M, STEPS, rank as rankAll, roundFocus, hasRound, ready } from "./finderRules.js";
@@ -21,204 +21,185 @@ function addOnsFor(a, key) {
 const FINANCE_MONTHS = 24; // same illustration as 1laser.com's "24-month payment": price ÷ 24
 const monthly = (p) => (p.price / FINANCE_MONTHS).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-/* Idle state of the finder preview: line drawings traced from the straight front views on the 1laser.com home page
-   (public/assets/finder-front-*.png), blue lines with the brand-red trim where it sits on each machine.
-   Every 3 s a laser head sweeps across and engraves the next machine in, with its name and three key specs from the
-   catalog. Pure CSS, so outline, laser and label share one clock. */
-const SHAPES = [
-  { name: "XRF", art: "xrf", specs: [["Laser", "38W RF"], ["Work area", "23.6 × 11.8 in"], ["Speed", "1,200 mm/s"]] },
-  { name: "Cobra", art: "cobra", specs: [["Laser", "90–130W CO₂"], ["Work area", "up to 55 × 35 in"], ["Speed", "1,200 mm/s"]] },
-  { name: "Hydra Gen2", art: "hydra", specs: [["Laser", "70W RF / hybrid"], ["Work area", "up to 63 × 39 in"], ["Speed", "2,000 mm/s · 4G"]] },
-  { name: "VertiGo", art: "vertigo", specs: [["Laser", "38W RF"], ["Fits", "Ø 16–230 mm"], ["Speed", "800 mm/s"]] },
+const STAGES = [
+  { label: "Your material", questions: ["material"] },
+  { label: "Your work", questions: ["work"] },
+  { label: "Your pieces", questions: ["size", "round"] },
+  { label: "Your shop", questions: ["shop", "vent"] },
 ];
-const DUR = 12; // whole cycle; each machine gets a quarter
+const QUESTION_STAGE = STEPS.map(({ id }) => STAGES.findIndex(({ questions }) => questions.includes(id)));
+const FINISHED = STEPS.length;
 
-function MachineMorph() {
-  return (
-    <div className="fx-morph" aria-hidden="true" style={{ "--dur": `${DUR}s`, "--step": `${DUR / SHAPES.length}s` }}>
-      <div className="fx-art">
-        {SHAPES.map((x, n) => (
-          <img key={x.art} src={asset(`finder-front-${x.art}.png`)} alt="" className="fv" style={{ animationDelay: `${(n * DUR) / SHAPES.length}s` }} />
-        ))}
-        <span className="fx-beam" />
-      </div>
-      <div className="fx-ms">
-        {SHAPES.map((x, n) => (
-          <div key={x.name} className="fx-ms-item" style={{ animationDelay: `${(n * DUR) / SHAPES.length}s` }}>
-            <b>{x.name}</b>
-            <dl>{x.specs.map(([k, v]) => <div key={k}><dt>{t(k)}</dt><dd>{v}</dd></div>)}</dl>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Remember answers when the visitor leaves the homepage and returns to the finder.
+// Keep answers when the visitor opens a product and then comes back to the finder.
 const memo = { answers: {}, step: 0 };
 
-/* Confetti for the reveal: 64 pieces thrown out from behind the machine on a golden-angle spread, mostly upward,
-   then falling and spinning. Fixed positions (no randomness) so every reveal looks the same. */
-const CONFETTI = Array.from({ length: 64 }, (_, i) => {
-  const a = (i * 137.5 * Math.PI) / 180;
-  const r = 55 + ((i * 53) % 185);
-  return {
-    k: ["c-red", "c-sky", "c-gold", "c-green", "c-pink"][i % 5] + (i % 3 === 0 ? " dot" : i % 3 === 1 ? " strip" : ""),
-    v: { "--x": `${Math.round(Math.cos(a) * r)}px`, "--y": `${Math.round(Math.sin(a) * r * 0.8 - 40)}px`, "--s": `${((i * 97) % 720) - 360}deg`, "--d": `${(1.1 + (i % 5) * 0.14).toFixed(2)}s`, "--w": `${(i % 4) * 0.035}s` },
-  };
-});
-
-/* Warm the browser cache with every machine's front picture (preview and result sizes) once the finder is on the page,
-   so the "best match" picture swaps instantly while the visitor answers instead of popping in late. */
-let warmed = false;
-const warmFronts = () => {
-  if (warmed || typeof Image === "undefined") return;
-  warmed = true;
-  const go = () => products.filter((p) => p.kind === "machine").forEach((p) => [600, 900].forEach((w) => { const i = new Image(); i.decoding = "async"; i.src = img(frontImg(p), w); }));
-  (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(go);
-};
-
-export default function FinderCard() {
-  useEffect(warmFronts, []);
-  const cardRef = useRef(null);
-  const [answers, setAnswersRaw] = useState(memo.answers);
-  const [step, setStepRaw] = useState(memo.step);
-  const setAnswers = (v) => { memo.answers = v; setAnswersRaw(v); };
-  const setStep = (v) => setStepRaw((s) => { const n = typeof v === "function" ? v(s) : v; memo.step = n; return n; });
-  const [slot, setSlot] = useState(null);
-  const [lead, setLead] = useState(null);
-  useEffect(() => setSlot(document.getElementById("fc-result")), []);
-  const done = step >= STEPS.length;
-  const cur = STEPS[Math.min(step, STEPS.length - 1)];
-  const ranked = useMemo(() => rank(answers), [answers]);
-  const lines = summary(answers);
-  const answered = lines.length > 0;
-  const top = ranked[0] && byHandle[M[ranked[0].key].handle];
-  const has = (s) => (s.multi ? (answers[s.id] || []).length > 0 : !!answers[s.id]);
-  const reveal = () => slot?.scrollIntoView({ behavior: "smooth", block: "start" });
-  const showCard = () => setTimeout(() => cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
-  const finish = () => { setStep(STEPS.length); showCard(); };
-  const pick = (id) => {
-    if (cur.multi) {
-      const set = answers[cur.id] || [];
-      setAnswers({ ...answers, [cur.id]: set.includes(id) ? set.filter((x) => x !== id) : [...set, id] });
-    } else {
-      setAnswers({ ...answers, [cur.id]: id });
-      const last = STEPS.indexOf(cur) === STEPS.length - 1;
-      setTimeout(() => { setStep((s) => Math.max(s, STEPS.indexOf(cur) + 1)); if (last) showCard(); }, 260);
-    }
-  };
-  const reset = () => { setAnswers({}); setStep(0); };
-  const edit = (n) => { setStep(n); showCard(); };
-  const leadDialog = lead && <LeadDialog mode={lead} product={answered ? top : null} lines={lines} onClose={() => setLead(null)} />;
-
-  const stepper = (
-    <ol className="fx-steps" aria-label={t("Progress")}>
-      {STEPS.map((s, n) => {
-        const state = n === step ? "on" : has(s) ? "done" : n < step ? "skip" : "";
+function FinderProgress({ stage, answers, onEdit }) {
+  return (
+    <ol className="fx-steps" aria-label={t("Progress")} style={{ "--progress": stage / STAGES.length * 100 + "%" }}>
+      {[...STAGES.map(({ label }) => label), "Your machine"].map((label, i) => {
+        const canEdit = i < stage;
+        const completed = canEdit && STAGES[i].questions.some((id) => Array.isArray(answers[id]) ? answers[id].length : answers[id]);
+        const current = i === stage;
+        const content = (
+          <>
+            <span className="fx-step-number" aria-hidden="true">
+              {completed ? <Icon name="check" size={15} /> : i === STAGES.length ? <Icon name="sparkle" size={16} /> : i + 1}
+            </span>
+            <span className="fx-step-label">{t(label)}</span>
+          </>
+        );
         return (
-          <li key={s.id} className={state}>
-            <button type="button" onClick={() => setStep(n)} aria-current={n === step ? "step" : undefined} disabled={n > step && (!has(s) || STEPS.slice(0, n).some((x) => x.required && !has(x)))}>
-              <i>{has(s) && n !== step ? <Icon name="check" size={11} /> : n + 1}</i><span>{t(s.short)}</span>
-            </button>
+          <li key={label} className={completed ? "done" : undefined} aria-current={current ? "step" : undefined}>
+            {canEdit ? <button type="button" onClick={() => onEdit(QUESTION_STAGE.indexOf(i))}>{content}</button> : content}
           </li>
         );
       })}
     </ol>
   );
+}
 
-  if (done && top) {
-    const reasons = answered ? ranked[0].reasons : [];
-    return (
-      <article ref={cardRef} className="fx fx-done" aria-live="polite">
-        <div className="fx-main">
-          <p className="fx-kicker"><Icon name="check" size={14} />{t("Your match is ready")}</p>
-          <p className="fx-sub">{fill(t("Based on {n} of {total} answers"), { n: lines.length, total: STEPS.length })}</p>
-          <h3 className="fx-name"><Link to={`/products/${top.handle}`}>{top.name}</Link></h3>
-          <p className="fx-tag">{top.tagline}</p>
-          {reasons.length > 0 && <ul className="fx-why">{reasons.map((r) => <li key={r}><Icon name="check" size={14} />{t(r)}</li>)}</ul>}
-          <p className="fx-price"><b>{money(top.price)}</b>{top.compareAt > top.price && <><s>{money(top.compareAt)}</s><em>{t("Save")} {money(top.compareAt - top.price)}</em></>}<span>{t("or")} ${monthly(top)}{t("/mo for 24 months")}</span></p>
-          <div className="fx-cta">
-            <AddButton product={top} className="ih-btn line" />
-            <Link to={`/products/${top.handle}`} className="ih-btn dark">{t("Buy now")}</Link>
-          </div>
-          <Link to="/pages/sales-consultation" className="fx-call-cta">
-            <span className="fx-call-ico"><Icon name="calendar" size={20} tone /></span>
-            <span><b>{t("Want to talk it through first?")}</b><em>{t("Book a free 30-minute call with a laser expert")}</em></span>
-            <Icon name="arrow" size={18} />
-          </Link>
-          <p className="fx-foot">
-            <button type="button" onClick={() => edit(STEPS.length - 1)}>← {t("Change answers")}</button>
-            <button type="button" onClick={reset}>↺ {t("Start over")}</button>
-            <button type="button" onClick={reveal}>{t("Specs and good to know")} ↓</button>
-          </p>
-        </div>
-        {/* the reveal: the picked machine rises onto the stage, a laser line sweeps it once and a few sparks burst out */}
-        <Link to={`/products/${top.handle}`} className="fx-stage" tabIndex={-1} aria-hidden="true" key={top.handle}>
-          <span className="fx-pick-chip"><Icon name="sparkle" size={14} />{t("Picked for you")}</span>
-          <span className="fx-burst"><b className="fx-flash" />{CONFETTI.map((c, i) => <i key={i} className={c.k} style={c.v} />)}</span>
-          <span className="fx-scan" />
-          <img src={img(frontImg(top), 900)} alt="" />
-        </Link>
-        {slot && createPortal(<FinderResult answers={answers} ranked={ranked} />, slot)}
-        {leadDialog}
-      </article>
-    );
-  }
+export default function FinderCard() {
+  const [answers, setAnswers] = useState(memo.answers);
+  const [step, setStep] = useState(memo.step);
+  const cardRef = useRef(null);
+  const titleRef = useRef(null);
+  const resultRef = useRef(null);
+  const shouldFocus = useRef(false);
+  const done = step === FINISHED;
+  const question = STEPS[step];
+  const stage = done ? STAGES.length : QUESTION_STAGE[step];
+  const selection = question && answers[question.id];
+  const hasAnswer = Array.isArray(selection) ? selection.length > 0 : Boolean(selection);
+  const last = step === FINISHED - 1;
+  const ranked = done ? rank(answers) : [];
+  const top = ranked[0] && byHandle[M[ranked[0].key].handle];
+
+  useEffect(() => {
+    if (!shouldFocus.current) return;
+    shouldFocus.current = false;
+    const card = cardRef.current;
+    titleRef.current?.focus({ preventScroll: true });
+    const top = card.getBoundingClientRect().top;
+    const offset = parseFloat(getComputedStyle(card).scrollMarginTop);
+    if (top < offset - 1 || top > window.innerHeight * 0.5) {
+      card.scrollIntoView({ block: "start" });
+    }
+  }, [step]);
+
+  const saveAnswers = (next) => {
+    memo.answers = next;
+    setAnswers(next);
+  };
+  const goTo = (next) => {
+    if (next === step) return;
+    shouldFocus.current = true;
+    memo.step = next;
+    setStep(next);
+  };
+  const pick = (value, checked) => {
+    const next = question.multi
+      ? checked ? [...(selection || []), value] : selection.filter((item) => item !== value)
+      : value;
+    saveAnswers({ ...answers, [question.id]: next });
+  };
+  const skip = () => {
+    if (hasAnswer) {
+      const next = { ...answers };
+      delete next[question.id];
+      saveAnswers(next);
+    }
+    goTo(step + 1);
+  };
+  const startOver = () => {
+    saveAnswers({});
+    goTo(0);
+  };
 
   return (
-    <article ref={cardRef} className="fx">
-      <div className="fx-main">
-        <p className="fx-kicker"><Icon name="search" size={14} />{t("6 quick questions · about 30 seconds")}</p>
-        {stepper}
-        <div className="fx-q" key={cur.id}>
-          <p className="fx-count">{fill(t("Question {n} of {total}"), { n: step + 1, total: STEPS.length })} · <span className={cur.required ? "req" : ""}>{t(cur.required ? "Required" : "Optional")}</span></p>
-          <h3>{t(cur.title)}</h3>
-          <p className="fx-hint">{t(cur.hint)}</p>
-          <div className={`fx-options${cur.options.length > 3 ? " grid" : ""}`} role={cur.multi ? "group" : "radiogroup"} aria-label={t(cur.title)}>
-            {cur.options.map(([id, label, sub]) => {
-              const on = cur.multi ? (answers[cur.id] || []).includes(id) : answers[cur.id] === id;
-              return (
-                <button key={id} type="button" role={cur.multi ? "checkbox" : "radio"} aria-checked={on} className={on ? "on" : ""} onClick={() => pick(id)}>
-                  <span><b>{t(label)}</b>{sub && <em>{t(sub)}</em>}</span>
-                  <i aria-hidden="true"><Icon name="check" size={12} /></i>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        <div className="fx-nav">
-          {step > 0 ? <button type="button" className="fx-link" onClick={() => setStep(step - 1)}>← {t("Back")}</button> : <span />}
-          <span className="fx-nav-r">
-            {!cur.required && !has(cur) && <button type="button" className="fx-link" onClick={() => (step === STEPS.length - 1 ? finish() : setStep(step + 1))}>{t("Skip")}</button>}
-            {cur.multi && <button type="button" className="ih-btn dark sm" disabled={!has(cur)} onClick={() => (step === STEPS.length - 1 ? finish() : setStep(step + 1))}>{t("Continue")} →</button>}
-            {!cur.multi && has(cur) && step < STEPS.length - 1 && <button type="button" className="fx-link" onClick={() => setStep(step + 1)}>{t("Next")} →</button>}
-            {ready(answers) && step < STEPS.length - 1 && <button type="button" className="fx-link strong" onClick={finish}>{t("See my match")}</button>}
-          </span>
-        </div>
-      </div>
-      <aside className={`fx-peek${answered ? " live" : ""}`} aria-live="polite">
-        <p className="fx-peek-label">{answered ? t("Best match so far") : t("Your match appears here")}</p>
-        {!answered && <MachineMorph />}
-        {answered && top && (
-          <Link to={`/products/${top.handle}`} className="fx-peek-card" key={top.handle}>
-            <span className="fx-peek-img"><img src={img(frontImg(top), 600)} alt="" /></span>
-            <b>{top.name}</b>
-            <span className="fx-peek-price">{money(top.price)}{top.compareAt > top.price && <s>{money(top.compareAt)}</s>}</span>
-          </Link>
-        )}
-        {answered ? (
+    <>
+      <article ref={cardRef} className="fx">
+        <FinderProgress stage={stage} answers={answers} onEdit={goTo} />
+        {done ? (
           <>
-            <ul className="fx-peek-why">{ranked[0].reasons.slice(0, 2).map((r) => <li key={r}><Icon name="check" size={12} />{t(r)}</li>)}</ul>
-            <p className="fx-meter" aria-hidden="true"><i style={{ width: `${(lines.length / STEPS.length) * 100}%` }} /></p>
+            {top ? (
+              <div className="fx-done">
+                <div className="fx-main">
+                  <p className="fx-kicker"><Icon name="check" size={15} />{t("Your match is ready")}</p>
+                  <h3 ref={titleRef} tabIndex={-1} className="fx-name"><Link to={`/products/${top.handle}`}>{top.name}</Link></h3>
+                  <p className="fx-tag">{top.tagline}</p>
+                  <ul className="fx-why">
+                    {ranked[0].reasons.map((reason) => <li key={reason}><Icon name="check" size={15} />{t(reason)}</li>)}
+                  </ul>
+                  <p className="fx-price">
+                    <b>{money(top.price)}</b>
+                    {top.compareAt > top.price && <><s>{money(top.compareAt)}</s><em>{t("Save")} {money(top.compareAt - top.price)}</em></>}
+                    <span>{t("or")} ${monthly(top)}{t("/mo for 24 months")}</span>
+                  </p>
+                  <div className="fx-cta">
+                    <AddButton product={top} className="ih-btn line" />
+                    <Link to={`/products/${top.handle}`} className="ih-btn dark">{t("Buy now")}</Link>
+                  </div>
+                  <Link to="/pages/sales-consultation" className="fx-call-cta">
+                    <span className="fx-call-ico"><Icon name="calendar" size={20} tone /></span>
+                    <span><b>{t("Want to talk it through first?")}</b><em>{t("Book a free 30-minute call with a laser expert")}</em></span>
+                    <Icon name="arrow" size={18} />
+                  </Link>
+                </div>
+                <div className="fx-stage">
+                  <img src={img(frontImg(top), 900)} alt={top.name} width="900" height="600" />
+                </div>
+              </div>
+            ) : (
+              <div className="fx-q">
+                <h3 ref={titleRef} tabIndex={-1}>{t("Not sure which one fits?")}</h3>
+                <Link to="/pages/sales-consultation" className="ih-btn dark">{t("Talk to a laser expert")}</Link>
+              </div>
+            )}
+            <div className="fx-foot">
+              <button type="button" onClick={() => goTo(0)}>← {t("Change answers")}</button>
+              <button type="button" onClick={startOver}>{t("Start over")}</button>
+              {top && <button type="button" onClick={() => resultRef.current?.scrollIntoView({ block: "start" })}>{t("Specs and good to know")} ↓</button>}
+            </div>
           </>
         ) : (
-          <p className="fx-peek-note">{t("Your best match updates with every answer.")}</p>
+          <>
+            <div className="fx-q" key={question.id}>
+              <p className="fx-count">{fill(t("Step {n} of {total}"), { n: stage + 1, total: STAGES.length })} · {t(STAGES[stage].label)}</p>
+              <h3 id="finder-question" ref={titleRef} tabIndex={-1}>{t(question.title)}</h3>
+              <p className="fx-hint" id="finder-hint">{t(question.hint)} {!question.required && <span>{t("Optional")}</span>}</p>
+              <fieldset className="fx-options" aria-labelledby="finder-question" aria-describedby="finder-hint">
+                {question.options.map(([id, label, detail]) => (
+                  <label className="fx-option" key={id}>
+                    <input
+                      type={question.multi ? "checkbox" : "radio"}
+                      name={question.id}
+                      checked={question.multi ? (selection || []).includes(id) : selection === id}
+                      onChange={(event) => pick(id, event.target.checked)}
+                    />
+                    <span className="fx-option-copy"><b>{t(label)}</b>{detail && <small>{t(detail)}</small>}</span>
+                    <span className="fx-option-mark" aria-hidden="true"><Icon name="check" size={13} /></span>
+                  </label>
+                ))}
+              </fieldset>
+            </div>
+            <div className="fx-nav">
+              {step > 0 && <button type="button" className="fx-link" onClick={() => goTo(step - 1)}>← {t("Back")}</button>}
+              <div className="fx-nav-r">
+                {!question.required && (!last || hasAnswer) && <button type="button" className="fx-link" onClick={skip}>{t("Skip")}</button>}
+                <button type="button" className="fx-next" disabled={!hasAnswer && !last} onClick={() => goTo(step + 1)}>
+                  {t(last ? "See my match" : "Continue")} <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </div>
+            <div className="fx-foot">
+              <a href={`tel:${contact.tel}`}><Icon name="phone" size={15} />{t("Rather talk to an expert?")}</a>
+              {!last && ready(answers) && <button type="button" onClick={() => goTo(FINISHED)}>{t("See my match")} →</button>}
+            </div>
+          </>
         )}
-        <a href={`tel:${contact.tel}`} className="fx-expert"><Icon name="phone" size={14} />{t("Rather talk to an expert?")}</a>
-      </aside>
-      {leadDialog}
-    </article>
+      </article>
+      {top && <div ref={resultRef} id="fc-result"><FinderResult answers={answers} ranked={ranked} /></div>}
+    </>
   );
 }
 
@@ -346,8 +327,7 @@ export function LeadDialog({ mode = "quote", product, lines = [], onClose }) {
   );
 }
 
-/** Full-width result under the product grid, after the result panel of the thunderlaserusa.com finder:
-    our pick with why it fits, key specs, good-to-know notes, warranty, then buy and lead buttons. */
+/** Specifications, alternatives and consultation options below the matched machine. */
 function FinderResult({ answers, ranked }) {
   const [lead, setLead] = useState(null);
   // Details under the result card: the pick itself (photo, price, buttons) is shown once, in the card above.

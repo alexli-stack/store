@@ -556,6 +556,7 @@ export default {
   "Your match is ready": "Tu máquina ideal está lista",
   "Based on {n} of {total} answers": "Según {n} de {total} respuestas",
   "6 quick questions · about 30 seconds": "6 preguntas rápidas · unos 30 segundos",
+  "Step {n} of {total}": "Paso {n} de {total}",
   "Question {n} of {total}": "Pregunta {n} de {total}",
   "See my match": "Ver mi resultado",
   "Best match so far": "Mejor opción hasta ahora",

@@ -556,6 +556,7 @@ export default {
   "Your match is ready": "おすすめが決まりました",
   "Based on {n} of {total} answers": "{total} 問中 {n} 問の回答から",
   "6 quick questions · about 30 seconds": "6 つの質問 · 約 30 秒",
+  "Step {n} of {total}": "ステップ {n} / {total}",
   "Question {n} of {total}": "質問 {n} / {total}",
   "See my match": "結果を見る",
   "Best match so far": "現時点のおすすめ",
