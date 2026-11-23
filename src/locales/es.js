@@ -39,8 +39,6 @@ export default {
   "Built for drinkware": "Diseñada para vasos y botellas",
   "Built-in vertical rotary. No setup, no alignment.": "Rotativo vertical integrado. Sin montaje ni alineación.",
   "Homepage highlights": "Destacados de la página de inicio",
-  "Play banner": "Reproducir el carrusel",
-  "Pause banner": "Pausar el carrusel",
   "Ends Cyber Monday, Nov 30": "Termina el Cyber Monday, 30 de noviembre",
   "Shop Black Friday Deals": "Ver ofertas del Black Friday",
   "Flagship desktop laser": "Láser de escritorio insignia",

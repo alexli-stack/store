@@ -39,8 +39,6 @@ export default {
   "Built for drinkware": "Conçu pour les gourdes et verres",
   "Built-in vertical rotary. No setup, no alignment.": "Rotatif vertical intégré. Sans réglage ni alignement.",
   "Homepage highlights": "À la une",
-  "Play banner": "Lancer le carrousel",
-  "Pause banner": "Mettre le carrousel en pause",
   "Ends Cyber Monday, Nov 30": "Se termine le Cyber Monday, le 30 novembre",
   "Shop Black Friday Deals": "Voir les offres Black Friday",
   "Flagship desktop laser": "Laser de bureau phare",

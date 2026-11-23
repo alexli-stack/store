@@ -39,8 +39,6 @@ export default {
   "Built for drinkware": "专为杯具打造",
   "Built-in vertical rotary. No setup, no alignment.": "内置立式旋转轴，免安装、免校准。",
   "Homepage highlights": "首页焦点内容",
-  "Play banner": "播放轮播",
-  "Pause banner": "暂停轮播",
   "Ends Cyber Monday, Nov 30": "11 月 30 日网购星期一结束",
   "Shop Black Friday Deals": "查看黑五优惠",
   "Flagship desktop laser": "旗舰桌面激光机",

@@ -39,8 +39,6 @@ export default {
   "Built for drinkware": "ドリンクウェア専用設計",
   "Built-in vertical rotary. No setup, no alignment.": "縦型ロータリー内蔵。セットアップも位置合わせも不要。",
   "Homepage highlights": "ホームページの注目情報",
-  "Play banner": "バナーを再生",
-  "Pause banner": "バナーを一時停止",
   "Ends Cyber Monday, Nov 30": "11月30日のサイバーマンデーまで",
   "Shop Black Friday Deals": "ブラックフライデーセールを見る",
   "Flagship desktop laser": "フラッグシップのデスクトップレーザー",

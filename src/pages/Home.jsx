@@ -17,24 +17,17 @@ function HeroButtons({ slide }) {
   );
 }
 
-function HeroVideo({ src, paused }) {
-  const ref = useRef(null);
+function HeroVideo({ src }) {
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    const video = ref.current;
-    if (paused) video.pause();
-    else video.play().catch(() => {});
-  }, [paused]);
-
   return (
-    <video ref={ref} src={src} className={ready ? "ready" : undefined} muted loop playsInline preload="none" aria-hidden="true" onPlaying={() => setReady(true)} />
+    <video src={src} className={ready ? "ready" : undefined} autoPlay muted loop playsInline aria-hidden="true" onPlaying={() => setReady(true)} />
   );
 }
 
 function Hero() {
   const [index, setIndex] = useState(0);
-  const [motionPaused, setMotionPaused] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const [reduceMotion] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const [touching, setTouching] = useState(false);
@@ -43,7 +36,8 @@ function Hero() {
   const box = useRef(null);
   const touch = useRef(null);
   const count = heroSlides.length;
-  const stopRotation = motionPaused || hovered || focused || touching || !seen || !pageVisible;
+  const showMotion = !reduceMotion && seen && pageVisible;
+  const stopRotation = !showMotion || hovered || focused || touching;
 
   useEffect(() => {
     if (!("IntersectionObserver" in window)) return undefined;
@@ -95,24 +89,12 @@ function Hero() {
       onTouchEnd={onTouchEnd}
       onTouchCancel={() => { touch.current = null; setTouching(false); }}
     >
-      <div className="ih-hero-controls">
-        <div className="ih-pages">
-          {heroSlides.map((slide, position) => (
-            <button key={slide.id} type="button" aria-current={position === index ? "true" : undefined} onClick={() => setIndex(position)}>
-              <span>{t(slide.tab)}</span>
-            </button>
-          ))}
-        </div>
-        <button
-          type="button"
-          className="ih-hero-motion"
-          aria-label={t(motionPaused ? "Play banner" : "Pause banner")}
-          onClick={() => setMotionPaused((paused) => !paused)}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-            {motionPaused ? <path d="M5 2.5v11l8-5.5z" /> : <path d="M4 3h2.5v10H4zm5.5 0H12v10H9.5z" />}
-          </svg>
-        </button>
+      <div className="ih-pages">
+        {heroSlides.map((slide, position) => (
+          <button key={slide.id} type="button" aria-current={position === index ? "true" : undefined} onClick={() => setIndex(position)}>
+            <span>{t(slide.tab)}</span>
+          </button>
+        ))}
       </div>
       {heroSlides.map((slide, position) => {
         const current = position === index;
@@ -121,7 +103,7 @@ function Hero() {
           <article key={slide.id} className={`ih-slide ih-slide--${slide.id}${current ? " on" : ""}`} inert={!current} aria-hidden={!current}>
             <div className="ih-slide-media" aria-hidden="true">
               <img src={asset(slide.image)} alt="" fetchPriority={position === 0 ? "high" : undefined} />
-              {slide.video && current && seen && <HeroVideo src={asset(slide.video)} paused={motionPaused || !pageVisible} />}
+              {slide.video && current && showMotion && <HeroVideo src={asset(slide.video)} />}
             </div>
             <div className="ih-slide-copy">
               <p className="ih-top">{t(slide.eyebrow)}</p>

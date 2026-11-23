@@ -39,8 +39,6 @@ export default {
   "Built for drinkware": "Für Trinkgefäße gebaut",
   "Built-in vertical rotary. No setup, no alignment.": "Integrierte vertikale Rotation. Ohne Aufbau, ohne Ausrichtung.",
   "Homepage highlights": "Highlights der Startseite",
-  "Play banner": "Banner abspielen",
-  "Pause banner": "Banner pausieren",
   "Ends Cyber Monday, Nov 30": "Endet am Cyber Monday, 30. November",
   "Shop Black Friday Deals": "Black-Friday-Angebote ansehen",
   "Flagship desktop laser": "Unser Flaggschiff unter den Desktoplasern",
