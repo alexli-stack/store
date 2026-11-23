@@ -388,6 +388,7 @@ export default {
   "out of 5": "sur 5",
   "reviews of the": "avis sur",
   "Verified buyer": "Acheteur vérifié",
+  "Read review": "Lire l’avis",
   "Read all reviews": "Lire tous les avis",
   "X Series": "Série X",
   "XRF Performance Desktop Laser Engraver (38W RF)": "Graveur laser de bureau haute performance XRF (38W RF)",

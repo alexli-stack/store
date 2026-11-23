@@ -560,49 +560,130 @@ const PROMISES = [ // [icon, worry, promise, link label, dialog]
 ];
 
 
-/* Featured owner quotes: seven lines picked from the real reviews in site.js (Judge.me homeReviews and Trustpilot), word for word. They rotate every
-   few seconds (paused while the pointer or focus is on them, and not at all with reduced motion); the dots pick one. */
-const QUOTES = [
-  { name: "Thomas M Eichhorn", product: "XRF 38W", q: "If I had the funds, I would replace several of the other lasers I have with OneLasers." },
-  { name: "James Kirk", product: "XRF 38W", q: "Smooth, solid, relatively quiet, accurate. I love it! Puts the joy back into creating." },
-  { name: "Jason Olsen", product: "XRF · Trustpilot", q: "Tech support is not only here in America but the team is dedicated and passionate and it shows!" },
-  { name: "Chris Vaughn", product: "Hydra 9", q: "So much faster and reliable to cut! Really stoked on my purchase with this machine." },
-  { name: "David F", product: "XRF · Trustpilot", q: "I like having the RF tube because I'm able to run the laser at higher power and not having any water cooling." },
-  { name: "Emily R.", product: "Hydra 16", q: "Needed a laser that could keep up with my growing business, and this one delivers." },
-  { name: "Guills785", product: "Trustpilot", q: "No doubt this have to be one of the best laser in the market for sure. I don't regret it one second." },
-];
+// The front row covers the machine families represented in the collected product reviews.
+const OWNER_REVIEWS = [
+  ...homeReviews.items.map((review) => ({ ...review, source: "Judge.me" })),
+  ...trustpilot.items.map((review) => ({ ...review, source: "Trustpilot" })),
+].filter(({ productHandle }) => byHandle[productHandle]);
 
-/* Split a quote for the word-by-word reveal: on spaces for Latin text, in pairs of characters for Chinese / Japanese. */
-const words = (s) => (/\s/.test(s) ? s.split(/(?<=\s)/) : s.match(/.{1,2}/gu) || [s]);
-function QuoteReel() {
-  const [i, setI] = useState(0);
-  const touch = useRef(null); // swipe left / right on phones
-  const [hold, setHold] = useState(false);
-  useEffect(() => {
-    if (hold || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
-    const id = setTimeout(() => setI((n) => (n + 1) % QUOTES.length), 3800);
-    return () => clearTimeout(id);
-  }, [i, hold]);
-  const r = QUOTES[i];
+function ReviewStars({ rating }) {
   return (
-    <blockquote className="iowners-quote" onTouchStart={(e) => { touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; setHold(true); }} onTouchEnd={(e) => { const s = touch.current; touch.current = null; setHold(false); if (!s) return; const dx = e.changedTouches[0].clientX - s.x, dy = e.changedTouches[0].clientY - s.y; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) setI((n) => (n + (dx < 0 ? 1 : QUOTES.length - 1)) % QUOTES.length); }} onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)} onFocus={() => setHold(true)} onBlur={() => setHold(false)} aria-live="polite">
-      <span className="iowners-mark" aria-hidden="true">“</span>
-      <div className="iowners-q" key={i}>
-        <span className="iowners-stars" aria-label={t("5 out of 5 stars")}>{[0, 1, 2, 3, 4].map((n) => <i key={n} style={{ "--s": n }} aria-hidden="true">★</i>)}</span>
-        <p aria-label={t(r.q)}>{words(t(r.q)).map((w, n) => <span key={n} aria-hidden="true" style={{ "--w": n }}>{w}</span>)}</p>
-        <footer>
-          <span className="iowners-avatar" aria-hidden="true">{r.name.replace(/[^A-Za-z ]/g, "").split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]).join("")}</span>
-          <span><b>{r.name}</b><small>{r.product}</small></span>
-        </footer>
+    <span className="irv-stars" role="img" aria-label={`${rating} / 5`}>
+      <span aria-hidden="true">{"★".repeat(rating)}<span className="irv-stars-empty">{"★".repeat(5 - rating)}</span></span>
+    </span>
+  );
+}
+
+function OwnerReviewDetail({ review, onClose }) {
+  const dialogRef = useRef(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog.open) dialog.showModal();
+    return lockScroll();
+  }, []);
+
+  const product = byHandle[review.productHandle];
+  const fromTrustpilot = review.source === "Trustpilot";
+  const sourceUrl = fromTrustpilot ? trustpilot.url : `${product.sourceUrl}#judgeme_product_reviews`;
+  const sourceLabel = fromTrustpilot ? "See all reviews on Trustpilot" : "Read all owner reviews";
+
+  return (
+    <dialog
+      ref={dialogRef}
+      className="irv-detail"
+      aria-labelledby="irv-detail-name"
+      onClose={onClose}
+      onClick={(event) => { if (event.target === event.currentTarget) event.currentTarget.close(); }}
+    >
+      <div className="irv-detail-content">
+        <button type="button" className="irv-detail-close" aria-label={t("Close")} onClick={() => dialogRef.current.close()}><Icon name="close" size={20} /></button>
+        <h3 id="irv-detail-name">{review.name}</h3>
+        <ReviewStars rating={review.rating} />
+        <p className="irv-meta">{review.source} · {review.date}</p>
+        <blockquote>“{review.text}”</blockquote>
+        <Link href={sourceUrl}>{t(sourceLabel)} <Icon name="arrow" size={16} /></Link>
       </div>
-      <div className="iowners-nav">
-        <button type="button" className="iowners-step" aria-label={t("Previous")} onClick={() => setI((i + QUOTES.length - 1) % QUOTES.length)}><Icon name="chevron" size={16} /></button>
-        <div className="iowners-dots" role="tablist" aria-label={t("Owner quotes")}>
-          {QUOTES.map((x, n) => <button key={n} type="button" role="tab" aria-selected={n === i} aria-label={`${n + 1} / ${QUOTES.length}`} className={n === i ? (hold ? "on held" : "on") : ""} onClick={() => setI(n)}><i /></button>)}
+    </dialog>
+  );
+}
+
+function OwnerReviews({ onReadAll }) {
+  const row = useDragScroll();
+  const [bounds, setBounds] = useState({ start: true, end: false });
+  const [selected, setSelected] = useState(null);
+
+  useEffect(() => {
+    const list = row.current;
+    const update = () => {
+      const start = list.scrollLeft < 2;
+      const end = list.scrollLeft + list.clientWidth >= list.scrollWidth - 2;
+      setBounds((previous) => previous.start === start && previous.end === end ? previous : { start, end });
+    };
+    update();
+    list.addEventListener("scroll", update, { passive: true });
+    const observer = new ResizeObserver(update);
+    observer.observe(list);
+    return () => {
+      observer.disconnect();
+      list.removeEventListener("scroll", update);
+    };
+  }, [row]);
+
+  const move = (direction) => {
+    const list = row.current;
+    const [first, second] = list.children;
+    if (!second) return;
+    const left = direction * (second.offsetLeft - first.offsetLeft);
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth";
+    list.scrollBy({ left, behavior });
+  };
+
+  return (
+    <section className="ih-block irv" aria-labelledby="owner-reviews-title">
+      <div className="ih-wrap irv-head">
+        <h2 className="ih-h2" id="owner-reviews-title">{t("Hear it from owners.")}</h2>
+        <div className="irv-tools">
+          <button type="button" className="irv-score" aria-haspopup="dialog" onClick={onReadAll}>
+            <span className="irv-score-number"><span aria-hidden="true">★</span> <b>{homeReviews.average}</b> <small>{t("out of 5")}</small></span>
+            <span className="irv-score-total">{homeReviews.count} {t("machine reviews")} · Judge.me</span>
+          </button>
+          <div className="ih-arrows irv-arrows">
+            <button type="button" aria-label={t("Previous")} aria-controls="owner-reviews-list" disabled={bounds.start} onClick={() => move(-1)}><Icon name="chevron" size={16} /></button>
+            <button type="button" aria-label={t("Next")} aria-controls="owner-reviews-list" disabled={bounds.end} onClick={() => move(1)}><Icon name="chevron" size={16} /></button>
+          </div>
         </div>
-        <button type="button" className="iowners-step next" aria-label={t("Next")} onClick={() => setI((i + 1) % QUOTES.length)}><Icon name="chevron" size={16} /></button>
       </div>
-    </blockquote>
+
+      <ul className="ih-scroller irv-row" id="owner-reviews-list" role="list" ref={row}>
+        {OWNER_REVIEWS.map((review) => {
+          const product = byHandle[review.productHandle];
+          const initials = review.name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+          return (
+            <li className="irv-card" key={review.source + review.name}>
+              <header className="irv-card-head">
+                <div>
+                  <h3>{review.name}</h3>
+                  <ReviewStars rating={review.rating} />
+                  <p className="irv-meta">{review.source} · {review.date}</p>
+                </div>
+                <span className="irv-avatar" aria-hidden="true">{initials}</span>
+              </header>
+              <blockquote className="irv-quote">“{review.text}”</blockquote>
+              <button type="button" className="irv-read" aria-haspopup="dialog" onClick={() => setSelected(review)}>{t("Read review")}</button>
+              <Link to={`/products/${product.handle}`} className="irv-machine">
+                <img src={img(frontImg(product), 200)} alt="" width="78" height="52" loading="lazy" draggable={false} />
+                <span>{product.name}</span>
+                <Icon name="chevron" size={16} />
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="ih-wrap irv-footer">
+        <button type="button" aria-haspopup="dialog" onClick={onReadAll}>{t("Read all reviews")} <Icon name="arrow" size={16} /></button>
+      </div>
+      {selected && <OwnerReviewDetail review={selected} onClose={() => setSelected(null)} />}
+    </section>
   );
 }
 
@@ -680,8 +761,6 @@ function CountUp({ text }) {
 export default function Home({ openFinder = false }) {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [dlg, setDlg] = useState(null); // promise / next-step dialogs, so the visitor stays on the home page
-  const rv = useDragScroll();
-  const rvSlide = (dir) => rv.current?.scrollBy({ left: dir * rv.current.clientWidth * 0.8, behavior: "smooth" });
   useEffect(() => {
     if (openFinder) openMachineFinder();
   }, [openFinder]);
@@ -694,38 +773,8 @@ export default function Home({ openFinder = false }) {
 
       <Credibility />
 
-      {/* Owner reviews */}
-      <section className="ih-block irv iowners">
-        <div className="ih-wrap">
-          <p className="ist-kicker">{t("Real owner reviews")}</p>
-          <div className="irv-head">
-            <h2 className="ih-h2">{t("Hear it from owners.")}</h2>
-            <button type="button" className="irv-score" onClick={() => setReviewsOpen(true)}>
-              <span className="irv-stars" aria-hidden="true">★★★★★</span>
-              <b>{homeReviews.average}</b>
-              <em>{t("out of 5")} · {homeReviews.count} {t("machine reviews")}</em>
-            </button>
-          </div>
-          <QuoteReel />
-          <div className="ih-arrows irv-arrows">
-            <button type="button" aria-label={t("Previous")} onClick={() => rvSlide(-1)}><Icon name="chevron" size={16} /></button>
-            <button type="button" aria-label={t("Next")} onClick={() => rvSlide(1)}><Icon name="chevron" size={16} /></button>
-          </div>
-        </div>
-        <div className="ih-scroller irv-row" ref={rv}>
-            {[...homeReviews.items, ...trustpilot.items.map((r) => ({ ...r, product: "Trustpilot" }))].filter((r) => !QUOTES.some((x) => x.name === r.name)).map((r) => (
-              <figure key={r.product + r.name}>
-                <span className="irv-stars" aria-label={`${r.rating || 5} / 5`}>{"★".repeat(r.rating || 5)}</span>
-                <blockquote>“{r.text}”</blockquote>
-                <figcaption><b>{r.name}</b><span>{r.product} · {r.date}</span></figcaption>
-              </figure>
-            ))}
-        </div>
-        <div className="ih-wrap">
-          <p className="fd-links"><button type="button" onClick={() => setReviewsOpen(true)}>{t("Read all reviews")} ›</button></p>
-          {reviewsOpen && <ReviewsDialog onClose={() => setReviewsOpen(false)} />}
-        </div>
-      </section>
+      <OwnerReviews onReadAll={() => setDlg("reviews")} />
+      {reviewsOpen && <ReviewsDialog onClose={() => setReviewsOpen(false)} />}
 
       {/* Why OneLaser */}
       <section className="ih-block ip2 iwhy">

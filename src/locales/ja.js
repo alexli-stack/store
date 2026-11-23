@@ -388,6 +388,7 @@ export default {
   "out of 5": "（5点満点）",
   "reviews of the": "件のレビュー：",
   "Verified buyer": "購入確認済み",
+  "Read review": "レビューを読む",
   "Read all reviews": "すべてのレビューを見る",
   "X Series": "Xシリーズ",
   "XRF Performance Desktop Laser Engraver (38W RF)": "XRF 高性能デスクトップレーザー彫刻機（38W RF）",

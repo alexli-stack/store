@@ -388,6 +388,7 @@ export default {
   "out of 5": "分（满分 5 分）",
   "reviews of the": "条评价，机型",
   "Verified buyer": "已验证买家",
+  "Read review": "阅读评价",
   "Read all reviews": "查看全部评价",
   "X Series": "X 系列",
   "XRF Performance Desktop Laser Engraver (38W RF)": "XRF 高性能桌面激光雕刻机（38W RF）",

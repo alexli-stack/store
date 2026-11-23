@@ -388,6 +388,7 @@ export default {
   "out of 5": "von 5",
   "reviews of the": "Bewertungen für",
   "Verified buyer": "Verifizierter Käufer",
+  "Read review": "Bewertung lesen",
   "Read all reviews": "Alle Bewertungen lesen",
   "X Series": "X-Serie",
   "XRF Performance Desktop Laser Engraver (38W RF)": "XRF Hochleistungs-Desktop-Lasergravierer (38W RF)",
