@@ -99,10 +99,16 @@ function Hero() {
       {heroSlides.map((slide, position) => {
         const current = position === index;
         const Title = position === 0 ? "h1" : "h2";
+        const poster = <img src={asset(slide.image)} alt="" fetchPriority={position === 0 ? "high" : undefined} />;
         return (
           <article key={slide.id} className={`ih-slide ih-slide--${slide.id}${current ? " on" : ""}`} inert={!current} aria-hidden={!current}>
             <div className="ih-slide-media" aria-hidden="true">
-              <img src={asset(slide.image)} alt="" fetchPriority={position === 0 ? "high" : undefined} />
+              {slide.mobileImage ? (
+                <picture>
+                  <source media="(max-width: 860px)" srcSet={asset(slide.mobileImage)} />
+                  {poster}
+                </picture>
+              ) : poster}
               {slide.video && current && showMotion && <HeroVideo src={asset(slide.video)} />}
             </div>
             <div className="ih-slide-copy">

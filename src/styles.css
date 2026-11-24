@@ -1138,11 +1138,15 @@ ul { list-style: none; }
 .ih-slide--friday { --hero-tone: 18 9 8; }
 .ih-slide--xrf { --hero-tone: 15 10 13; }
 .ih-slide-media { position: absolute; inset: 0 0 0 27%; pointer-events: none; overflow: hidden; }
-.ih-slide--vertigo .ih-slide-media { inset-inline-start: 40%; }
-.ih-slide-media > img, .ih-slide-media > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.ih-slide--vertigo .ih-slide-media {
+  inset-inline-start: max(26%, calc(100% - 1640px));
+  mask-image: linear-gradient(90deg, transparent, #000 16%);
+}
+.ih-slide-media > picture { position: absolute; inset: 0; }
+.ih-slide-media > img, .ih-slide-media > video, .ih-slide-media > picture > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .ih-slide--friday .ih-slide-media > img { object-position: center 59%; }
 .ih-slide--xrf .ih-slide-media > img, .ih-slide--xrf .ih-slide-media > video { object-position: 78% center; }
-.ih-slide--vertigo .ih-slide-media > img { object-position: 60% 48%; }
+.ih-slide--vertigo .ih-slide-media img { object-position: 59% 52%; }
 .ih-slide-media > video { opacity: 0; transition: opacity .4s ease; }
 .ih-slide-media > video.ready { opacity: 1; }
 .ih-slide::after {
@@ -1152,6 +1156,10 @@ ul { list-style: none; }
   pointer-events: none;
   background: linear-gradient(90deg, rgb(var(--hero-tone)) 20%, rgb(var(--hero-tone) / .92) 32%, rgb(var(--hero-tone) / .32) 57%, transparent 75%),
     linear-gradient(180deg, rgb(0 0 0 / .49), transparent 20%, transparent 72%, rgb(0 0 0 / .71));
+}
+.ih-slide--vertigo::after {
+  background: linear-gradient(90deg, rgb(var(--hero-tone)) 27%, rgb(var(--hero-tone) / .9) 37%, rgb(var(--hero-tone) / .34) 54%, transparent 72%),
+    linear-gradient(180deg, rgb(0 0 0 / .55), transparent 19%, transparent 78%, rgb(0 0 0 / .72));
 }
 .ih-slide-copy {
   position: absolute;
@@ -1187,6 +1195,9 @@ ul { list-style: none; }
 .ih-hero-arrow.prev svg { transform: rotate(180deg); }
 .ih-hero-arrow.next { right: 10px; }
 
+@media (min-width: 861px) and (max-width: 1024px) {
+  .ih-slide--vertigo .ih-slide-copy { bottom: 198px; }
+}
 @media (max-width: 860px) {
   .ih-hero { height: clamp(510px, 128vw, 565px); }
   .ih-slide .ih-slide-media { inset: 24% 0 0; }
@@ -1194,12 +1205,36 @@ ul { list-style: none; }
   .ih-slide--friday .ih-slide-media > img { object-position: 57% center; }
   .ih-slide--xrf .ih-slide-media { inset-block-start: 41%; mask-image: linear-gradient(transparent, #000 20%, #000 74%, transparent); }
   .ih-slide--xrf .ih-slide-media > img, .ih-slide--xrf .ih-slide-media > video { object-fit: contain; object-position: center; }
-  .ih-slide--vertigo .ih-slide-media > img { object-position: 58% 60%; }
+  .ih-slide--vertigo { display: flex; flex-direction: column; align-items: center; padding-block: 66px 58px; }
+  .ih-slide--vertigo .ih-slide-media {
+    position: relative;
+    inset: auto;
+    flex: 1;
+    width: min(100%, 420px);
+    min-height: 0;
+    container-type: size;
+    mask-image: none;
+  }
+  .ih-slide--vertigo .ih-slide-media > picture {
+    inset: 50% auto auto 50%;
+    width: min(100%, 150cqh);
+    aspect-ratio: 3 / 2;
+    transform: translate(-50%, -50%);
+    mask-image: linear-gradient(180deg, transparent, #000 11%, #000 85%, transparent),
+      linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask-composite: intersect;
+  }
+  .ih-slide--vertigo .ih-slide-media img { object-position: center; }
   .ih-slide--about .ih-slide-media > img, .ih-slide--about .ih-slide-media > video { object-position: 59% center; }
   .ih-slide::after {
     background: linear-gradient(180deg, rgb(var(--hero-tone)) 22%, rgb(var(--hero-tone) / .8) 33%, transparent 63%, rgb(0 0 0 / .72) 100%);
   }
+  .ih-slide--vertigo::after {
+    background: linear-gradient(180deg, rgb(var(--hero-tone)) 23%, rgb(var(--hero-tone) / .76) 37%, transparent 51%),
+      linear-gradient(180deg, transparent 76%, rgb(0 0 0 / .66));
+  }
   .ih-slide-copy { inset: 66px 18px auto; max-width: none; align-items: center; text-align: center; }
+  .ih-slide--vertigo .ih-slide-copy { position: relative; inset: auto; order: -1; width: 100%; padding-inline: 18px; }
   .ih-top { margin-bottom: 6px; font-size: 11px; letter-spacing: .1em; }
   .ih-slide-title { font-size: clamp(31px, 7.2vw, 49px); }
   .ih-slogan { margin-top: 8px; font-size: 15px; line-height: 1.4; }
