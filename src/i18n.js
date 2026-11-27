@@ -1,9 +1,4 @@
 import { useSyncExternalStore } from "react";
-import es from "./locales/es.js";
-import fr from "./locales/fr.js";
-import de from "./locales/de.js";
-import zh from "./locales/zh.js";
-import ja from "./locales/ja.js";
 
 /* Interface language. English strings are the keys; a missing entry falls back to English.
    Product names, descriptions, specs and the long product stories come from 1laser.com in English and are not translated here.
@@ -16,7 +11,11 @@ export const LANGS = [
   { code: "zh", region: "中国大陆", label: "简体中文" },
   { code: "ja", region: "日本", label: "日本語" },
 ];
-const DICT = { es, fr, de, zh, ja };
+const loaders = import.meta.glob("./locales/*.js", { import: "default" });
+const DICT = {};
+async function loadLanguage(code) {
+  if (code !== "en" && !DICT[code]) DICT[code] = await loaders[`./locales/${code}.js`]();
+}
 const KEY = "onelaser-store-lang-v1";
 const listeners = new Set();
 const read = () => {
@@ -31,8 +30,14 @@ let lang = read();
 if (typeof document !== "undefined") document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
 
 export const getLang = () => lang;
-export function setLang(code) {
-  if (!LANGS.some((l) => l.code === code) || code === lang) return;
+export const prepareLanguage = () => loadLanguage(lang);
+let changeRequest = 0;
+export async function setLang(code) {
+  if (!LANGS.some((l) => l.code === code)) return;
+  const request = ++changeRequest;
+  if (code === lang) return;
+  try { await loadLanguage(code); } catch { return; }
+  if (request !== changeRequest) return;
   lang = code;
   try { localStorage.setItem(KEY, code); } catch { /* private mode: keep it for this visit only */ }
   document.documentElement.lang = code === "zh" ? "zh-CN" : code;

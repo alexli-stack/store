@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { t } from "../i18n.js";
-import { byHandle, go, img, machines, products } from "../lib.js";
+import { byHandle, go, img, machines, products, useCampaignActive } from "../lib.js";
 import { useCart } from "../cart.jsx";
 import { addOns, faq, promo } from "../data/site.js";
 import { Icon, Link, QtyStepper, usd } from "../components/ui.jsx";
@@ -60,6 +60,7 @@ function compareSet(product) {
 
 export default function Product({ handle }) {
   const product = byHandle[handle];
+  const campaignActive = useCampaignActive(promo.endsAt);
   const { add } = useCart();
   const [variantId, setVariantId] = useState(null);
   const [photo, setPhoto] = useState(0);
@@ -89,6 +90,7 @@ export default function Product({ handle }) {
   if (!product) return <div className="container section-pad"><h1>{t("Product not found")}</h1><Link to="/">{t("Back to store")}</Link></div>;
 
   const variant = product.variants.find((v) => v.id === variantId) || product.variants.find((v) => v.available) || product.variants[0];
+  const variantName = variant.title === "Default Title" ? "" : variant.title;
   const gallery = variant.image && !product.images.includes(variant.image) ? [variant.image, ...product.images] : product.images;
   const pickVariant = (v) => {
     setVariantId(v.id);
@@ -145,9 +147,9 @@ export default function Product({ handle }) {
 
         <div className="ip-col">
           <h1>{product.name}</h1>
-          <p className="ip-sub">{[variant.title, isMachine ? product.seriesName : null, product.tagline].filter(Boolean).map((t) => <span key={t}>{t}</span>)}</p>
+          <p className="ip-sub">{[variantName, isMachine ? product.seriesName : null, product.tagline].filter(Boolean).map((t) => <span key={t}>{t}</span>)}</p>
 
-          {saved > 0 && (
+          {campaignActive && saved > 0 && (
             <Link to="/collections/deals" className="ip-promo">
               <span><img src={img(product.images[0], 240)} alt="" /></span>
               <span><b>{t("Black Friday: save")} {usd(variant.compareAt - variant.price).replace(".00", "")}</b><em>{t("Ends Cyber Monday, Nov 30. Price already applied.")}</em></span>
@@ -213,7 +215,7 @@ export default function Product({ handle }) {
 
           <div className="ip-summary">
             <h2>{product.name}</h2>
-            <p>{variant.title || product.tagline}</p>
+            <p>{variantName || product.tagline}</p>
             {options.filter((a) => picked[a.handle]).map((a) => <p key={a.handle} className="ip-summary-line"><span>{a.name} × {picked[a.handle]}</span><span>{usd(a.price * picked[a.handle])}</span></p>)}
             <p className="ip-summary-total"><span>{t("Total")}</span><b>{usd(total)}</b></p>
             {saved > 0 && <p className="ip-summary-save">{t("You save")} {usd(saved)}</p>}
@@ -315,7 +317,7 @@ export default function Product({ handle }) {
       )}
 
       <div className="ip-bar">
-        <div className="ip-bar-name"><strong>{product.name}</strong><span>{variant.title || product.tagline}</span></div>
+        <div className="ip-bar-name"><strong>{product.name}</strong><span>{variantName || product.tagline}</span></div>
         <div className="ip-bar-price"><b>{usd(total)}</b>{saved > 0 && <small>{t("Save")} {usd(saved)}</small>}</div>
         <div className="ip-bar-btns">{buttons}</div>
       </div>

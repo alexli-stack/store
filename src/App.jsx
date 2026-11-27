@@ -1,17 +1,18 @@
+import { lazy, Suspense } from "react";
 import { CartProvider } from "./cart.jsx";
-import { useRoute } from "./lib.js";
+import { byHandle, useRoute } from "./lib.js";
 import { useLang } from "./i18n.js";
 import { Footer, Header } from "./components/Chrome.jsx";
 import Home from "./pages/Home.jsx";
-import Collection from "./pages/Collection.jsx";
-import Product from "./pages/Product.jsx";
-import Cart from "./pages/Cart.jsx";
-import Checkout from "./pages/Checkout.jsx";
-import Compare from "./pages/Compare.jsx";
-import Consult from "./pages/Consult.jsx";
-import Finance from "./pages/Finance.jsx";
 import Assistant from "./components/Assistant.jsx";
-import { byHandle } from "./lib.js";
+
+const Collection = lazy(() => import("./pages/Collection.jsx"));
+const Product = lazy(() => import("./pages/Product.jsx"));
+const Cart = lazy(() => import("./pages/Cart.jsx"));
+const Checkout = lazy(() => import("./pages/Checkout.jsx"));
+const Compare = lazy(() => import("./pages/Compare.jsx"));
+const Consult = lazy(() => import("./pages/Consult.jsx"));
+const Finance = lazy(() => import("./pages/Finance.jsx"));
 
 function Page({ path, query }) {
   const [, section, handle] = path.split("/");
@@ -31,15 +32,15 @@ export default function App() {
   return (
     <CartProvider>
       {path === "/checkout" ? (
-        <Checkout key={lang} />
+        <Suspense fallback={null}><Checkout key={lang} /></Suspense>
       ) : (
         <>
           <Header path={path} lang={lang} />
-          <main key={`main-${lang}`}><Page path={path} query={query} /></main>
+          <main key={`main-${lang}`}><Suspense fallback={null}><Page path={path} query={query} /></Suspense></main>
           <Footer key={`footer-${lang}`} />
           {/* Shopping assistant while people are choosing (home, product, collection, search, compare).
               Left out of the single-goal pages: booking, financing, cart and checkout. */}
-          {/^\/($|products\/|collections\/|search|compare)/.test(path) && <Assistant key={path.split("/")[2] || "site"} product={path.startsWith("/products/") ? byHandle[path.split("/")[2]] : null} />}
+          {/^\/($|products\/|collections\/|search|compare)/.test(path) && <Assistant key={path.split("/")[2] || "site"} home={path === "/"} product={path.startsWith("/products/") ? byHandle[path.split("/")[2]] : null} />}
         </>
       )}
     </CartProvider>

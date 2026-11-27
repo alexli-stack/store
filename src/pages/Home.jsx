@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { t } from "../i18n.js";
-import { asset, byHandle, img, lockScroll, money, frontImg, openMachineFinder } from "../lib.js";
-import { contact, footer, heroSlides, homeFaq, homeOwnership, homeWhy, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, homeMakerVideos, trustpilot } from "../data/site.js";
+import { asset, byHandle, img, lockScroll, money, frontImg, openMachineFinder, useCampaignActive } from "../lib.js";
+import { contact, footer, heroSlides, homeFaq, homeOwnership, homeWhy, homeReviews, homeStandard, homeFeaturedMachines, homeShopCategories, homeMakerVideos, promo, trustpilot } from "../data/site.js";
 import { AddButton, Icon, Link, useDragScroll } from "../components/ui.jsx";
 import FinderCard, { FinderHelp } from "../components/Finder.jsx";
 
-const SLIDE_MS = 10000;
-
 function HeroButtons({ slide }) {
+  if (slide.id === "overview") return (
+    <div className="ih-btns">
+      <button type="button" className="ih-btn light" onClick={openMachineFinder}>{t("Find my laser")} <Icon name="arrow" size={18} /></button>
+      <Link to="/compare" className="ih-btn ghost">{t("Compare machines")}</Link>
+    </div>
+  );
   const product = slide.to?.startsWith("/products/") ? byHandle[slide.to.slice(10)] : null;
   return (
     <div className="ih-btns">
@@ -21,53 +25,37 @@ function HeroVideo({ src }) {
   const [ready, setReady] = useState(false);
 
   return (
-    <video src={src} className={ready ? "ready" : undefined} autoPlay muted loop playsInline aria-hidden="true" onPlaying={() => setReady(true)} />
+    <video src={src} className={ready ? "ready" : undefined} autoPlay muted playsInline aria-hidden="true" onPlaying={() => setReady(true)} />
   );
 }
 
 function Hero() {
-  const [index, setIndex] = useState(0);
-  const [reduceMotion] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
-  const [touching, setTouching] = useState(false);
-  const [seen, setSeen] = useState(true);
-  const [pageVisible, setPageVisible] = useState(() => !document.hidden);
-  const box = useRef(null);
+  const [activeId, setActiveId] = useState("overview");
+  const [seenSlides, setSeenSlides] = useState(() => new Set(["overview"]));
+  const [reduceMotion, setReduceMotion] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const touch = useRef(null);
-  const count = heroSlides.length;
-  const showMotion = !reduceMotion && seen && pageVisible;
-  const stopRotation = !showMotion || hovered || focused || touching;
-
+  const campaignActive = useCampaignActive(promo.endsAt);
+  const slides = campaignActive ? heroSlides : heroSlides.filter(({ id }) => id !== "friday");
+  const index = Math.max(0, slides.findIndex(({ id }) => id === activeId));
   useEffect(() => {
-    if (!("IntersectionObserver" in window)) return undefined;
-    const observer = new IntersectionObserver(([entry]) => setSeen(entry.isIntersecting), { threshold: 0.05 });
-    observer.observe(box.current);
-    return () => observer.disconnect();
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = (event) => setReduceMotion(event.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
   }, []);
 
-  useEffect(() => {
-    const handleVisibility = () => setPageVisible(!document.hidden);
-    document.addEventListener("visibilitychange", handleVisibility);
-    return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, []);
-
-  useEffect(() => {
-    if (stopRotation) return undefined;
-    const timer = setTimeout(() => setIndex((current) => (current + 1) % count), SLIDE_MS);
-    return () => clearTimeout(timer);
-  }, [index, stopRotation, count]);
-
-  const changeSlide = (direction) => setIndex((current) => (current + direction + count) % count);
+  const selectSlide = (id) => {
+    setActiveId(id);
+    setSeenSlides((previous) => previous.has(id) ? previous : new Set([...previous, id]));
+  };
+  const changeSlide = (direction) => selectSlide(slides[(index + direction + slides.length) % slides.length].id);
   const onTouchStart = (event) => {
     const point = event.touches[0];
     touch.current = { x: point.clientX, y: point.clientY };
-    setTouching(true);
   };
   const onTouchEnd = (event) => {
     const start = touch.current;
     touch.current = null;
-    setTouching(false);
     if (!start) return;
     const point = event.changedTouches[0];
     const dx = point.clientX - start.x;
@@ -77,39 +65,34 @@ function Hero() {
 
   return (
     <section
-      ref={box}
       className="ih-hero"
       aria-label={t("Homepage highlights")}
       aria-roledescription="carousel"
-      onPointerEnter={(event) => { if (event.pointerType === "mouse") setHovered(true); }}
-      onPointerLeave={() => setHovered(false)}
-      onFocusCapture={(event) => setFocused(event.target.matches(":focus-visible"))}
-      onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
-      onTouchCancel={() => { touch.current = null; setTouching(false); }}
+      onTouchCancel={() => { touch.current = null; }}
     >
       <div className="ih-pages">
-        {heroSlides.map((slide, position) => (
-          <button key={slide.id} type="button" aria-current={position === index ? "true" : undefined} onClick={() => setIndex(position)}>
+        {slides.map((slide, position) => (
+          <button key={slide.id} type="button" aria-current={position === index ? "true" : undefined} aria-controls={`slide-${slide.id}`} onClick={() => selectSlide(slide.id)}>
             <span>{t(slide.tab)}</span>
           </button>
         ))}
       </div>
-      {heroSlides.map((slide, position) => {
+      {slides.map((slide, position) => {
         const current = position === index;
         const Title = position === 0 ? "h1" : "h2";
-        const poster = <img src={asset(slide.image)} alt="" fetchPriority={position === 0 ? "high" : undefined} />;
+        const poster = <img src={asset(slide.image)} alt="" fetchPriority={position === 0 ? "high" : undefined} decoding="async" />;
         return (
-          <article key={slide.id} className={`ih-slide ih-slide--${slide.id}${current ? " on" : ""}`} inert={!current} aria-hidden={!current}>
+          <article key={slide.id} id={`slide-${slide.id}`} className={`ih-slide ih-slide--${slide.id}${current ? " on" : ""}`} inert={!current} aria-hidden={!current}>
             <div className="ih-slide-media" aria-hidden="true">
-              {slide.mobileImage ? (
+              {seenSlides.has(slide.id) && (slide.mobileImage ? (
                 <picture>
                   <source media="(max-width: 860px)" srcSet={asset(slide.mobileImage)} />
                   {poster}
                 </picture>
-              ) : poster}
-              {slide.video && current && showMotion && <HeroVideo src={asset(slide.video)} />}
+              ) : poster)}
+              {slide.video && current && !reduceMotion && <HeroVideo src={asset(slide.video)} />}
             </div>
             <div className="ih-slide-copy">
               <p className="ih-top">{t(slide.eyebrow)}</p>
@@ -130,13 +113,10 @@ function Hero() {
   );
 }
 
-const FINANCE_MONTHS = 24;
-
 function HomeCard({ product, description, badge }) {
   const { handle, name, price, compareAt, priceVaries } = product;
   const productPath = `/products/${handle}`;
   const savings = compareAt - price;
-  const monthly = (price / FINANCE_MONTHS).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <article className="ih-card">
@@ -153,7 +133,7 @@ function HomeCard({ product, description, badge }) {
         <b>{money(price)}</b>
         {savings > 0 && <><s>{money(compareAt)}</s><span className="ih-card-break" aria-hidden="true" /><em>{t("Save")} {money(savings)}</em></>}
       </p>
-      <p className="ih-card-monthly">{t("or")} <b>${monthly}</b>{t("/mo for 24 months")}</p>
+      <p className="ih-card-monthly"><Link to="/pages/financing">{t("See financing options")}</Link></p>
       <div className="ih-card-btns">
         <AddButton product={product} className="ih-btn line sm" />
         <Link to={productPath} className="ih-btn dark sm">{t("Learn more")}</Link>
@@ -178,11 +158,37 @@ function FeaturedMachines() {
   );
 }
 
+function Applications() {
+  return (
+    <section className="ih-block ih-wrap ih-applications" aria-labelledby="home-application-title">
+      <h2 className="ih-h2" id="home-application-title">{t("What do you want to make?")}</h2>
+      <p className="ih-intro">{t("Start with the work you do and see which machine fits.")}</p>
+      <ul>
+        {homeFeaturedMachines.map(({ handle, application }) => (
+          <li key={handle}>
+            <Link to={`/products/${handle}`}>
+              <img src={asset(application.image)} alt="" loading="lazy" decoding="async" />
+              <div>
+                <h3>{t(application.label)}</h3>
+                <p>{t(application.materials)}</p>
+              </div>
+              <Icon name="arrow" size={18} />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function MachineFinder() {
   return (
     <section className="ih-block ih-finder ih-wrap" id="machine-finder" aria-labelledby="machine-finder-title">
-      <h2 className="ih-h2" id="machine-finder-title">{t("Find your machine")}</h2>
-      <p className="ih-finder-intro">{t("Answer a few questions about your materials and jobs, and get a matched machine.")}</p>
+      <h2 className="ih-h2" id="machine-finder-title" tabIndex={-1}>{t("Find your machine")}</h2>
+      <div className="ih-finder-heading">
+        <p className="ih-intro">{t("In four steps, tell us about your work and get a machine recommendation.")}</p>
+        <Link to="/compare" className="ih-text-action">{t("Compare machines")} <Icon name="arrow" size={16} /></Link>
+      </div>
       <FinderCard />
       <FinderHelp />
     </section>
@@ -251,14 +257,19 @@ function useSwipeClose(onClose) {
 function TrustDialog({ kind, onClose, onTrustpilot }) {
   const [film, setFilm] = useState(false);
   const [clip, setClip] = useState(PRESS[0]);
+  const dialogRef = useRef(null);
   const quotes = useRef(null);
   const swipe = useSwipeClose(onClose);
   useEffect(() => {
-    const onKey = (e) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
+    const opener = document.activeElement;
+    const dialog = dialogRef.current;
+    if (!dialog.open) dialog.showModal();
     const unlock = lockScroll();
-    return () => { window.removeEventListener("keydown", onKey); unlock(); };
-  }, [onClose]);
+    return () => {
+      unlock();
+      opener?.focus({ preventScroll: true });
+    };
+  }, []);
   const More = ({ href, to, ghost, children }) => (href ? <Link href={href} className={`tdlg-more${ghost ? " ghost" : ""}`}>{children} <Icon name="arrow" size={16} /></Link> : <Link to={to} className={`tdlg-more${ghost ? " ghost" : ""}`}>{children} <Icon name="arrow" size={16} /></Link>);
   const Head = ({ title, sub }) => {
     const [, kicker] = DLG_HEAD[kind];
@@ -370,13 +381,15 @@ function TrustDialog({ kind, onClose, onTrustpilot }) {
     );
   }
   return (
-    <div className="tdlg-scrim" onClick={onClose}>
-      <div className={`tdlg tdlg-${kind}`} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()} {...swipe}>
+    <dialog ref={dialogRef} className="tdlg-scrim ih-trust-dialog" aria-label={t(DLG_HEAD[kind][1])}
+      onCancel={(event) => { event.preventDefault(); onClose(); }}
+      onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <div className={`tdlg tdlg-${kind}`} {...swipe}>
         <span className="tdlg-grab" aria-hidden="true" />
         <button type="button" className="tdlg-x" aria-label={t("Close")} onClick={onClose}><Icon name="close" size={20} /></button>
         {body}
       </div>
-    </div>
+    </dialog>
   );
 }
 
@@ -601,10 +614,10 @@ function OwnerReviews({ onReadAll }) {
 }
 
 const ASSURANCES = [
-  { kind: "support", icon: "headset", label: "Under 10 minutes", detail: "Typical support response, business hours" },
-  { kind: "warranty", icon: "shield", label: "12-month parts warranty", detail: "1 year on every machine" },
-  { kind: "shipping", icon: "truck", label: "Fast shipping", detail: "Ships From California", href: "https://www.1laser.com/pages/shipping-policy" },
-  { kind: "company", icon: "pin", label: "U.S. company", detail: "Local team for sales and support" },
+  { kind: "support", icon: "headset", label: "U.S.-based technical support", detail: contact.phone },
+  { kind: "warranty", icon: "shield", label: "Warranty by model", detail: "See what your machine covers" },
+  { kind: "shipping", icon: "truck", label: "Shipping and delivery", detail: "Check rates and timing", href: "https://www.1laser.com/pages/shipping-policy" },
+  { kind: "company", icon: "pin", label: "U.S. company", detail: "Lake Forest, California" },
 ];
 
 function AssuranceBar({ onOpen }) {
@@ -680,17 +693,17 @@ function AfterYouBuy() {
               </div>
             </div>
             <div className="iown-support-media">
-              <img src={asset("home-support-video-call.webp")} alt="" width="840" height="840" loading="lazy" decoding="async" />
+              <img src={asset("home-why-onelaser-team.webp")} alt={t("The OneLaser team gathered around a laser machine at an event")} width="280" height="220" loading="lazy" decoding="async" />
             </div>
           </div>
           <ul className="iown-resources">
             {homeOwnership.map(({ icon, title, text, href }) => (
               <li key={icon}>
-                <Link href={href} aria-labelledby={`ownership-${icon}-title`} aria-describedby={`ownership-${icon}-text`}>
+                <Link href={href}>
                   <span className="iown-icon"><Icon name={icon} size={21} /></span>
                   <span className="iown-copy">
-                    <span className="iown-resource-title" id={`ownership-${icon}-title`}>{t(title)}</span>
-                    <span id={`ownership-${icon}-text`}>{t(text)}</span>
+                    <span className="iown-resource-title">{t(title)}</span>
+                    <span>{t(text)}</span>
                   </span>
                   <Icon name="arrow" size={18} />
                 </Link>
@@ -708,7 +721,7 @@ function MakerVideoCard({ video, onPlay }) {
   const { id, title, creator, model, preview } = video;
   return (
     <li className="imakers-card">
-      <button type="button" aria-haspopup="dialog" aria-labelledby={`maker-video-${id}-title`} aria-describedby={`maker-video-${id}-credit`} onClick={() => onPlay(video)}>
+      <button type="button" aria-haspopup="dialog" onClick={() => onPlay(video)}>
         <span className="imakers-media">
           <img
             src={usePreview ? asset(preview) : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
@@ -719,14 +732,14 @@ function MakerVideoCard({ video, onPlay }) {
             loading="lazy"
             decoding="async"
           />
-          {usePreview && <small className="imakers-preview" aria-hidden="true">{t("Project reference image")}</small>}
+          {usePreview && <small className="imakers-preview">{t("Project reference image")}</small>}
           <span className="imakers-play" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
           </span>
         </span>
         <span className="imakers-info">
-          <span className="imakers-credit" id={`maker-video-${id}-credit`}>{creator} <span aria-hidden="true">·</span> {model}</span>
-          <span className="imakers-project" id={`maker-video-${id}-title`}>{t(title)}</span>
+          <span className="imakers-credit">{creator} <span aria-hidden="true">·</span> {model}</span>
+          <span className="imakers-project">{t(title)}</span>
         </span>
       </button>
     </li>
@@ -778,6 +791,74 @@ function MakerVideos() {
   );
 }
 
+const ROI_FIELDS = [
+  { name: "investment", label: "Total upfront cost ($)", min: 1 },
+  { name: "price", label: "Selling price per item ($)", min: 0 },
+  { name: "volume", label: "Items sold per month", min: 0, step: 1 },
+  { name: "materials", label: "Material cost per item ($)", min: 0 },
+  { name: "labor", label: "Labor and other costs per item ($)", min: 0 },
+  { name: "fixed", label: "Monthly fixed costs ($)", min: 0 },
+];
+
+function PaybackEstimator() {
+  const [result, setResult] = useState(null);
+  const estimate = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const { investment, price, materials, labor, fixed, volume } = Object.fromEntries(
+      ROI_FIELDS.map(({ name }) => [name, Number(data.get(name))]),
+    );
+    const monthly = Math.round(((price - materials - labor) * volume - fixed) * 100) / 100;
+    setResult({ monthly, months: monthly > 0 ? Math.ceil(investment / monthly) : null });
+  };
+  return (
+    <section className="ih-block ih-wrap ih-payback" aria-labelledby="home-payback-title">
+      <details>
+        <summary>
+          <div><h2 id="home-payback-title">{t("Estimate your payback period")}</h2><p>{t("See how your prices, costs and order volume affect the time it could take to recover your investment.")}</p></div>
+          <Icon name="chevron" size={20} />
+        </summary>
+        <form onSubmit={estimate} onChange={() => setResult(null)}>
+          <div className="ih-payback-inputs">
+            {ROI_FIELDS.map(({ name, label, min, step = ".01" }) => (
+              <label key={name}>{t(label)}
+                <input name={name} type="number" min={min} max="10000000" step={step} required inputMode={step === 1 ? "numeric" : "decimal"} />
+              </label>
+            ))}
+          </div>
+          <p>{t("Include equipment and setup in upfront cost. The estimate assumes steady sales and costs and excludes taxes and financing unless you enter them.")}</p>
+          <button type="submit" className="ih-btn dark sm">{t("Calculate estimate")}</button>
+          <div className="ih-payback-result" aria-live="polite" aria-atomic="true">
+            {result && (
+              <>
+                <p>{t("Estimated monthly operating profit")} <strong>{money(result.monthly)}</strong></p>
+                <p>{result.months
+                  ? <>{t("Estimated months to pay back")} <strong>{result.months.toLocaleString()}</strong></>
+                  : t("At this sales volume and cost, the investment would not be recovered.")}</p>
+              </>
+            )}
+          </div>
+        </form>
+      </details>
+    </section>
+  );
+}
+
+function HelpToChoose() {
+  return (
+    <section className="ih-block ih-wrap ih-next" aria-labelledby="home-next-title">
+      <div>
+        <h2 id="home-next-title">{t("Want to see a machine in action?")}</h2>
+        <p>{t("Find a demo host near you or talk with our U.S. team about your materials, workspace and budget.")}</p>
+      </div>
+      <div className="ih-next-actions">
+        <Link href={contact.demo} className="ih-btn dark">{t("Find a demo host")}</Link>
+        <Link href={contact.booking} className="ih-btn line">{t("Schedule a Sales Call")}</Link>
+      </div>
+    </section>
+  );
+}
+
 export default function Home({ openFinder = false }) {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [dlg, setDlg] = useState(null); // promise / next-step dialogs, so the visitor stays on the home page
@@ -788,33 +869,39 @@ export default function Home({ openFinder = false }) {
     <div className="ih">
       <Hero />
       <AssuranceBar onOpen={setDlg} />
+      <Applications />
       <FeaturedMachines />
       <MachineFinder />
-
-      <Credibility />
 
       <OwnerReviews onReadAll={() => setDlg("reviews")} />
       {reviewsOpen && <ReviewsDialog onClose={() => setReviewsOpen(false)} />}
 
+      <MakerVideos />
       <WhyOneLaser />
+      <Credibility />
 
       <AfterYouBuy />
-
       <ShopCategories />
-
-      <MakerVideos />
+      <PaybackEstimator />
 
       <section className="ih-block ifq">
         <div className="ih-wrap">
           <h2 className="ih-h2">{t("Questions? Answers.")}</h2>
           <ul className="iw-faq">
-            {homeFaq.map(([q, ans], n) => (
-              <li key={q}><details open={n === 0}><summary><span>{t(q)}</span><Icon name="chevron" size={16} /></summary><p>{t(ans)}</p></details></li>
+            {homeFaq.map(([q, ans, link], n) => (
+              <li key={q}>
+                <details open={n === 0}>
+                  <summary><span>{t(q)}</span><Icon name="chevron" size={16} /></summary>
+                  <p>{t(ans)}</p>
+                  {link && <Link to={link.to} href={link.href} className="ih-text-action">{t(link.label)} <Icon name="arrow" size={16} /></Link>}
+                </details>
+              </li>
             ))}
           </ul>
           {dlg && <TrustDialog kind={dlg} onClose={() => setDlg(null)} onTrustpilot={() => { setDlg(null); setReviewsOpen(true); }} />}
         </div>
       </section>
+      <HelpToChoose />
     </div>
   );
 }

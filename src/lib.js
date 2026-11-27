@@ -137,6 +137,26 @@ export function lockScroll() {
 
 export function openMachineFinder() {
   const finder = document.getElementById("machine-finder");
-  if (finder) finder.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (finder) {
+    finder.querySelector("h2")?.focus({ preventScroll: true });
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    finder.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" });
+  }
   else go("/?finder=1");
+}
+
+export function useCampaignActive(endsAt) {
+  const end = Date.parse(endsAt);
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    const check = () => setNow(Date.now());
+    const remaining = end - now;
+    const timer = remaining > 0 ? window.setTimeout(check, Math.min(remaining, 2_147_483_647)) : null;
+    document.addEventListener("visibilitychange", check);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", check);
+    };
+  }, [end, now]);
+  return now < end;
 }

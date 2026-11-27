@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { LANGS, getLang, setLang, t } from "../i18n.js";
-import { asset, byHandle, go, img, products, frontImg, openMachineFinder } from "../lib.js";
+import { asset, byHandle, go, img, products, frontImg, openMachineFinder, useCampaignActive } from "../lib.js";
 import { useCart } from "../cart.jsx";
 import { nav, promo, benefits, contact, footer } from "../data/site.js";
 import { Countdown, Icon, Link, usd } from "./ui.jsx";
@@ -8,6 +8,23 @@ import { Countdown, Icon, Link, usd } from "./ui.jsx";
 const hasMenu = (n) => !!(n.series || n.cards);
 /** Internal store route or external official-site URL. */
 const Go = ({ url, children, ...rest }) => (/^(https?:|mailto:|tel:)/.test(url) ? <Link href={url} {...rest}>{children}</Link> : <Link to={url} {...rest}>{children}</Link>);
+
+function MenuLinks({ menu }) {
+  const items = (links) => links.map(([label, url]) => (
+    <li key={label}><Go url={url}>{t(label)}<Icon name="chevron" size={14} /></Go></li>
+  ));
+  if (!menu.linkGroups) return <ul>{items(menu.links)}</ul>;
+  return (
+    <div className="nav-link-groups">
+      {menu.linkGroups.map(([label, links]) => (
+        <section key={label} aria-label={t(label)}>
+          <p>{t(label)}</p>
+          <ul>{items(links)}</ul>
+        </section>
+      ))}
+    </div>
+  );
+}
 
 /* Places a product photo in a 3:2 tile so that the machine itself (crop box) fills 84% of the width or 78% of the height. */
 const fitCrop = (c) => {
@@ -26,7 +43,9 @@ export function Header({ path }) {
   const [q, setQ] = useState("");
   const [far, setFar] = useState(false);
   const [hover, setHover] = useState(false); // Insta360: the bar turns white as soon as the pointer is on it
-  const [promoOn, setPromoOn] = useState(() => { try { return sessionStorage.getItem("onelaser-promo-closed") !== "1"; } catch { return true; } });
+  const campaignActive = useCampaignActive(promo.endsAt);
+  const [promoOpen, setPromoOpen] = useState(() => { try { return sessionStorage.getItem("onelaser-promo-closed") !== "1"; } catch { return true; } });
+  const promoOn = campaignActive && promoOpen && path !== "/";
   useEffect(() => {
     document.documentElement.classList.toggle("has-promo", promoOn);
     return () => document.documentElement.classList.remove("has-promo");
@@ -36,7 +55,7 @@ export function Header({ path }) {
     setOpen(null); setMobile(false);
     openMachineFinder();
   };
-  const closePromo = () => { setPromoOn(false); try { sessionStorage.setItem("onelaser-promo-closed", "1"); } catch { /* keep it closed for this view only */ } };
+  const closePromo = () => { setPromoOpen(false); try { sessionStorage.setItem("onelaser-promo-closed", "1"); } catch { /* keep it closed for this view only */ } };
   const current = LANGS.find((l) => l.code === getLang()) || LANGS[0];
   const [top, setTop] = useState(true);
   useEffect(() => {
@@ -55,9 +74,23 @@ export function Header({ path }) {
     e.preventDefault();
     if (q.trim()) go(`/search?q=${encodeURIComponent(q.trim())}`);
   };
+  const focusMenu = (event, item) => {
+    if (event.key !== "ArrowDown" || !hasMenu(item)) return;
+    event.preventDefault();
+    setOpen(item.label);
+    requestAnimationFrame(() => document.querySelector("#desktop-mega a")?.focus());
+  };
+  const dismissMenu = (event) => {
+    if (event.key !== "Escape" || !open) return;
+    document.querySelector(".site-nav .open")?.focus();
+    setOpen(null);
+  };
   return (
     <>
-      <header className={`site-header${overlay ? " overlay" : ""}`} onMouseLeave={() => { setOpen(null); setHover(false); }}>
+      <header className={`site-header${overlay ? " overlay" : ""}`} onKeyDown={dismissMenu} onMouseLeave={(event) => {
+        if (!event.currentTarget.querySelector("#desktop-mega")?.contains(document.activeElement)) setOpen(null);
+        setHover(false);
+      }}>
         {promoOn && (
           <div className={`promo-bar${top ? "" : " away"}`}>
             <Link href={promo.link} className="promo-bar-link" tabIndex={top ? 0 : -1}>
@@ -73,7 +106,15 @@ export function Header({ path }) {
           <Link to="/" className="brand" aria-label={t("OneLaser Store home")}><img src={asset(overlay ? "onelaser-logo-red-white.svg" : "onelaser-logo-transparent.svg")} alt="OneLaser" /></Link>
           <nav className="site-nav" aria-label={t("Primary")}>
             {nav.map((n) => (
-              <Link key={n.label} to={n.to} href={n.href} className={`${n.hot ? "hot" : ""}${hasMenu(n) ? " has-menu" : ""}${open === n.label ? " open" : ""}`} onMouseEnter={() => setOpen(hasMenu(n) ? n.label : null)} onFocus={() => setOpen(hasMenu(n) ? n.label : null)}>{t(n.label)}{hasMenu(n) && <Icon name="chevron" size={12} />}</Link>
+              <Link key={n.label} to={n.to} href={n.href}
+                className={`${n.hot ? "hot" : ""}${hasMenu(n) ? " has-menu" : ""}${open === n.label ? " open" : ""}`}
+                aria-expanded={hasMenu(n) ? open === n.label : undefined}
+                aria-controls={open === n.label ? "desktop-mega" : undefined}
+                onMouseEnter={() => setOpen(hasMenu(n) ? n.label : null)}
+                onFocus={() => setOpen(hasMenu(n) ? n.label : null)}
+                onKeyDown={(event) => focusMenu(event, n)}>
+                {t(n.label)}{hasMenu(n) && <Icon name="chevron" size={12} />}
+              </Link>
             ))}
           </nav>
           <div className="site-actions">
@@ -85,7 +126,7 @@ export function Header({ path }) {
           </div>
         </div>
         {nav.filter((n) => n.label === open).map((n) => (
-          <div key={n.label} className="mega">
+          <div key={n.label} id="desktop-mega" className="mega">
             {n.series ? (
               <div className="mega-machines">
                 <div className="mega-series">
@@ -119,7 +160,7 @@ export function Header({ path }) {
                 {n.cards.map(([label, url, image]) => (
                   <Go key={label} url={url} className="mega-card"><img src={img(image, 600)} alt="" /><span>{t(label)}<Icon name="chevron" size={18} /></span></Go>
                 ))}
-                <ul>{n.links.map(([label, url]) => <li key={label}><Go url={url}>{t(label)}<Icon name="chevron" size={14} /></Go></li>)}</ul>
+                <MenuLinks menu={n} />
               </div>
             )}
           </div>
@@ -179,7 +220,8 @@ export function Header({ path }) {
                     </div>
                   ) : (
                     <div className="mnav-links">
-                      {[...n.cards, ...n.links].map(([label, url]) => <Go key={label} url={url}>{t(label)}<Icon name="chevron" size={14} /></Go>)}
+                      {n.cards.map(([label, url]) => <Go key={label} url={url}>{t(label)}<Icon name="chevron" size={14} /></Go>)}
+                      <MenuLinks menu={n} />
                     </div>
                   )}
                 </details>

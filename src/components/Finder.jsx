@@ -18,9 +18,6 @@ function addOnsFor(a, key) {
   return out.filter(([, h]) => byHandle[h]);
 }
 
-const FINANCE_MONTHS = 24; // same illustration as 1laser.com's "24-month payment": price ÷ 24
-const monthly = (p) => (p.price / FINANCE_MONTHS).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
 const STAGES = [
   { label: "Your material", questions: ["material"] },
   { label: "Your work", questions: ["work"] },
@@ -171,11 +168,11 @@ export default function FinderCard() {
                   <p className="fx-price">
                     <b>{money(top.price)}</b>
                     {top.compareAt > top.price && <><s>{money(top.compareAt)}</s><em>{t("Save")} {money(top.compareAt - top.price)}</em></>}
-                    <span>{t("or")} ${monthly(top)}{t("/mo for 24 months")}</span>
+                    <span><Link to="/pages/financing">{t("See financing options")}</Link></span>
                   </p>
                   <div className="fx-cta">
                     <AddButton product={top} className="ih-btn line" />
-                    <Link to={`/products/${top.handle}`} className="ih-btn dark">{t("Buy now")}</Link>
+                    <Link to={`/products/${top.handle}`} className="ih-btn dark">{t("Learn more")}</Link>
                   </div>
                   <Link to="/pages/sales-consultation" className="fx-call-cta">
                     <span className="fx-call-ico"><Icon name="calendar" size={20} tone /></span>

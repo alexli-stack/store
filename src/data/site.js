@@ -49,7 +49,7 @@ export const nav = [
   },
   { label: "Accessories", to: "/collections/accessories" },
   { label: "Material", to: "/collections/materials" },
-  { label: "Black Friday", to: "/collections/deals", hot: true },
+  { label: "Compare", to: "/compare" },
   {
     label: "Support", href: `${SITE}/pages/sales-consultation`,
     // Two picture cards plus a link list, as on 1laser.com.
@@ -57,7 +57,10 @@ export const nav = [
       ["Get a Quote", `${SITE}/products/sales-consultation-call`, `${SITE}/cdn/shop/files/Consultation_Call_Session_f357d165-c36d-445e-8589-cd76cb193639.png?v=1764916744`],
       ["1-on-1 Support", `${SITE}/products/engineer-1-on-1-training-support`, `${SITE}/cdn/shop/files/1-on-1_training.png?v=1764920272`],
     ],
-    links: [["Contact Support", SUPPORT_TICKET], ["Financing", "/pages/financing"], ["Policy", `${SITE}/pages/shipping-policy`], ["Blogs", `${SITE}/blogs/topic`], ["Product Knowledge Base", "https://wiki.1laser.com"]],
+    linkGroups: [
+      ["Buying resources", [["Find a demo host", `${SITE}/pages/find-demo-host`], ["Financing", "/pages/financing"], ["Shipping Policy", `${SITE}/pages/shipping-policy`]]],
+      ["Owner support", [["Contact Support", SUPPORT_TICKET], ["Warranty Policy", `${SITE}/pages/warranty-policy`], ["Product Knowledge Base", "https://wiki.1laser.com"], ["Blogs", `${SITE}/blogs/topic`]]],
+    ],
   },
   {
     label: "Community", href: `${SITE}/pages/laser-engraving-community`,
@@ -69,7 +72,7 @@ export const nav = [
   },
   { label: "Contact", href: `${SITE}/pages/contact-us` },
 ];
-export const contact = { phone: "626-800-4130", tel: "+16268004130", call: "/pages/sales-consultation", supportTicket: SUPPORT_TICKET };
+export const contact = { phone: "626-800-4130", tel: "+16268004130", call: "/pages/sales-consultation", booking: `${SITE}/pages/sales-consultation`, demo: `${SITE}/pages/find-demo-host`, supportTicket: SUPPORT_TICKET };
 
 // Footer: columns, links, contact lines and social accounts as on www.1laser.com (read 2026-11-18).
 export const footer = {
@@ -93,7 +96,7 @@ export const homeStandard = {
   points: [
     ["U.S. company and local team", "An accountable OneLaser team for sales, service, and product guidance in the U.S."],
     ["Training that gets work moving", "One-on-one training and knowledge resources help teams move from setup to real jobs."],
-    ["Warranty and easy returns", "Official warranty coverage and a 30-day return policy provide a clearer ownership path."],
+    ["Warranty and returns", "Coverage varies by model. For returns, submit a request within 30 days of delivery. Eligibility and fees apply."],
     ["Technical support after delivery", "Support continues through real technicians, service resources, and available parts."],
   ],
   cta: ["Explore OneLaser support", `${SITE}/products/sales-consultation-call`],
@@ -101,6 +104,15 @@ export const homeStandard = {
 
 // Hero videos are short, silent background clips. Each slide has a still for its first frame.
 export const heroSlides = [
+  {
+    id: "overview",
+    tab: "Overview",
+    eyebrow: "OneLaser",
+    title: "Laser engravers and cutters for makers and small shops",
+    text: "Make custom gifts, cut signs, and fill bigger orders with help from our U.S. team.",
+    image: "home-hero-xrf.webp",
+    mobileImage: "home-hero-xrf-compact.webp",
+  },
   {
     id: "friday",
     tab: "Black Friday",
@@ -117,8 +129,9 @@ export const heroSlides = [
     eyebrow: "Flagship desktop laser",
     title: "XRF 38W",
     text: "All-in-one RF power for fine engraving and everyday production.",
-    image: "home-hero-xrf.jpg",
-    video: "home-hero-xrf-loop.mp4",
+    image: "home-hero-xrf.webp",
+    mobileImage: "home-hero-xrf-compact.webp",
+    video: "home-hero-xrf-intro.mp4",
     cta: "Explore XRF",
     to: "/products/onelaser-xrf-desktop-laser-machine",
   },
@@ -140,9 +153,9 @@ export const heroSlides = [
     title: homeStandard.title,
     text: "Laser machines for creators, backed by a U.S. team.",
     image: "home-hero-brand-poster.webp",
-    video: "home-hero-brand-loop.mp4",
+    video: "home-hero-brand-intro.mp4",
     cta: "Schedule a Sales Call",
-    to: contact.call,
+    href: contact.booking,
   },
 ];
 
@@ -216,10 +229,14 @@ export const addOns = {
 
 /* ---------- Home, Insta360-style (2026-11-17) ---------- */
 export const homeFeaturedMachines = [
-  { handle: "onelaser-xrf-desktop-laser-machine", description: "38W RF desktop laser.", badge: "Best Seller" },
-  { handle: "cobra-8-90w-co2-laser-engraver-cutter", description: "90W CO₂ workshop laser.", badge: "NEW" },
-  { handle: "hydra-7-gen-2-70w-rf-co2-dual-laser-machine", description: "70W air-cooled RF laser." },
-  { handle: "vertigo-vertical-laser-engraver", description: "Vertical laser for drinkware." },
+  { handle: "onelaser-xrf-desktop-laser-machine", description: "38W RF desktop laser.", badge: "Best Seller",
+    application: { label: "Fine-detail engraving", materials: "Wood, leather and photo engraving", image: "home-project-batch-leather-gifts.webp" } },
+  { handle: "cobra-8-90w-co2-laser-engraver-cutter", description: "90W CO₂ workshop laser.", badge: "NEW",
+    application: { label: "Signs and cut parts", materials: "Acrylic and wood", image: "home-project-large-acrylic-sign.webp" } },
+  { handle: "hydra-7-gen-2-70w-rf-co2-dual-laser-machine", description: "70W air-cooled RF laser.",
+    application: { label: "Larger jobs and batches", materials: "Signs, décor and repeat orders", image: "home-project-walnut-mountain-wall.webp" } },
+  { handle: "vertigo-vertical-laser-engraver", description: "Vertical laser for drinkware.",
+    application: { label: "Personalized drinkware", materials: "Tumblers and bottles", image: "home-project-vertigo-corporate-tumbler-batch.webp" } },
 ];
 
 export const homeShopCategories = [
@@ -232,6 +249,9 @@ export const homeMakerVideos = [
   { id: "LG3wz6y-tOE", title: "Engraving a bamboo cutting board", creator: "Peachy Creations", model: "XRF 38W", preview: "home-maker-bamboo.webp" },
   { id: "0gGxQMZZhOs", title: "Making leather patch hats", creator: "Wrico Goods", model: "Hydra 9", preview: "home-maker-leather.webp" },
   { id: "sk-OcNSGa1o", title: "Engraving a batch of tumblers", creator: "Woodwork by Allan", model: "Hydra 7", preview: "home-maker-tumblers.webp" },
+  { id: "HdP62cQVzs0", title: "Making best-selling maps", creator: "OneLaser", model: "Hydra 16", preview: "home-project-walnut-mountain-wall.webp" },
+  { id: "fdmr7l_crhI", title: "Making leatherette hat patches", creator: "ESENTL LASERHYDE", model: "Cobra 10 · XRF", preview: "home-maker-leather.webp" },
+  { id: "G9fXsZAbUXs", title: "Engraving tumblers with VertiGo", creator: "Make or Break Shop", model: "VertiGo", preview: "home-maker-tumblers.webp" },
 ];
 
 export const newHandles = ["onelaser-xrf-desktop-laser-machine", "vertigo-vertical-laser-engraver"];
@@ -343,13 +363,13 @@ export const homeOwnership = [
 
 // Home buying FAQ (after "Questions? Answers." on thunderlaserusa.com). Answers restate the policies and pages on 1laser.com.
 export const homeFaq = [
-  ["Which machine is right for me?", "Answer the six questions in “Find your machine” above, compare every model side by side, or schedule a call with a OneLaser engineer."],
-  ["What warranty is included?", "X Series (XRF, XT) and Hydra: 3-year mechanical parts, 2-year electrical components, 1-year optics and laser source. Cobra: 1-year mechanical and electrical (optical lenses not covered). VertiGo: 1-year mechanical and electrical, 6-month laser source, 1-month lens and mirror."],
-  ["Can I return a machine?", RETURN_TERMS],
-  ["Is financing available?", "Yes. OneLaser works with Shop Pay Installments, Affirm and ClickLease. Rates and terms depend on the lender's approval."],
-  ["Which software does it work with?", "OneLaser machines work with LightBurn, MakerBoost AI and RDWorks on Windows and macOS."],
-  ["How does support work after I buy?", "You talk to U.S.-based engineers who have built, tuned and repaired these machines. Contact them from the Support page."],
-  ["How much is shipping?", "The shipping rate and delivery estimate are shown at checkout once you enter your address. See the Shipping Policy for details."],
+  ["Which machine is right for me?", "Use the four-step machine finder to get a recommendation, compare machines side by side, or schedule a sales call.", { to: "/compare", label: "Compare machines" }],
+  ["What warranty is included?", "X Series (XRF, XT) and Hydra: 3-year mechanical parts, 2-year electrical components, 1-year optics and laser source. Cobra: 1-year mechanical and electrical (optical lenses not covered). VertiGo: 1-year mechanical and electrical, 6-month laser source, 1-month lens and mirror.", { href: `${SITE}/pages/warranty-policy`, label: "Warranty Policy" }],
+  ["Can I return a machine?", RETURN_TERMS, { href: `${SITE}/pages/refund-policy`, label: "Refund Policy" }],
+  ["Is financing available?", "Financing options are available. Rates and terms depend on the lender’s approval.", { to: "/pages/financing", label: "See financing options" }],
+  ["Which software does it work with?", "Check your model’s product page for compatible software, operating systems and any license you may need."],
+  ["How does support work after I buy?", "Contact the U.S. support team by phone, email or support ticket for help with setup and troubleshooting.", { href: SUPPORT_TICKET, label: "Open a support ticket" }],
+  ["How much is shipping?", "Shipping costs and delivery times depend on your order and destination. Check the shipping policy and confirm your estimate at checkout.", { href: `${SITE}/pages/shipping-policy`, label: "Shipping Policy" }],
 ];
 
 // Home owner reviews. Real reviews copied word for word (shortened only with "…") from the Judge.me widgets on the 1laser.com

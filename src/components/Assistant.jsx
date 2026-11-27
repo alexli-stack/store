@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getLang, t } from "../i18n.js";
-import { lockScroll, byHandle, frontImg, img, money, products, openMachineFinder } from "../lib.js";
+import { lockScroll, byHandle, frontImg, img, money, products, openMachineFinder, useCampaignActive } from "../lib.js";
 import { useCart } from "../cart.jsx";
 import { AddButton, Icon, Link } from "./ui.jsx";
 import { M, STEPS, rank } from "./finderRules.js";
@@ -185,12 +185,18 @@ function productReply(s, p) {
 function reply(raw, product) {
   const s = raw.toLowerCase();
   if (has(s, ["need a chiller", "chiller"]) && has(s, ["need", "do i"])) return { text: "Glass CO₂ tubes need water cooling, so Cobra and the glass-tube Hydra configurations need a chiller. RF machines (XRF, VertiGo, Hydra 7 Gen2 and the Pro 70W RF options) are air-cooled.", cards: products.filter((p) => p.category === "cooling"), src: ["Catalog specs"], next: ["Which accessories fit?", "Talk to an expert"] };
+  const dealQuestion = has(s, ["deal", "black friday", "sale", "discount", "cheap", "save", "offer", "coupon"]);
+  if (dealQuestion && Date.now() >= Date.parse(promo.endsAt)) return {
+    text: "Check the official OneLaser store for current offers.",
+    links: [["OneLaser Store home", "https://www.1laser.com"]],
+    next: ["Which laser fits me?", "Can I pay monthly?"],
+  };
   const own = productReply(s, product);
   if (own) return own;
   const list = (hs) => hs.map((h) => byHandle[h]).filter(Boolean);
   if (has(s, ["person", "human", "call", "phone", "talk", "expert", "sales", "agent"]))
     return { src: ["OneLaser contact details"], next: ["Shipping and returns", "Can I pay monthly?"], text: "Happy to hand you over. A OneLaser expert can take a free 30-minute call, or you can ring the team now.", links: [["Book a free call", "/pages/sales-consultation"], [tx("Call {phone}", { phone: contact.phone }), `tel:${contact.tel}`]] };
-  if (has(s, ["deal", "black friday", "sale", "discount", "cheap", "save", "offer", "coupon"])) {
+  if (dealQuestion) {
     const deals = products.filter((p) => p.compareAt > p.price).sort((x, y) => (y.compareAt - y.price) - (x.compareAt - x.price)).slice(0, 6);
     return { text: [promo.label, promo.headline, "These have the biggest savings right now:"], cards: deals, links: [["See all deals", "/collections/machines"]], src: ["Catalog prices", "Black Friday offer"], next: ["Which laser fits me?", "Can I pay monthly?", "What do owners say?"] };
   }
@@ -270,8 +276,9 @@ const load = () => { try { return JSON.parse(sessionStorage.getItem(STORE)) || {
 const keep = (v) => { try { sessionStorage.setItem(STORE, JSON.stringify(v)); } catch { /* private mode: this page only */ } };
 const wide = () => typeof window !== "undefined" && !window.matchMedia("(max-width: 860px)").matches;
 
-export default function Assistant({ product }) {
-  const labels = product ? [tx("Ask about {name}", { name: short(product) }), "Shop with AI", product.compareAt > product.price ? "See today's deal" : "Find my laser"] : LABELS;
+export default function Assistant({ product, home }) {
+  const campaignActive = useCampaignActive(promo.endsAt);
+  const labels = product ? [tx("Ask about {name}", { name: short(product) }), "Shop with AI", campaignActive && product.compareAt > product.price ? "See today's deal" : "Find my laser"] : LABELS;
   const chips = product ? productChips(product) : CHIPS;
   const cats = product?.kind === "machine" && siblings(product).length > 1 ? siblings(product).map((p) => [p.handle, short(p), p.handle, true]) : CATS;
   const ctx = product?.handle || "site";
@@ -334,7 +341,11 @@ export default function Assistant({ product }) {
   const body = useRef(null);
   const input = useRef(null);
 
-  useEffect(() => { const id = setInterval(() => setLabel((n) => (n + 1) % 3), 3200); return () => clearInterval(id); }, []);
+  useEffect(() => {
+    if (home || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    const id = setInterval(() => setLabel((n) => (n + 1) % 3), 3200);
+    return () => clearInterval(id);
+  }, [home]);
   useEffect(() => { body.current?.scrollTo({ top: body.current.scrollHeight, behavior: "smooth" }); }, [msgs, typing, open]);
   useEffect(() => {
     if (!open) return undefined;
@@ -391,9 +402,9 @@ export default function Assistant({ product }) {
           </button>
         </div>
       )}
-      <button type="button" className={`ai-pill${open ? " hide" : ""}${mini ? " mini" : ""}`} onClick={() => openWith()} aria-label={t("Open the OneLaser shopping assistant")} aria-expanded={open}>
+      <button type="button" className={`ai-pill${open ? " hide" : ""}${mini ? " mini" : ""}${home ? " ai-pill-home" : ""}`} onClick={() => openWith()} aria-label={t("Open the OneLaser shopping assistant")} aria-expanded={open}>
         <span className="ai-avatar"><Icon name="sparkle" size={20} /></span>
-        <span className="ai-pill-text" key={label}>{say(labels[label % labels.length])}</span>
+        <span className="ai-pill-text" key={label}>{home ? t("Shopping assistant") : say(labels[label % labels.length])}</span>
       </button>
       {open && <div className="ai-backdrop" onClick={close} aria-hidden="true" />}
       {open && (
@@ -426,7 +437,7 @@ export default function Assistant({ product }) {
               )}
               {product && cats !== CATS && <p className="ai-sub">{t("Other sizes in this series")}</p>}
               <div className="ai-cats-wrap"><div className="ai-cats">
-                {cats.map((c) => {
+                {cats.filter(([kind]) => campaignActive || kind !== "deals").map((c) => {
                   const p = c[2] && byHandle[c[2]];
                   return (
                     <button key={c[0]} type="button" onClick={() => cat(c)} className={product && c[2] === product.handle ? "on" : ""}>
@@ -439,7 +450,7 @@ export default function Assistant({ product }) {
               {msgs.length === 0 && (
                 <div className="ai-try">
                   <p>{t("Try asking")}</p>
-                  <div className="ai-chips grid">{chips.map((c) => <button key={en(c)} type="button" onClick={() => ask(c)}><Icon name="sparkle" size={12} />{say(c)}</button>)}</div>
+                  <div className="ai-chips grid">{chips.filter((c) => campaignActive || !/black friday/i.test(en(c))).map((c) => <button key={en(c)} type="button" onClick={() => ask(c)}><Icon name="sparkle" size={12} />{say(c)}</button>)}</div>
                 </div>
               )}
             </div>
